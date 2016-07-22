@@ -366,11 +366,11 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
 
 					ParseQuery<Account> subQuery2 = ParseQuery.getQuery(Account.class);
 					subQuery2.whereEqualTo(Const.kUserEmailKey, mSignInEmail);
-					subQuery2.whereEqualTo(Const.kUserTypeKey, 1);
+					subQuery2.whereEqualTo(Const.kUserTypeKey, 2);
 
 					ParseQuery<Account> subQuery1 = ParseQuery.getQuery(Account.class);
 					subQuery1.whereEqualTo(Const.kUserUsernameKey, mSignInEmail);
-					subQuery1.whereEqualTo(Const.kUserTypeKey, 1);
+					subQuery1.whereEqualTo(Const.kUserTypeKey, 2);
 
 					List<ParseQuery<Account>> subList = new ArrayList<>();
 					subList.add(subQuery1);

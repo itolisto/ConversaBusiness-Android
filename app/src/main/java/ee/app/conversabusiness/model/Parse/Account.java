@@ -7,13 +7,12 @@ import com.parse.ParseClassName;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFile;
-import com.parse.ParseInstallation;
-import com.parse.ParsePush;
 import com.parse.ParseUser;
 
 import java.util.HashMap;
 
 import ee.app.conversabusiness.ConversaApp;
+import ee.app.conversabusiness.utils.Utils;
 
 /**
  * Created by edgargomez on 4/15/16.
@@ -32,9 +31,7 @@ public class Account extends ParseUser {
                     // 1. Save Customer object id
                     ConversaApp.getPreferences().setBusinessId(result);
                     // 2. Subscribe to Customer channels
-                    ParsePush.subscribeInBackground(result + "_pbc");
-                    ParsePush.subscribeInBackground(result + "_pvt");
-                    ParseInstallation.getCurrentInstallation().saveEventually();
+                    Utils.subscribeToTags(result);
                 }
             }
         });

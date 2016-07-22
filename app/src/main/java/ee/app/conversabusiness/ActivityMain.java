@@ -11,13 +11,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.parse.ParsePush;
-
 import ee.app.conversabusiness.extendables.ConversaActivity;
 import ee.app.conversabusiness.model.Parse.Account;
 import ee.app.conversabusiness.utils.Const;
 import ee.app.conversabusiness.utils.Logger;
 import ee.app.conversabusiness.utils.PagerAdapter;
+import ee.app.conversabusiness.utils.Utils;
 
 public class ActivityMain extends ConversaActivity {
 
@@ -142,12 +141,11 @@ public class ActivityMain extends ConversaActivity {
         });
 
         if (ConversaApp.getPreferences().getBusinessId().isEmpty()) {
-            // Get Customer Id
+            // 1. Get Customer Id
             Account.getBusinessId();
         } else {
-            // 2. Subscribe to Customer channels
-            ParsePush.subscribeInBackground(ConversaApp.getPreferences().getBusinessId() + "_pbc");
-            ParsePush.subscribeInBackground(ConversaApp.getPreferences().getBusinessId() + "_pvt");
+            // 1. Subscribe to Customer channels
+            Utils.subscribeToTags(ConversaApp.getPreferences().getBusinessId());
         }
 	}
 	

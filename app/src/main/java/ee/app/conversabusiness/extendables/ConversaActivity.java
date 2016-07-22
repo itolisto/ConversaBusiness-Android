@@ -15,8 +15,8 @@ import ee.app.conversabusiness.R;
 import ee.app.conversabusiness.adapters.MessagesAdapter;
 import ee.app.conversabusiness.interfaces.OnMessageTaskCompleted;
 import ee.app.conversabusiness.model.Database.Message;
+import ee.app.conversabusiness.notifications.CustomNotificationExtenderService;
 import ee.app.conversabusiness.response.MessageResponse;
-import ee.app.conversabusiness.services.NewMessageService;
 import ee.app.conversabusiness.utils.Const;
 
 public class ConversaActivity extends BaseActivity implements OnMessageTaskCompleted {
@@ -146,7 +146,7 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Message message = intent.getParcelableExtra(NewMessageService.PARAM_OUT_MSG);
+            Message message = intent.getParcelableExtra(CustomNotificationExtenderService.PARAM_OUT_MSG);
             MessageReceived(message);
         }
     }

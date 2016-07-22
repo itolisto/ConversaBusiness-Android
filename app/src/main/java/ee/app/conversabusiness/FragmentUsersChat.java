@@ -22,8 +22,8 @@ import java.util.List;
 import ee.app.conversabusiness.adapters.ChatsAdapter;
 import ee.app.conversabusiness.interfaces.OnContactTaskCompleted;
 import ee.app.conversabusiness.model.Database.dCustomer;
+import ee.app.conversabusiness.notifications.CustomNotificationExtenderService;
 import ee.app.conversabusiness.response.ContactResponse;
-import ee.app.conversabusiness.services.NewMessageService;
 
 public class FragmentUsersChat extends Fragment implements OnContactTaskCompleted {
 
@@ -110,7 +110,7 @@ public class FragmentUsersChat extends Fragment implements OnContactTaskComplete
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            dCustomer contact = intent.getParcelableExtra(NewMessageService.PARAM_OUT_MSG);
+            dCustomer contact = intent.getParcelableExtra(CustomNotificationExtenderService.PARAM_OUT_MSG);
             ContactAddedFromBroadcast(contact);
         }
     }
