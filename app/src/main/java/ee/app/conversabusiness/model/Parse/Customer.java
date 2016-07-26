@@ -1,6 +1,7 @@
 package ee.app.conversabusiness.model.Parse;
 
 import com.parse.ParseClassName;
+import com.parse.ParseFile;
 import com.parse.ParseObject;
 
 /**
@@ -9,28 +10,20 @@ import com.parse.ParseObject;
 @ParseClassName("Customer")
 public class Customer extends ParseObject {
 
-    public boolean getGender() {
-        return getBoolean("gender");
-    }
-
-    public void setGender(boolean value) {
-        put("gender", value);
-    }
-
     public String getName() {
         return getString("name");
     }
 
-    public void setName(String value) {
-        put("name", value);
+    public String getDisplayName() {
+        return getString("displayName");
     }
 
     public String getStatus() {
         return getString("status");
     }
 
-    public void setStatus(String value) {
-        put("status", value);
+    public ParseFile getAvatar() {
+        return getParseFile("avatar");
     }
 
 }

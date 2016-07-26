@@ -10,9 +10,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import ee.app.conversabusiness.FragmentHome;
-import ee.app.conversabusiness.FragmentUsersChat;
-import ee.app.conversabusiness.FragmentDeals;
 import ee.app.conversabusiness.FragmentSettings;
+import ee.app.conversabusiness.FragmentUsersChat;
 
 public class PagerAdapter extends FragmentStatePagerAdapter {
 
@@ -22,19 +21,16 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public Fragment getItem(int i) {
-        Fragment fragment = null;
+        Fragment fragment;
 
         switch (i) {
             case 0:
-                fragment = new FragmentHome();
-                break;
-            case 1:
                 fragment = new FragmentUsersChat();
                 break;
-            case 2:
-                fragment = new FragmentDeals();
+            case 1:
+                fragment = new FragmentHome();
                 break;
-            case 3:
+            case 2:
                 fragment = new FragmentSettings();
                 break;
             default:
@@ -47,7 +43,7 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return 4;
+        return 3;
     }
 
     @Override

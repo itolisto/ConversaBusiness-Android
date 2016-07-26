@@ -50,7 +50,7 @@ public class Const {
 		public static final String kMessageUserKey = "user";
 		public static final String kMessageBusinessKey = "business";
 		public static final String kMessageFromUserKey = "fromUser";
-		public static final String kMessageSizeInBytesKey = "sizeInBytes";
+		public static final String kMessageSizeInBytesKey = "size";
 		public static final String kMessageWidthKey    = "width";
 		public static final String kMessageHeightKey   = "height";
 		public static final String kMessageThumbKey    = "thumbnail";
@@ -60,11 +60,11 @@ public class Const {
 		public static final String kMessageLocationKey = "location";
 		public static final String kMessageReadAtKey = "reatAt";
 		// Message
-		public static final String kMessageTypeText = "t";
-		public static final String kMessageTypeAudio = "a";
-		public static final String kMessageTypeVideo = "v";
-		public static final String kMessageTypeImage = "i";
-		public static final String kMessageTypeLocation = "l";
+		public static final String kMessageTypeText = "1";
+		public static final String kMessageTypeAudio = "2";
+		public static final String kMessageTypeVideo = "3";
+		public static final String kMessageTypeImage = "4";
+		public static final String kMessageTypeLocation = "5";
 
 
 	// User class
@@ -72,7 +72,6 @@ public class Const {
 	public static final String kUserUsernameKey = "username";
 	public static final String kUserEmailKey    = "email";
 	public static final String kUserPasswordKey = "password";
-	public static final String kUserDisplayNameKey  = "displayName";
 	public static final String kUserTypeKey     = "userType";
 	public static final String kUserBirthday = "birthday";
 	public static final String kUserGender = "gender";
@@ -106,6 +105,11 @@ public class Const {
 	// Customer class
 	public static final String kClassCustomer       = "Customer";
 	public static final String kCustomerUserInfoKey = "userInfo";
+	public static final String kCustomerActiveKey = "active";
+	public static final String kCustomerDisplayNameKey = "displayName";
+	public static final String kCustomerStatusKey = "status";
+	public static final String kCustomerAvatarKey = "avatar";
+	public static final String kCustomerNameKey = "name";
 
 	// dCustomer class
 	public static final String kClassBusiness           = "dBusiness";

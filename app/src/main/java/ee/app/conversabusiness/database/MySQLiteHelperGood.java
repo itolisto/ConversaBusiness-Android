@@ -58,28 +58,39 @@ public class MySQLiteHelperGood {
     public static final String sMessageCreatedAt = "created_at";
     public static final String sMessageModifiedAt = "modified_at";
     public static final String sMessageReadAt = "read_at";
+    public static final String sMessageMessageId = "message_id";
+    public static final String sMessageWidth = "width";
+    public static final String sMessageHeight = "height";
+    public static final String sMessageDuration = "duration";
+    public static final String sMessageBytes = "bytes";
 
     private static final String TABLE_MESSAGES_CREATE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_MESSAGES + "("
             + "\"" + COLUMN_ID + "\" INTEGER PRIMARY KEY AUTOINCREMENT, "
-            + "\"" + sMessageFromUserId + "\" CHAR(10) NOT NULL, "
-            + "\"" + sMessageToUserId + "\" CHAR(10) NOT NULL, "
+            + "\"" + sMessageFromUserId + "\" CHAR(14) NOT NULL, "
+            + "\"" + sMessageToUserId + "\" CHAR(14) NOT NULL, "
             + "\"" + sMessageType + "\" CHAR(1) NOT NULL, "
             + "\"" + sMessageDeliveryStatus + "\" CHAR(1) NOT NULL, "
-            + "\"" + sMessageBody + "\" TEXT NOT NULL, "
-            + "\"" + sMessageFileId + "\" VARCHAR(255) NOT NULL, "
-            + "\"" + sMessageLongitude + "\" FLOAT NOT NULL, "
-            + "\"" + sMessageLatitude + "\" FLOAT NOT NULL, "
+            + "\"" + sMessageBody + "\" TEXT, "
+            + "\"" + sMessageFileId + "\" TEXT, "
+            + "\"" + sMessageLongitude + "\" REAL DEFAULT 0, "
+            + "\"" + sMessageLatitude + "\" REAL DEFAULT 0, "
             + "\"" + sMessageCreatedAt + "\" INTEGER NOT NULL, "
-            + "\"" + sMessageModifiedAt + "\" INTEGER NOT NULL, "
-            + "\"" + sMessageReadAt + "\" INTEGER NOT NULL DEFAULT '0' );";
+            + "\"" + sMessageModifiedAt + "\" INTEGER NOT NULL DEFAULT '0', "
+            + "\"" + sMessageReadAt + "\" INTEGER NOT NULL DEFAULT '0', "
+            + "\"" + sMessageMessageId + "\" CHAR(14),"
+            + "\"" + sMessageWidth + "\" INTEGER DEFAULT 0,"
+            + "\"" + sMessageHeight + "\" INTEGER DEFAULT 0,"
+            + "\"" + sMessageDuration + "\" INTEGER DEFAULT 0,"
+            + "\"" + sMessageBytes + "\" INTEGER DEFAULT 0 );";
     private static final String tmIndex1 = "CREATE INDEX M_search on "  + TABLE_MESSAGES + "(" + sMessageFromUserId + ", " + sMessageToUserId + "); ";
+    private static final String tmIndex2 = "CREATE UNIQUE INDEX IF NOT EXISTS C_messageId on "  + TABLE_MESSAGES + "(" + sMessageMessageId + ");";
 
     // CONTACTS
     public static final String sBusinessCustomerId = "customerId";
     public static final String sBusinessDisplayName = "displayName";
     public static final String sBusinessRecent = "recent";
-    public static final String sBusinessAbout = "about";
+    public static final String sBusinessName = "name";
     public static final String sBusinessStatus = "statusMessage";
     public static final String sBusinessComposingMessage = "composingMessageString";
     public static final String sBusinessAvatarFile = "avatar_file_url";
@@ -90,17 +101,17 @@ public class MySQLiteHelperGood {
     private static final String TABLE_CONTACTS_CREATE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_CV_CONTACTS + "("
             + "\"" + COLUMN_ID + "\" INTEGER PRIMARY KEY, "
-            + "\"" + sBusinessCustomerId + "\" CHAR(10) NOT NULL, "
+            + "\"" + sBusinessCustomerId + "\" CHAR(14) NOT NULL, "
             + "\"" + sBusinessDisplayName + "\" VARCHAR(180) NOT NULL, "
-            + "\"" + sBusinessRecent + "\" INTEGER NOT NULL, "
-            + "\"" + sBusinessAbout + "\" VARCHAR(255) NOT NULL, "
-            + "\"" + sBusinessStatus + "\" VARCHAR(255) NOT NULL, "
-            + "\"" + sBusinessComposingMessage + "\" VARCHAR(255) NOT NULL, "
-            + "\"" + sBusinessAvatarFile + "\" VARCHAR(355) NOT NULL, "
+            + "\"" + sBusinessRecent + "\" INTEGER, "
+            + "\"" + sBusinessName + "\" VARCHAR(100) NOT NULL, "
+            + "\"" + sBusinessStatus + "\" VARCHAR(255), "
+            + "\"" + sBusinessComposingMessage + "\" VARCHAR(255), "
+            + "\"" + sBusinessAvatarFile + "\" VARCHAR(355), "
             + "\"" + sBusinessBlocked + "\" CHAR(1) NOT NULL DEFAULT 'N', "
             + "\"" + sBusinessMuted + "\" CHAR(1) NOT NULL DEFAULT 'N', "
             + "\"" + sBusinessCreatedAt + "\" INTEGER NOT NULL );";
-    private static final String tcIndex1 = "CREATE UNIQUE INDEX IF NOT EXISTS C_businessId on "  + TABLE_CV_CONTACTS + "(" + sBusinessCustomerId + ");";
+    private static final String tcIndex1 = "CREATE UNIQUE INDEX IF NOT EXISTS C_customerId on "  + TABLE_CV_CONTACTS + "(" + sBusinessCustomerId + ");";
 
     /************************************************************/
     /*********************OPEN/CLOSE METHODS*********************/
@@ -152,7 +163,7 @@ public class MySQLiteHelperGood {
         contact.put(sBusinessCustomerId, user.getBusinessId());
         contact.put(sBusinessDisplayName, user.getDisplayName());
         contact.put(sBusinessRecent, user.getRecent());
-        contact.put(sBusinessAbout, user.getAbout());
+        contact.put(sBusinessName, user.getName());
         contact.put(sBusinessStatus, user.getStatusMessage());
         contact.put(sBusinessComposingMessage, "");
         contact.put(sBusinessAvatarFile, user.getAvatarThumbFileId());
@@ -251,7 +262,7 @@ public class MySQLiteHelperGood {
         contact.setBusinessId(cursor.getString(1));
         contact.setDisplayName(cursor.getString(2));
         contact.setRecent(cursor.getLong(3));
-        contact.setAbout(cursor.getString(4));
+        contact.setName(cursor.getString(4));
         contact.setStatusMessage(cursor.getString(5));
         contact.setComposingMessage(cursor.getString(6));
         contact.setAvatarThumbFileId(cursor.getString(7));
@@ -274,12 +285,17 @@ public class MySQLiteHelperGood {
         message.put(sMessageType, newMessage.getMessageType());
         message.put(sMessageDeliveryStatus, newMessage.getDeliveryStatus());
         message.put(sMessageBody, newMessage.getBody());
-        message.put(sMessageFileId, newMessage.getImageFileId());
+        message.put(sMessageFileId, newMessage.getFileId());
         message.put(sMessageLongitude, newMessage.getLongitude());
         message.put(sMessageLatitude, newMessage.getLatitude());
         message.put(sMessageCreatedAt, newMessage.getCreated());
         message.put(sMessageModifiedAt, newMessage.getModified());
         message.put(sMessageReadAt, newMessage.getReadAt());
+        message.put(sMessageMessageId, newMessage.getMessageId());
+        message.put(sMessageWidth, newMessage.getWidth());
+        message.put(sMessageHeight, newMessage.getHeight());
+        message.put(sMessageDuration, newMessage.getDuration());
+        message.put(sMessageBytes, newMessage.getBytes());
 
         openMessagesTable();
         long id = myDb.insert(TABLE_MESSAGES, null, message);
@@ -398,7 +414,6 @@ public class MySQLiteHelperGood {
 
     public List<Message> getMessagesByContact(String id, int count, int offset) throws SQLException {
         String fromId = ConversaApp.getPreferences().getBusinessId();
-        ArrayList<Message> messages = new ArrayList<>();
         openMessagesTable();
         String query = "SELECT m.* FROM "
                         + TABLE_MESSAGES + " m"
@@ -411,7 +426,8 @@ public class MySQLiteHelperGood {
         Cursor cursor = myDb.rawQuery(query, new String[]{});
         cursor.moveToFirst();
 
-        while (!cursor.isAfterLast()) {
+
+        ArrayList<Message> messages = new ArrayList<>(cursor.getCount());  while (!cursor.isAfterLast()) {
             Message contact = cursorToMessage(cursor);
             messages.add(contact);
             cursor.moveToNext();
@@ -430,12 +446,17 @@ public class MySQLiteHelperGood {
         message.setMessageType(cursor.getString(3));
         message.setDeliveryStatus(cursor.getString(4));
         message.setBody(cursor.getString(5));
-        message.setImageFileId(cursor.getString(6));
+        message.setFileId(cursor.getString(6));
         message.setLongitude(cursor.getFloat(7));
         message.setLatitude(cursor.getFloat(8));
         message.setCreated(cursor.getLong(9));
         message.setModified(cursor.getLong(10));
         message.setReadAt(cursor.getLong(11));
+        message.setMessageId(cursor.getString(12));
+        message.setWidth(cursor.getInt(13));
+        message.setHeight(cursor.getInt(14));
+        message.setDuration(cursor.getInt(15));
+        message.setBytes(cursor.getInt(16));
         return message;
     }
 
@@ -527,6 +548,7 @@ public class MySQLiteHelperGood {
         public void onCreate(SQLiteDatabase db) {
             db.execSQL(TABLE_MESSAGES_CREATE);
             db.execSQL(tmIndex1);
+            db.execSQL(tmIndex2);
         }
 
         @Override

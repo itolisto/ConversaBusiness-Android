@@ -19,7 +19,6 @@
     <string name="sign_email_length_error">Email is required</string>
 
     <string-array name="categories_titles">
-        <item name="Home">Home</item>
         <item name="Conversas">Chats</item>
         <item name="Categories">Statistics</item>
         <item name="Settings">Settings</item>

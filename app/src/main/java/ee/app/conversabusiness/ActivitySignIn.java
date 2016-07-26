@@ -31,7 +31,6 @@ import com.parse.SignUpCallback;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import ee.app.conversabusiness.model.Parse.Account;
 import ee.app.conversabusiness.utils.Const;
@@ -364,22 +363,14 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
 					final String mSignInEmail = mEtSignInEmail.getText().toString();
 					final String mSignInPassword = mEtSignInPassword.getText().toString();
 
-					ParseQuery<Account> subQuery2 = ParseQuery.getQuery(Account.class);
-					subQuery2.whereEqualTo(Const.kUserEmailKey, mSignInEmail);
-					subQuery2.whereEqualTo(Const.kUserTypeKey, 2);
+					ParseQuery<Account> query = ParseQuery.getQuery(Account.class);
+					query.whereEqualTo(Const.kUserEmailKey, mSignInEmail);
+					query.whereEqualTo(Const.kUserTypeKey, 2);
 
-					ParseQuery<Account> subQuery1 = ParseQuery.getQuery(Account.class);
-					subQuery1.whereEqualTo(Const.kUserUsernameKey, mSignInEmail);
-					subQuery1.whereEqualTo(Const.kUserTypeKey, 2);
-
-					List<ParseQuery<Account>> subList = new ArrayList<>();
-					subList.add(subQuery1);
-					subList.add(subQuery2);
-
-					ParseQuery<Account> query = ParseQuery.or(subList);
 					Collection<String> collection = new ArrayList<>();
 					collection.add(Const.kUserUsernameKey);
 					query.selectKeys(collection);
+
 					query.getFirstInBackground(new GetCallback<Account>() {
 						@Override
 						public void done(Account object, ParseException e) {

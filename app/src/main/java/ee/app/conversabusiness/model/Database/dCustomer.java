@@ -46,8 +46,8 @@ public class dCustomer implements Parcelable {
 
     private long mId;
     private String mBusinessId;
+    private String mName;
     private String mDisplayName;
-    private String mAbout;
     private String mStatusMessage;
     private String mComposingMessageString;
     private String mAvatarThumbFileId;
@@ -73,8 +73,8 @@ public class dCustomer implements Parcelable {
 
     public long getId() { return mId; }
     public String getBusinessId() { return mBusinessId; }
+    public String getName() { return mName; }
     public String getDisplayName() { return mDisplayName; }
-    public String getAbout() { return mAbout; }
     public String getStatusMessage() { return mStatusMessage; }
     public String getComposingMessage() { return mComposingMessageString; }
     public String getAvatarThumbFileId() { return mAvatarThumbFileId; }
@@ -85,8 +85,8 @@ public class dCustomer implements Parcelable {
 
     public void setId(long mId) { this.mId = mId; }
     public void setBusinessId(String mBusinessId) { this.mBusinessId = mBusinessId; }
+    public void setName(String mName) { this.mName = mName; }
     public void setDisplayName(String mDisplayName) { this.mDisplayName = mDisplayName; }
-    public void setAbout(String about) { this.mAbout = about; }
     public void setStatusMessage(String mStatusMessage) { this.mStatusMessage = mStatusMessage; }
     public void setComposingMessage(String mComposingMessageString) { this.mComposingMessageString = mComposingMessageString; }
     public void setAvatarThumbFileId(String mAvatarThumbFileId) { this.mAvatarThumbFileId = mAvatarThumbFileId; }
@@ -169,8 +169,8 @@ public class dCustomer implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(this.mId);
         dest.writeString(this.mBusinessId);
+        dest.writeString(this.mName);
         dest.writeString(this.mDisplayName);
-        dest.writeString(this.mAbout);
         dest.writeString(this.mStatusMessage);
         dest.writeString(this.mComposingMessageString);
         dest.writeString(this.mAvatarThumbFileId);
@@ -186,8 +186,8 @@ public class dCustomer implements Parcelable {
     protected dCustomer(Parcel in) {
         this.mId = in.readLong();
         this.mBusinessId = in.readString();
+        this.mName = in.readString();
         this.mDisplayName = in.readString();
-        this.mAbout = in.readString();
         this.mStatusMessage = in.readString();
         this.mComposingMessageString = in.readString();
         this.mAvatarThumbFileId = in.readString();

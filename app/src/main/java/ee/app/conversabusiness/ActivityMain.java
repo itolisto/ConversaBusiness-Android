@@ -7,25 +7,18 @@ import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 
 import ee.app.conversabusiness.extendables.ConversaActivity;
 import ee.app.conversabusiness.model.Parse.Account;
-import ee.app.conversabusiness.utils.Const;
 import ee.app.conversabusiness.utils.Logger;
 import ee.app.conversabusiness.utils.PagerAdapter;
-import ee.app.conversabusiness.utils.Utils;
 
 public class ActivityMain extends ConversaActivity {
 
-    private boolean mPushHandledOnNewIntent = false;
     private ViewPager mViewPager;
     private TabLayout tabLayout;
     private String titles[];
     private int[] tabIcons = {
-            R.drawable.actuales,
             R.drawable.chats,
             R.drawable.basket,
             R.drawable.settings
@@ -57,7 +50,6 @@ public class ActivityMain extends ConversaActivity {
         tabLayout.getTabAt(0).setIcon(tabIcons[0]);
         tabLayout.getTabAt(1).setIcon(tabIcons[1]);
         tabLayout.getTabAt(2).setIcon(tabIcons[2]);
-        tabLayout.getTabAt(3).setIcon(tabIcons[3]);
 
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -143,101 +135,14 @@ public class ActivityMain extends ConversaActivity {
         if (ConversaApp.getPreferences().getBusinessId().isEmpty()) {
             // 1. Get Customer Id
             Account.getBusinessId();
-        } else {
-            // 1. Subscribe to Customer channels
-            Utils.subscribeToTags(ConversaApp.getPreferences().getBusinessId());
         }
+
+        super.initialization();
 	}
-	
-	@Override
-    protected void onNewIntent(Intent intent) {
-        setIntent(intent);
-        mPushHandledOnNewIntent = false;
-        if (getIntent().getBooleanExtra(Const.PUSH_INTENT, false)) {
-            mPushHandledOnNewIntent = true;
-            getIntent().removeExtra(Const.PUSH_INTENT);
-            openWallFromNotification(intent);
-        }
-        super.onNewIntent(intent);
-    }
-
-    // You need to do the Play Services APK check here too.
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        if (!mPushHandledOnNewIntent) {
-            if (getIntent().getBooleanExtra(Const.PUSH_INTENT, false)) {
-                mPushHandledOnNewIntent = false;
-                getIntent().removeExtra(Const.PUSH_INTENT);
-                new Thread(new Runnable() {
-                    public void run() {
-                        openWallFromNotification(getIntent());
-                    }
-                }).start();
-            }
-        }
-    }
 
     @Override
-    public void onBackPressed() {
-        if(mViewPager.getCurrentItem() == 1) {
-            Log.e(this.getClass().getSimpleName(), "getBackStackEntryCount: " + getSupportFragmentManager().getBackStackEntryCount());
-            if(getSupportFragmentManager().getBackStackEntryCount() > 1) {
-                getSupportActionBar().setTitle(getString(R.string.categories));
-                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-                getSupportFragmentManager().popBackStack();
-                return;
-            } else {
-                // We need to pop immediate because root fragment is being pop when
-                // back is pressed. This way we exit application as expected.
-                getSupportFragmentManager().popBackStack();
-            }
-        }
+    protected void openFromNotification(Intent intent) {
 
-        super.onBackPressed();
-    }
-
-    private void openWallFromNotification(Intent intent) {
-        String fromUserId = intent.getStringExtra(Const.PUSH_FROM_USER_ID);
-//        User fromUser     = ConversaApp.getDB().isContact(fromUserId);
-
-//        if(fromUser == null) {
-//            try {
-//                fromUser = new ConversaAsyncTask<Void, Void, User>(
-//                        new CouchDB.FindBusinessById(fromUserId), null, getApplicationContext(), true
-//                ).execute().get();
-//            } catch (InterruptedException | ExecutionException e) {
-//                e.printStackTrace();
-//            }
-//        } else {
-            //UsersManagement.setBusiness(fromUser);
-            //SettingsManager.ResetSettings();
-//            if (ActivityChatWall.gCurrentMessages != null)
-//                ActivityChatWall.gCurrentMessages.clear();
-
-//            startActivity(new Intent(this, ActivityChatWall.class));
-//        }
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        super.onPrepareOptionsMenu(menu);
-        MenuItem item = menu.findItem(R.id.grid_default_search);
-
-        switch (mViewPager.getCurrentItem()) {
-            case 1:
-                if (item != null) {
-                    item.setVisible(true);
-                }
-                return true;
-            default:
-                if (item != null) {
-                    item.setVisible(false);
-                }
-                return true;
-
-        }
     }
 
 }
