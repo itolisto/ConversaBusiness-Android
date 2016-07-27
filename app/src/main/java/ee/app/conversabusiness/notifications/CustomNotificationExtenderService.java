@@ -65,6 +65,8 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
                     return true;
                 }
 
+                dCustomer dbcustomer = null;
+
                 // 1. Find if user is already a contact
                 if(ConversaApp.getDB().isContact(contactId) == null) {
                     // 2. Call Parse for User information
@@ -89,7 +91,7 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
                     }
 
                     // 3. If Customer was found, save to Local Database
-                    dCustomer dbcustomer = new dCustomer();
+                    dbcustomer = new dCustomer();
                     dbcustomer.setBusinessId(contactId);
                     dbcustomer.setName(customer.getName());
                     dbcustomer.setDisplayName(customer.getDisplayName());
@@ -103,15 +105,12 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
                     } catch (IllegalStateException e) {
                         dbcustomer.setAvatarThumbFileId("");
                     }
+
                     dbcustomer = ConversaApp.getDB().saveContact(dbcustomer);
 
                     if (dbcustomer.getId() == -1) {
                         Log.e(TAG, "Error guardando Contacto");
-                    } else {
-                        Intent broadcastIntent = new Intent();
-                        broadcastIntent.setAction(FragmentUsersChat.UsersReceiver.ACTION_RESP);
-                        broadcastIntent.putExtra(PARAM_OUT_MSG, dbcustomer);
-                        ConversaApp.getLocalBroadcastManager().sendBroadcast(broadcastIntent);
+                        return true;
                     }
                 }
 
@@ -207,13 +206,21 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
 
                 dbmessage = ConversaApp.getDB().saveMessage(dbmessage);
 
-                // 4. Broadcast result as from IntentService ain't possible to access ui thread
                 if (dbmessage.getId() == -1) {
                     Log.e(TAG, "Error guardando Message");
-                } else {
-                    Intent broadcastIntent = new Intent();
-                    broadcastIntent.setAction(ConversaActivity.MessageReceiver.ACTION_RESP);
-                    broadcastIntent.putExtra(PARAM_OUT_MSG, dbmessage);
+                    return true;
+                }
+
+                // 4. Broadcast results as from IntentService ain't possible to access ui thread
+                Intent broadcastIntent = new Intent();
+                broadcastIntent.setAction(ConversaActivity.MessageReceiver.ACTION_RESP);
+                broadcastIntent.putExtra(PARAM_OUT_MSG, dbmessage);
+                ConversaApp.getLocalBroadcastManager().sendBroadcast(broadcastIntent);
+
+                if (dbcustomer != null) {
+                    broadcastIntent = new Intent();
+                    broadcastIntent.setAction(FragmentUsersChat.UsersReceiver.ACTION_RESP);
+                    broadcastIntent.putExtra(PARAM_OUT_MSG, dbcustomer);
                     ConversaApp.getLocalBroadcastManager().sendBroadcast(broadcastIntent);
                 }
                 break;
@@ -226,7 +233,6 @@ public class CustomNotificationExtenderService extends NotificationExtenderServi
             overrideSettings.extender = new NotificationCompat.Extender() {
                 @Override
                 public NotificationCompat.Builder extend(NotificationCompat.Builder builder) {
-                    builder.setGroupSummary(true);
                     // Sets the background notification color to Green on Android 5.0+ devices.
                     return builder.setColor(new BigInteger("FF00FF00", 16).intValue());
                 }

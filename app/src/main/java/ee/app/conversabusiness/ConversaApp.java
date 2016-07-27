@@ -71,11 +71,12 @@ public class ConversaApp extends Application {
 		Foreground.init(this);
 		mDb = new MySQLiteHelperGood(this);
 		Fresco.initialize(this);
+		setPreferences(new Preferences(this));
+		setLocalBroadcastManager(LocalBroadcastManager.getInstance(this));
 		OneSignal.startInit(this)
 				.setNotificationOpenedHandler(new CustomNotificationOpenedHandler(getApplicationContext()))
 				.init();
-		setPreferences(new Preferences(this));
-		setLocalBroadcastManager(LocalBroadcastManager.getInstance(this));
+
 		// Register subclassing for using as Parse objects
 		ParseObject.registerSubclass(Options.class);
 		ParseObject.registerSubclass(Account.class);
@@ -84,10 +85,6 @@ public class ConversaApp extends Application {
 		ParseObject.registerSubclass(Customer.class);
 		ParseObject.registerSubclass(pMessage.class);
 		ParseObject.registerSubclass(BusinessOptions.class);
-
-		// [Optional] Power your app with Local Datastore. For more info, go to
-		// https://parse.com/docs/ios/guide#local-datastore
-		Parse.enableLocalDatastore(this);
 
 		// Initialize Parse.
 		Parse.initialize(this, "39H1RFC1jalMV3cv8pmDGPRh93Bga1mB4dyxbLwl", "YC3vORNGt6I4f8yEsO6TyGF97XbmitofOrrS5PCC");

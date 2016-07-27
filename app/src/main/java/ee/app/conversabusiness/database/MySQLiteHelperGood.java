@@ -14,7 +14,6 @@ import android.support.annotation.UiThread;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.GregorianCalendar;
 import java.util.List;
 
 import ee.app.conversabusiness.ConversaApp;
@@ -33,12 +32,9 @@ public class MySQLiteHelperGood {
 
     private static final String TAG = "MySQLiteHelper";
     private final Context context;
-    private DatabaseHelperMessages myDbHelperForMessages;
-    private DatabaseHelperContacts myDbHelperForContacts;
-    private SQLiteDatabase myDb;
+    private DatabaseHelper myDbHelper;
 
-    private static final String DATABASE_NAME1 = "userMessagesdb.db";
-    private static final String DATABASE_NAME2 = "userContactsdb.db";
+    private static final String DATABASE_NAME1 = "conversabusinessdb.db";
     private static final int DATABASE_VERSION = 1;
 
     private static final String TABLE_MESSAGES = "message";
@@ -113,45 +109,52 @@ public class MySQLiteHelperGood {
             + "\"" + sBusinessCreatedAt + "\" INTEGER NOT NULL );";
     private static final String tcIndex1 = "CREATE UNIQUE INDEX IF NOT EXISTS C_customerId on "  + TABLE_CV_CONTACTS + "(" + sBusinessCustomerId + ");";
 
+    // TRIGGERS
+    private static final String NEW_MESSAGE_TRIGGER = "new_message_trigger";
+    private static final String newMessageTrigger = "CREATE TRIGGER IF NOT EXISTS " + NEW_MESSAGE_TRIGGER
+            + " AFTER INSERT"
+            + " ON " + TABLE_MESSAGES
+            + " BEGIN "
+            + " update " + TABLE_CV_CONTACTS + " set " + sBusinessRecent + " = new." + sMessageCreatedAt
+            + " where " + sBusinessCustomerId + " = new." + sMessageFromUserId
+            + " or " + sBusinessCustomerId + " = new." + sMessageToUserId + ";"
+            + " END;";
+
+    private static final String DELETE_USER_TRIGGER = "delete_user_trigger";
+    private static final String deleteUserTrigger = "CREATE TRIGGER IF NOT EXISTS " + DELETE_USER_TRIGGER
+            + " AFTER DELETE"
+            + " ON " + TABLE_CV_CONTACTS
+            + " FOR EACH ROW"
+            + " BEGIN "
+            + " delete from " + TABLE_MESSAGES + " where " + sMessageFromUserId + " = old." + sBusinessCustomerId
+            + " or " + sMessageToUserId + " = old." + sBusinessCustomerId + ";"
+            + " END;";
+
     /************************************************************/
     /*********************OPEN/CLOSE METHODS*********************/
     /************************************************************/
 
     public MySQLiteHelperGood(Context context) {
         this.context = context;
-        myDbHelperForMessages = new DatabaseHelperMessages(context);
-        myDbHelperForContacts = new DatabaseHelperContacts(context);
-
+        myDbHelper = new DatabaseHelper(context);
         messageListeners = null;
         contactListeners = null;
-
-        openMessagesTable();
-        closeMessagesTable();
-        openContactsTable();
-        closeContactsTable();
+        openDatabase();
+        closeDatabase();
     }
 
-    public MySQLiteHelperGood openMessagesTable() throws SQLException {
-        myDb = myDbHelperForMessages.getWritableDatabase();
-        return this;
+    public SQLiteDatabase openDatabase() throws SQLException {
+        return myDbHelper.getWritableDatabase();
     }
 
-    public void closeMessagesTable() {
-        if (myDbHelperForMessages != null) { myDbHelperForMessages.close(); }
-    }
-
-    public MySQLiteHelperGood openContactsTable() throws SQLException {
-        myDb = myDbHelperForContacts.getWritableDatabase();
-        return this;
-    }
-
-    public void closeContactsTable() {
-        if (myDbHelperForContacts != null) { myDbHelperForContacts.close(); }
+    public void closeDatabase() {
+        if (myDbHelper != null) {
+            myDbHelper.close();
+        }
     }
 
     public boolean deleteDatabase() {
         context.deleteDatabase(DATABASE_NAME1);
-        context.deleteDatabase(DATABASE_NAME2);
         return true;
     }
 
@@ -171,9 +174,8 @@ public class MySQLiteHelperGood {
         contact.put(sBusinessMuted, "N");
         contact.put(sBusinessCreatedAt, user.getCreated());
 
-        openContactsTable();
-        long result = myDb.insert(TABLE_CV_CONTACTS, null, contact);
-        closeContactsTable();
+        long result = openDatabase().insert(TABLE_CV_CONTACTS, null, contact);
+        closeDatabase();
 
         if (result > 0) {
             user.setId(result);
@@ -185,8 +187,7 @@ public class MySQLiteHelperGood {
     public List<dCustomer> getAllContacts() {
         List<dCustomer> contacts = new ArrayList<>();
 
-        openContactsTable();
-        Cursor cursor = myDb.query(TABLE_CV_CONTACTS,null,null,null,null,null, sBusinessRecent + " DESC");
+        Cursor cursor = openDatabase().query(TABLE_CV_CONTACTS,null,null,null,null,null, sBusinessRecent + " DESC");
 
         cursor.moveToFirst();
         while (!cursor.isAfterLast()) {
@@ -196,27 +197,25 @@ public class MySQLiteHelperGood {
         }
         // make sure to close the cursor
         cursor.close();
-        closeContactsTable();
+        closeDatabase();
 
         return contacts;
     }
 
     public dCustomer deleteContactById(dCustomer customer) {
         String id = Long.toString(customer.getId());
-        openContactsTable();
-        int result = myDb.delete(TABLE_CV_CONTACTS, COLUMN_ID + " = ? ", new String[]{id});
-        closeContactsTable();
+        int result = openDatabase().delete(TABLE_CV_CONTACTS, COLUMN_ID + " = ? ", new String[]{id});
+        closeDatabase();
 
-        if( result == 1 ) {
-            deleteAllMessagesById(id);
+        if(result > 0) {
+            customer.setId(-1);
         }
 
         return customer;
     }
 
     public dCustomer isContact(String businessId) {
-        openContactsTable();
-        Cursor cursor = myDb.query(TABLE_CV_CONTACTS, null, sBusinessCustomerId + " = ?", new String[]{businessId}, null, null, null);
+        Cursor cursor = openDatabase().query(TABLE_CV_CONTACTS, null, sBusinessCustomerId + " = ?", new String[]{businessId}, null, null, null);
         cursor.moveToFirst();
         dCustomer contact = null;
 
@@ -226,14 +225,13 @@ public class MySQLiteHelperGood {
         }
 
         cursor.close();
-        closeContactsTable();
+        closeDatabase();
 
         return contact;
     }
 
     public boolean hasPendingMessages(String id) {
-        openContactsTable();
-        Cursor cursor = myDb.query(TABLE_CV_CONTACTS, new String[] {"hasPendingMessages"}, COLUMN_ID + " = ?",new String[] { id },null,null,null);
+        Cursor cursor = openDatabase().query(TABLE_CV_CONTACTS, new String[] {"hasPendingMessages"}, COLUMN_ID + " = ?",new String[] { id },null,null,null);
         cursor.moveToFirst();
         int has = 1;
 
@@ -243,7 +241,7 @@ public class MySQLiteHelperGood {
         }
 
         cursor.close();
-        closeContactsTable();
+        closeDatabase();
 
         return (has == 1);
     }
@@ -251,9 +249,8 @@ public class MySQLiteHelperGood {
     public void setHasPendingMessages(String id, int status) {
         ContentValues contentValues = new ContentValues();
         contentValues.put("hasPendingMessages", status);
-        openContactsTable();
-        myDb.update(TABLE_CV_CONTACTS, contentValues, "_id = ? ", new String[]{id});
-        closeContactsTable();
+        openDatabase().update(TABLE_CV_CONTACTS, contentValues, "_id = ? ", new String[]{id});
+        closeDatabase();
     }
 
     private dCustomer cursorToUser(Cursor cursor) {
@@ -297,9 +294,8 @@ public class MySQLiteHelperGood {
         message.put(sMessageDuration, newMessage.getDuration());
         message.put(sMessageBytes, newMessage.getBytes());
 
-        openMessagesTable();
-        long id = myDb.insert(TABLE_MESSAGES, null, message);
-        closeMessagesTable();
+        long id = openDatabase().insert(TABLE_MESSAGES, null, message);
+        closeDatabase();
 
         if(id > 0) {
             newMessage.setId(id);
@@ -311,16 +307,14 @@ public class MySQLiteHelperGood {
     public int updateDeliveryStatus(long messageId, String status) {
         ContentValues contentValues = new ContentValues();
         contentValues.put(sMessageDeliveryStatus, status);
-        openMessagesTable();
-        int result = myDb.update(TABLE_MESSAGES, contentValues, COLUMN_ID + " = ?", new String[]{Long.toString(messageId)});
-        closeMessagesTable();
+        int result = openDatabase().update(TABLE_MESSAGES, contentValues, COLUMN_ID + " = ?", new String[]{Long.toString(messageId)});
+        closeDatabase();
         return result;
     }
 
     public int messageCountForContact(String id) {
         String query = "SELECT COUNT(*) FROM " + TABLE_MESSAGES + " WHERE " + sMessageFromUserId + " = \'" + id + "\'";
-        openMessagesTable();
-        Cursor cursor = myDb.rawQuery(query, new String[]{});
+        Cursor cursor = openDatabase().rawQuery(query, new String[]{});
         cursor.moveToFirst();
         int count = 0;
 
@@ -330,7 +324,7 @@ public class MySQLiteHelperGood {
         }
 
         cursor.close();
-        closeMessagesTable();
+        closeDatabase();
 
         return count;
     }
@@ -338,7 +332,6 @@ public class MySQLiteHelperGood {
     public Message getLastMessage(String id) {
         String fromId = ConversaApp.getPreferences().getBusinessId();
         Message message = null;
-        openMessagesTable();
         String query = "SELECT m.* FROM "
                         + TABLE_MESSAGES + " m"
                         + " WHERE m." + sMessageFromUserId + " = \'" + id + "\' AND m." + sMessageToUserId + " = \'" + fromId + "\'"
@@ -348,7 +341,7 @@ public class MySQLiteHelperGood {
                         + " WHERE p." + sMessageFromUserId + " = \'" + fromId + "\' AND p." + sMessageToUserId + " = \'" + id + "\'"
                         + " ORDER BY " + sMessageCreatedAt + " DESC LIMIT 1";
 
-        Cursor cursor = myDb.rawQuery(query, new String[]{});
+        Cursor cursor = openDatabase().rawQuery(query, new String[]{});
         cursor.moveToFirst();
 
         while (!cursor.isAfterLast()) {
@@ -358,15 +351,14 @@ public class MySQLiteHelperGood {
 
         // make sure to close the cursor
         cursor.close();
-        closeMessagesTable();
+        closeDatabase();
 
         return message;
     }
 
     public boolean hasUnreadMessagesOrNewMessages(String id) {
         String query = "SELECT COUNT(*) FROM " + TABLE_MESSAGES + " WHERE " + sMessageFromUserId + " = \'" + id + "\' AND " + sMessageReadAt + " = 0";
-        openMessagesTable();
-        Cursor cursor = myDb.rawQuery(query, new String[]{});
+        Cursor cursor = openDatabase().rawQuery(query, new String[]{});
         cursor.moveToFirst();
         int count = 0;
 
@@ -376,45 +368,39 @@ public class MySQLiteHelperGood {
         }
 
         cursor.close();
-        closeMessagesTable();
+        closeDatabase();
 
         return (count > 0);
     }
 
     public int updateReadMessages(String id) {
         ContentValues contentValues = new ContentValues();
-        GregorianCalendar now = new GregorianCalendar();
-        long currentTimestamp = now.getTimeInMillis() / 1000;
-        contentValues.put("read_at", currentTimestamp);
-        openMessagesTable();
+        long currentTimestamp = System.currentTimeMillis();
+        contentValues.put(sMessageReadAt, currentTimestamp);
         String fromId = ConversaApp.getPreferences().getBusinessId();
-        int result1 = myDb.update(TABLE_MESSAGES, contentValues, sMessageFromUserId + " = ? AND " + sMessageToUserId + " = ?",
-                new String[] {id, fromId} );
-        closeMessagesTable();
-        //return result;
-        openMessagesTable();
-        int result2 = myDb.update(TABLE_MESSAGES, contentValues, "" + sMessageFromUserId + " = ? AND " + sMessageToUserId + " = ?",
-                new String[] { fromId, id } );
-        closeMessagesTable();
-        return result1 + result2;
+        int result1 = openDatabase().update(TABLE_MESSAGES, contentValues,
+                "(" + sMessageFromUserId + " = ? AND " + sMessageToUserId + " = ?)"
+                + " OR "
+                + "(" + sMessageFromUserId + " = ? AND " + sMessageToUserId + " = ?)",
+                new String[] {id, fromId, fromId, id} );
+        closeDatabase();
+        return result1;
     }
 
     private int deleteAllMessagesById(String id) {
-        openMessagesTable();
         String fromId = ConversaApp.getPreferences().getBusinessId();
-        int result1 = myDb.delete(TABLE_MESSAGES, "" + sMessageFromUserId + " = ? AND " + sMessageToUserId + " = ?",
-                new String[] { id, fromId });
-        int result2 = myDb.delete(TABLE_MESSAGES, "" + sMessageFromUserId + " = ? AND " + sMessageToUserId + " = ?",
-                new String[]{fromId, id});
-        int result = result1 + result2;
+        int result = openDatabase().delete(TABLE_MESSAGES,
+                "(" + sMessageFromUserId + " = ? AND " + sMessageToUserId + " = ?)"
+                + " OR "
+                + "(" + sMessageFromUserId + " = ? AND " + sMessageToUserId + " = ?)",
+                new String[] {id, fromId, fromId, id});
+        closeDatabase();
         Logger.error("MySQLiteHelper", "A total of  " + result + " messages were deleted from internal database for contact " + id);
-        closeMessagesTable();
         return result;
     }
 
     public List<Message> getMessagesByContact(String id, int count, int offset) throws SQLException {
         String fromId = ConversaApp.getPreferences().getBusinessId();
-        openMessagesTable();
         String query = "SELECT m.* FROM "
                         + TABLE_MESSAGES + " m"
                         + " WHERE m." + sMessageFromUserId + " = \'" + id + "\' AND m." + sMessageToUserId + " = \'" + fromId + "\'"
@@ -422,8 +408,8 @@ public class MySQLiteHelperGood {
                         "SELECT p.* FROM "
                         + TABLE_MESSAGES + " p"
                         + " WHERE p." + sMessageFromUserId + " = \'" + fromId + "\' AND p." + sMessageToUserId + " = \'" + id + "\'"
-                        + " ORDER BY " + sMessageCreatedAt + " DESC LIMIT " + count + " OFFSET " + (offset * count);
-        Cursor cursor = myDb.rawQuery(query, new String[]{});
+                        + " ORDER BY " + sMessageCreatedAt + " DESC LIMIT " + count + " OFFSET " + offset;
+        Cursor cursor = openDatabase().rawQuery(query, new String[]{});
         cursor.moveToFirst();
 
 
@@ -434,7 +420,7 @@ public class MySQLiteHelperGood {
         }
         // make sure to close the cursor
         cursor.close();
-        closeMessagesTable();
+        closeDatabase();
         return messages;
     }
 
@@ -474,29 +460,32 @@ public class MySQLiteHelperGood {
 
     @UiThread
     public void notifyMessageListeners(MessageResponse response) {
+        if (messageListeners == null) {
+            Log.e(TAG, "MessageListeners is null");
+            return;
+        }
+
+        if (response == null) {
+            Log.e(TAG, "MessageResponse parameter is null");
+            return;
+        }
+
         switch (response.getActionCode()) {
             case Message.ACTION_MESSAGE_SAVE:
-                if (messageListeners != null) {
-                    messageListeners.MessageSent(response);
-                }
+                messageListeners.MessageSent(response);
                 break;
             case Message.ACTION_MESSAGE_UPDATE:
-                if (messageListeners != null) {
-                    messageListeners.MessageUpdated(response);
-                }
+            case Message.ACTION_MESSAGE_UPDATE_UNREAD:
+                messageListeners.MessageUpdated(response);
                 break;
             case Message.ACTION_MESSAGE_DELETE:
-                if (messageListeners != null) {
-                    messageListeners.MessageDeleted(response);
-                }
+                messageListeners.MessageDeleted(response);
                 break;
             case Message.ACTION_MESSAGE_RETRIEVE_ALL:
-                if (messageListeners != null) {
-                    messageListeners.MessagesGetAll(response);
-                }
+                messageListeners.MessagesGetAll(response);
                 break;
             default:
-                Log.e(TAG, "notifyMessageListeners: " + response.getActionCode() + "\nObjeto puede ser null: " + response);
+                Log.e(TAG, "Response action code(" + response.getActionCode() + ") not defined");
                 break;
         }
     }
@@ -511,36 +500,38 @@ public class MySQLiteHelperGood {
 
     @UiThread
     public void notifyContactListeners(ContactResponse response) {
+        if (contactListeners == null) {
+            Log.e(TAG, "ContactListeners is null");
+            return;
+        }
+
+        if (response == null) {
+            Log.e(TAG, "ContactResponse parameter is null");
+            return;
+        }
+
         switch (response.getActionCode()) {
             case dCustomer.ACTION_MESSAGE_SAVE:
-                if (contactListeners != null) {
-                    contactListeners.ContactAdded(response);
-                }
+                contactListeners.ContactAdded(response);
                 break;
             case dCustomer.ACTION_MESSAGE_UPDATE:
-                if (contactListeners != null) {
-                    contactListeners.ContactUpdated(response);
-                }
+                contactListeners.ContactUpdated(response);
                 break;
             case dCustomer.ACTION_MESSAGE_DELETE:
-                if (contactListeners != null) {
-                    contactListeners.ContactDeleted(response);
-                }
+                contactListeners.ContactDeleted(response);
                 break;
             case dCustomer.ACTION_MESSAGE_RETRIEVE_ALL:
-                if (contactListeners != null) {
-                    contactListeners.ContactGetAll(response);
-                }
+                contactListeners.ContactGetAll(response);
                 break;
             default:
-                Log.e(TAG, "notifyContactListeners: " + response.getActionCode() + "\nObjeto puede ser null: " + response);
+                Log.e(TAG, "Response action code(" + response.getActionCode() + ") not defined");
                 break;
         }
     }
 
-    private static class DatabaseHelperMessages extends SQLiteOpenHelper {
+    private static class DatabaseHelper extends SQLiteOpenHelper {
 
-        DatabaseHelperMessages(Context context) {
+        DatabaseHelper(Context context) {
             super(context, DATABASE_NAME1, null, DATABASE_VERSION);
         }
 
@@ -549,6 +540,10 @@ public class MySQLiteHelperGood {
             db.execSQL(TABLE_MESSAGES_CREATE);
             db.execSQL(tmIndex1);
             db.execSQL(tmIndex2);
+            db.execSQL(TABLE_CONTACTS_CREATE);
+            db.execSQL(tcIndex1);
+            db.execSQL(newMessageTrigger);
+            db.execSQL(deleteUserTrigger);
         }
 
         @Override
@@ -556,28 +551,9 @@ public class MySQLiteHelperGood {
             Logger.error(TAG, "Upgrading database MESSAGES from version " + oldVersion + " to "
                     + newVersion + ", which will destroy all old data");
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_MESSAGES);
-            onCreate(db);
-        }
-    }
-
-    private static class DatabaseHelperContacts extends SQLiteOpenHelper {
-
-        DatabaseHelperContacts(Context context) {
-            super(context, DATABASE_NAME2, null, DATABASE_VERSION);
-        }
-
-        @Override
-        public void onCreate(SQLiteDatabase db) {
-            db.execSQL(TABLE_CONTACTS_CREATE);
-            db.execSQL(tcIndex1);
-        }
-
-        @Override
-        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            Logger.error(TAG, "Upgrading database CONTACTS from version " + oldVersion + " to "
-                    + newVersion + ", which will destroy all old data");
             db.execSQL("DROP TABLE IF EXISTS " + TABLE_CV_CONTACTS);
             onCreate(db);
         }
     }
+
 }

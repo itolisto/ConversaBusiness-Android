@@ -1,6 +1,5 @@
 package ee.app.conversabusiness;
 
-import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -141,7 +140,7 @@ public class ActivityMain extends ConversaActivity {
 	}
 
     @Override
-    protected void openFromNotification(Intent intent) {
+    protected void openFromNotification(Bundle extras) {
 
     }
 

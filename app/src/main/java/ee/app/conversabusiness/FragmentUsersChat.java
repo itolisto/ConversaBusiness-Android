@@ -21,12 +21,14 @@ import android.widget.RelativeLayout;
 import java.util.List;
 
 import ee.app.conversabusiness.adapters.ChatsAdapter;
+import ee.app.conversabusiness.dialog.CustomDeleteUserDialog;
 import ee.app.conversabusiness.interfaces.OnContactTaskCompleted;
 import ee.app.conversabusiness.model.Database.dCustomer;
 import ee.app.conversabusiness.notifications.CustomNotificationExtenderService;
 import ee.app.conversabusiness.response.ContactResponse;
+import ee.app.conversabusiness.utils.Const;
 
-public class FragmentUsersChat extends Fragment implements OnContactTaskCompleted {
+public class FragmentUsersChat extends Fragment implements OnContactTaskCompleted, ChatsAdapter.OnItemClickListener, ChatsAdapter.OnLongClickListener {
 
     public static RecyclerView mRvUsers;
     public static RelativeLayout mRlNoUsers;
@@ -42,7 +44,7 @@ public class FragmentUsersChat extends Fragment implements OnContactTaskComplete
         mRvUsers = (RecyclerView) rootView.findViewById(R.id.lvUsers);
         mRlNoUsers = (RelativeLayout) rootView.findViewById(R.id.rlNoChats);
 
-        mUserListAdapter = new ChatsAdapter((AppCompatActivity) getActivity());
+        mUserListAdapter = new ChatsAdapter((AppCompatActivity) getActivity(), this, this);
         mRvUsers.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRvUsers.setItemAnimator(new DefaultItemAnimator());
         mRvUsers.setAdapter(mUserListAdapter);
@@ -93,7 +95,16 @@ public class FragmentUsersChat extends Fragment implements OnContactTaskComplete
 
     @Override
     public void ContactDeleted(ContactResponse response) {
-
+        // 1. Get visible items and first visible item position
+        int visibleItemCount = mRvUsers.getChildCount();
+        int firstVisibleItem = ((LinearLayoutManager) mRvUsers.getLayoutManager()).findFirstVisibleItemPosition();
+        // 2. Update message
+        mUserListAdapter.removeContact(response.getCustomer(), firstVisibleItem, visibleItemCount);
+        // 3. Check visibility
+        if (mUserListAdapter.getItemCount() == 0) {
+            mRlNoUsers.setVisibility(View.VISIBLE);
+            mRvUsers.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -118,12 +129,42 @@ public class FragmentUsersChat extends Fragment implements OnContactTaskComplete
 
     public class UsersReceiver extends BroadcastReceiver {
         public static final String ACTION_RESP =
-                "conversa.fragmentuserschat.action.USER_SAVED";
+                "conversabusiness.fragmentuserschat.action.USER_SAVED";
 
         @Override
         public void onReceive(Context context, Intent intent) {
             dCustomer contact = intent.getParcelableExtra(CustomNotificationExtenderService.PARAM_OUT_MSG);
             ContactAddedFromBroadcast(contact);
         }
+    }
+
+    @Override
+    public void onItemClick(dCustomer contact) {
+        Intent intent = new Intent(getActivity(), ActivityChatWall.class);
+        intent.putExtra(Const.kClassBusiness, contact);
+        intent.putExtra(Const.kYapDatabaseName, false);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onItemLongClick(final dCustomer contact) {
+        final CustomDeleteUserDialog dialog = new CustomDeleteUserDialog(getContext());
+        dialog.setTitle("Test")
+                .setMessage("Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test")
+                //.dismissOnTouchOutside(false)
+                .setupPositiveButton("Accept", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        contact.removeContact();
+                        dialog.dismiss();
+                    }
+                })
+                .setupNegativeButton("Decline", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                    }
+                });
+        dialog.show();
     }
 }
