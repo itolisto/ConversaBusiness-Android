@@ -14,8 +14,7 @@ import ee.app.conversabusiness.R;
 import ee.app.conversabusiness.adapters.MessagesAdapter;
 import ee.app.conversabusiness.dialog.PushNotification;
 import ee.app.conversabusiness.interfaces.OnMessageTaskCompleted;
-import ee.app.conversabusiness.model.Database.Message;
-import ee.app.conversabusiness.notifications.CustomNotificationExtenderService;
+import ee.app.conversabusiness.model.Database.dbMessage;
 import ee.app.conversabusiness.response.MessageResponse;
 
 public class ConversaActivity extends BaseActivity implements OnMessageTaskCompleted {
@@ -109,7 +108,7 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
         /* Child activities override this method */
     }
 
-    public void MessageReceived(Message message) {
+    public void MessageReceived(dbMessage message) {
         // Show in-app notification
         if (mRlPushNotification != null) {
             PushNotification.make(getApplicationContext(), mRlPushNotification).show(message.getBody(), message.getFromUserId());
@@ -122,8 +121,8 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            Message message = intent.getParcelableExtra(CustomNotificationExtenderService.PARAM_OUT_MSG);
-            MessageReceived(message);
+//            Message message = intent.getParcelableExtra(CustomNotificationExtenderService.PARAM_OUT_MSG);
+//            MessageReceived(message);
         }
     }
 

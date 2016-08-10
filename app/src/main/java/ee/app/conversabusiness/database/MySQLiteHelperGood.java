@@ -19,7 +19,7 @@ import java.util.List;
 import ee.app.conversabusiness.ConversaApp;
 import ee.app.conversabusiness.interfaces.OnContactTaskCompleted;
 import ee.app.conversabusiness.interfaces.OnMessageTaskCompleted;
-import ee.app.conversabusiness.model.Database.Message;
+import ee.app.conversabusiness.model.Database.dbMessage;
 import ee.app.conversabusiness.model.Database.dCustomer;
 import ee.app.conversabusiness.response.ContactResponse;
 import ee.app.conversabusiness.response.MessageResponse;
@@ -275,7 +275,7 @@ public class MySQLiteHelperGood {
     /* ******************************************* */
     /* ******************************************* */
 
-    public Message saveMessage(Message newMessage) {
+    public dbMessage saveMessage(dbMessage newMessage) {
         ContentValues message = new ContentValues();
         message.put(sMessageFromUserId, newMessage.getFromUserId());
         message.put(sMessageToUserId, newMessage.getToUserId());
@@ -329,9 +329,9 @@ public class MySQLiteHelperGood {
         return count;
     }
 
-    public Message getLastMessage(String id) {
+    public dbMessage getLastMessage(String id) {
         String fromId = ConversaApp.getPreferences().getBusinessId();
-        Message message = null;
+        dbMessage message = null;
         String query = "SELECT m.* FROM "
                         + TABLE_MESSAGES + " m"
                         + " WHERE m." + sMessageFromUserId + " = \'" + id + "\' AND m." + sMessageToUserId + " = \'" + fromId + "\'"
@@ -399,7 +399,7 @@ public class MySQLiteHelperGood {
         return result;
     }
 
-    public List<Message> getMessagesByContact(String id, int count, int offset) throws SQLException {
+    public List<dbMessage> getMessagesByContact(String id, int count, int offset) throws SQLException {
         String fromId = ConversaApp.getPreferences().getBusinessId();
         String query = "SELECT m.* FROM "
                         + TABLE_MESSAGES + " m"
@@ -413,8 +413,8 @@ public class MySQLiteHelperGood {
         cursor.moveToFirst();
 
 
-        ArrayList<Message> messages = new ArrayList<>(cursor.getCount());  while (!cursor.isAfterLast()) {
-            Message contact = cursorToMessage(cursor);
+        ArrayList<dbMessage> messages = new ArrayList<>(cursor.getCount());  while (!cursor.isAfterLast()) {
+            dbMessage contact = cursorToMessage(cursor);
             messages.add(contact);
             cursor.moveToNext();
         }
@@ -424,8 +424,8 @@ public class MySQLiteHelperGood {
         return messages;
     }
 
-    private Message cursorToMessage(Cursor cursor) {
-        Message message = new Message();
+    private dbMessage cursorToMessage(Cursor cursor) {
+        dbMessage message = new dbMessage();
         message.setId(cursor.getLong(0));
         message.setFromUserId(cursor.getString(1));
         message.setToUserId(cursor.getString(2));
@@ -471,17 +471,17 @@ public class MySQLiteHelperGood {
         }
 
         switch (response.getActionCode()) {
-            case Message.ACTION_MESSAGE_SAVE:
+            case dbMessage.ACTION_MESSAGE_SAVE:
                 messageListeners.MessageSent(response);
                 break;
-            case Message.ACTION_MESSAGE_UPDATE:
-            case Message.ACTION_MESSAGE_UPDATE_UNREAD:
+            case dbMessage.ACTION_MESSAGE_UPDATE:
+            case dbMessage.ACTION_MESSAGE_UPDATE_UNREAD:
                 messageListeners.MessageUpdated(response);
                 break;
-            case Message.ACTION_MESSAGE_DELETE:
+            case dbMessage.ACTION_MESSAGE_DELETE:
                 messageListeners.MessageDeleted(response);
                 break;
-            case Message.ACTION_MESSAGE_RETRIEVE_ALL:
+            case dbMessage.ACTION_MESSAGE_RETRIEVE_ALL:
                 messageListeners.MessagesGetAll(response);
                 break;
             default:

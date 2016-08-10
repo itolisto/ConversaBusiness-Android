@@ -17,7 +17,7 @@ import java.util.List;
 
 import ee.app.conversabusiness.ConversaApp;
 import ee.app.conversabusiness.R;
-import ee.app.conversabusiness.model.Database.Message;
+import ee.app.conversabusiness.model.Database.dbMessage;
 import ee.app.conversabusiness.model.Database.dCustomer;
 import ee.app.conversabusiness.model.Parse.Account;
 import ee.app.conversabusiness.utils.Const;
@@ -72,7 +72,7 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsAdapter.ViewHolder> 
 
         holder.tvUser.setText(user.getDisplayName());
 
-        Message lastMessage = ConversaApp.getDB().getLastMessage(user.getBusinessId());
+        dbMessage lastMessage = ConversaApp.getDB().getLastMessage(user.getBusinessId());
 
         if(lastMessage == null) {
             holder.tvLastMessage.setText("");

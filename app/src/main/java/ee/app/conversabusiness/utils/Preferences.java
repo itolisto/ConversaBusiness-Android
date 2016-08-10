@@ -39,6 +39,7 @@ public class Preferences {
     // Defining SharedPreferences entries
     private static final String BUSINESS_ID = "business_id";
     private static final String FIRST_USER_SERVER_CALL = "first_users_server_call";
+    private static final String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
 
     private SharedPreferences sharedPreferences;
 
@@ -61,6 +62,15 @@ public class Preferences {
         return sharedPreferences.getBoolean(FIRST_USER_SERVER_CALL, true);
     }
 
+    public boolean getRegistrationToServer() {
+        return !(sharedPreferences.getString(SENT_TOKEN_TO_SERVER, "").isEmpty());
+    }
+
+    public String getRegistrationToken() {
+        return sharedPreferences.getString(SENT_TOKEN_TO_SERVER, "");
+    }
+
+
     public boolean cleanSharedPreferences() {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.clear();
@@ -69,15 +79,25 @@ public class Preferences {
     /* ******************************************************************************** */
 	/* ************************************ SETTERS *********************************** */
 	/* ******************************************************************************** */
-    public void setBusinessId(String id) {
+    public void setBusinessId(String id, boolean onBackground) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(BUSINESS_ID, id);
-        editor.apply();
+        if (onBackground) {
+            editor.apply();
+        } else {
+            editor.commit();
+        }
     }
 
     public void setIsFirstCallForUsers(boolean isFirst) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(FIRST_USER_SERVER_CALL, isFirst);
+        editor.apply();
+    }
+
+    public void setRegistrationToServer(String value) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(SENT_TOKEN_TO_SERVER, value);
         editor.apply();
     }
 

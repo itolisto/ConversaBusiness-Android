@@ -29,11 +29,8 @@ import android.graphics.Typeface;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
-import com.onesignal.OneSignal;
 import com.parse.Parse;
 import com.parse.ParseObject;
-import com.sinch.android.rtc.Sinch;
-import com.sinch.android.rtc.SinchClient;
 
 import ee.app.conversabusiness.database.MySQLiteHelperGood;
 import ee.app.conversabusiness.model.Parse.Account;
@@ -43,7 +40,6 @@ import ee.app.conversabusiness.model.Parse.Customer;
 import ee.app.conversabusiness.model.Parse.Options;
 import ee.app.conversabusiness.model.Parse.bCategory;
 import ee.app.conversabusiness.model.Parse.pMessage;
-import ee.app.conversabusiness.notifications.CustomNotificationOpenedHandler;
 import ee.app.conversabusiness.utils.Const;
 import ee.app.conversabusiness.utils.Foreground;
 import ee.app.conversabusiness.utils.Preferences;
@@ -71,13 +67,14 @@ public class ConversaApp extends Application {
 	public void onCreate() {
 		super.onCreate();
 		Foreground.init(this);
-		mDb = new MySQLiteHelperGood(this);
+		setDB();
+		setPreferences();
+		setLocalBroadcastManager();
+		SendBirdManager.initSendBirdManager(this);
+
 		Fresco.initialize(this);
-		setPreferences(new Preferences(this));
-		setLocalBroadcastManager(LocalBroadcastManager.getInstance(this));
-		OneSignal.startInit(this)
-				.setNotificationOpenedHandler(new CustomNotificationOpenedHandler(getApplicationContext()))
-				.init();
+
+		Parse.enableLocalDatastore(this);
 
 		// Register subclassing for using as Parse objects
 		ParseObject.registerSubclass(Options.class);
@@ -100,13 +97,6 @@ public class ConversaApp extends Application {
 //			.build()
 //		);
 
-		SinchClient sinchClient = Sinch.getSinchClientBuilder().context(getApplicationContext())
-				.applicationKey("<application key>")
-				.applicationSecret("<application secret>")
-				.environmentHost("sandbox.sinch.com")
-				.userId("<user id>")
-				.build();
-
 		//Crea las tipografias
 		setTfRalewayThin(Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Thin.ttf"));
 		setTfRalewayLight(Typeface.createFromAsset(getAssets(), Const.ROBOTO + "Roboto-Light.ttf"));
@@ -116,14 +106,20 @@ public class ConversaApp extends Application {
 	}
 
 	/* ************************************************************************************************ */
-
 	public static Preferences getPreferences() { return mPreferences; }
-    public static LocalBroadcastManager getLocalBroadcastManager() { return mLocalBroadcastManager; }
-    public static MySQLiteHelperGood getDB(){ return mDb; }
+	public static LocalBroadcastManager getLocalBroadcastManager() { return mLocalBroadcastManager; }
+	public static MySQLiteHelperGood getDB() { return mDb; }
 
-    private void setPreferences(Preferences preferences) { mPreferences = preferences; }
-	private void setLocalBroadcastManager(LocalBroadcastManager localBroadcastManager) {
-		mLocalBroadcastManager = localBroadcastManager;
+	private void setPreferences() {
+		mPreferences = new Preferences(this);
+	}
+
+	private void setLocalBroadcastManager() {
+		mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
+	}
+
+	private void setDB() {
+		mDb = new MySQLiteHelperGood(this);
 	}
 
     /* ************************************************************************************************ */

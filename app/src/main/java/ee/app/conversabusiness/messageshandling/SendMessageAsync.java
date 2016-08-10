@@ -25,7 +25,7 @@
 package ee.app.conversabusiness.messageshandling;
 
 import ee.app.conversabusiness.ConversaApp;
-import ee.app.conversabusiness.model.Database.Message;
+import ee.app.conversabusiness.model.Database.dbMessage;
 import ee.app.conversabusiness.model.Parse.Account;
 import ee.app.conversabusiness.utils.Const;
 
@@ -39,38 +39,38 @@ public class SendMessageAsync {
 
 	public static void sendTextMessage(String customerId, String text) {
 		// 1. Create local message
-		Message message = new Message();
+		dbMessage message = new dbMessage();
 		message.setFromUserId(ConversaApp.getPreferences().getBusinessId());
 		message.setToUserId(customerId);
 		message.setMessageType(Const.kMessageTypeText);
-		message.setDeliveryStatus(Message.statusUploading);
+		message.setDeliveryStatus(dbMessage.statusUploading);
 		message.setBody(text);
 
 		// 2. Save locally on background
-		message.saveToLocalDatabase(Message.ACTION_MESSAGE_SAVE);
+		message.saveToLocalDatabase(dbMessage.ACTION_MESSAGE_SAVE);
 	}
 
 	public static void sendLocationMessage(String customerId, float lat, float lon) {
 		// 1. Create local message
-		Message message = new Message();
+		dbMessage message = new dbMessage();
 		message.setFromUserId(ConversaApp.getPreferences().getBusinessId());
 		message.setToUserId(customerId);
 		message.setMessageType(Const.kMessageTypeLocation);
-		message.setDeliveryStatus(Message.statusUploading);
+		message.setDeliveryStatus(dbMessage.statusUploading);
 		message.setLatitude(lat);
 		message.setLongitude(lon);
 
 		// 2. Save locally on background
-		message.saveToLocalDatabase(Message.ACTION_MESSAGE_SAVE);
+		message.saveToLocalDatabase(dbMessage.ACTION_MESSAGE_SAVE);
 	}
 
 	public static void sendImageMessage(String businessId, int width, int height, int size) {
 		// 1. Create local message
-		Message message = new Message();
+		dbMessage message = new dbMessage();
 		message.setFromUserId(Account.getCurrentUser().getObjectId());
 		message.setToUserId(businessId);
 		message.setMessageType(Const.kMessageTypeLocation);
-		message.setDeliveryStatus(Message.statusUploading);
+		message.setDeliveryStatus(dbMessage.statusUploading);
 		message.setWidth(width);
 		message.setHeight(height);
 		message.setBytes(size);
@@ -78,23 +78,23 @@ public class SendMessageAsync {
 		// We probably need to add a variable to Message class to hold a reference
 
 		// 2. Save locally on background
-		message.saveToLocalDatabase(Message.ACTION_MESSAGE_SAVE);
+		message.saveToLocalDatabase(dbMessage.ACTION_MESSAGE_SAVE);
 	}
 
 	public static void sendVideoAudioMessage(String businessId, int duration, int size) {
 		// 1. Create local message
-		Message message = new Message();
+		dbMessage message = new dbMessage();
 		message.setFromUserId(Account.getCurrentUser().getObjectId());
 		message.setToUserId(businessId);
 		message.setMessageType(Const.kMessageTypeLocation);
-		message.setDeliveryStatus(Message.statusUploading);
+		message.setDeliveryStatus(dbMessage.statusUploading);
 		message.setDuration(duration);
 		message.setBytes(size);
 		// In here we must have a way to reference ParseFile associated with this message
 		// We probably need to add a variable to Message class to hold a reference
 
 		// 2. Save locally on background
-		message.saveToLocalDatabase(Message.ACTION_MESSAGE_SAVE);
+		message.saveToLocalDatabase(dbMessage.ACTION_MESSAGE_SAVE);
 	}
 
 }
