@@ -29,10 +29,12 @@ import android.graphics.Typeface;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.facebook.drawee.backends.pipeline.Fresco;
+import com.onesignal.OneSignal;
 import com.parse.Parse;
 import com.parse.ParseObject;
 
 import ee.app.conversabusiness.database.MySQLiteHelperGood;
+import ee.app.conversabusiness.management.Ably.Connection;
 import ee.app.conversabusiness.model.Parse.Account;
 import ee.app.conversabusiness.model.Parse.Business;
 import ee.app.conversabusiness.model.Parse.BusinessOptions;
@@ -40,6 +42,8 @@ import ee.app.conversabusiness.model.Parse.Customer;
 import ee.app.conversabusiness.model.Parse.Options;
 import ee.app.conversabusiness.model.Parse.bCategory;
 import ee.app.conversabusiness.model.Parse.pMessage;
+import ee.app.conversabusiness.notifications.onesignal.CustomNotificationOpenedHandler;
+import ee.app.conversabusiness.notifications.onesignal.CustomNotificationReceivedHandler;
 import ee.app.conversabusiness.utils.Const;
 import ee.app.conversabusiness.utils.Foreground;
 import ee.app.conversabusiness.utils.Preferences;
@@ -70,9 +74,27 @@ public class ConversaApp extends Application {
 		setDB();
 		setPreferences();
 		setLocalBroadcastManager();
-		SendBirdManager.initSendBirdManager(this);
 
 		Fresco.initialize(this);
+		OneSignal
+				// Initializes OneSignal to register the device for push notifications
+				.startInit(this)
+				// Prompts the user for location permissions. This allows for geotagging so you can
+				// send notifications to users based on location.
+				.autoPromptLocation(true)
+				// How OneSignal notifications will be shown when one is received while your app is
+				// in focus
+				.inFocusDisplaying(OneSignal.OSInFocusDisplayOption.None)
+				// Sets a notification opened handler. The instance will be called when a notification
+				// is tapped on from the notification shade or when closing an Alert notification
+				// shown in the app.
+				.setNotificationOpenedHandler(new CustomNotificationOpenedHandler(this))
+				// Sets a notification received handler. The instance will be called when a
+				// notification is received whether it was displayed or not.
+				.setNotificationReceivedHandler(new CustomNotificationReceivedHandler(this))
+				// Initializes OneSignal to register the device for push notifications
+				.init();
+		Connection.initAblyManager(this);
 
 		Parse.enableLocalDatastore(this);
 

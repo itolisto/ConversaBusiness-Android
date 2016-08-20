@@ -10,8 +10,9 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.support.annotation.UiThread;
 import android.util.Log;
+
+import com.parse.ParseFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +20,10 @@ import java.util.List;
 import ee.app.conversabusiness.ConversaApp;
 import ee.app.conversabusiness.interfaces.OnContactTaskCompleted;
 import ee.app.conversabusiness.interfaces.OnMessageTaskCompleted;
-import ee.app.conversabusiness.model.Database.dbMessage;
+import ee.app.conversabusiness.management.contact.ContactIntentService;
+import ee.app.conversabusiness.management.message.MessageIntentService;
 import ee.app.conversabusiness.model.Database.dCustomer;
-import ee.app.conversabusiness.response.ContactResponse;
-import ee.app.conversabusiness.response.MessageResponse;
+import ee.app.conversabusiness.model.Database.dbMessage;
 import ee.app.conversabusiness.utils.Logger;
 
 public class MySQLiteHelperGood {
@@ -39,6 +40,7 @@ public class MySQLiteHelperGood {
 
     private static final String TABLE_MESSAGES = "message";
     private static final String TABLE_CV_CONTACTS = "cv_contact";
+    private static final String TABLE_NOTIFICATION = "notification";
 
     private static final String COLUMN_ID = "_id";
 
@@ -72,8 +74,8 @@ public class MySQLiteHelperGood {
             + "\"" + sMessageLongitude + "\" REAL DEFAULT 0, "
             + "\"" + sMessageLatitude + "\" REAL DEFAULT 0, "
             + "\"" + sMessageCreatedAt + "\" INTEGER NOT NULL, "
-            + "\"" + sMessageModifiedAt + "\" INTEGER NOT NULL DEFAULT '0', "
-            + "\"" + sMessageReadAt + "\" INTEGER NOT NULL DEFAULT '0', "
+            + "\"" + sMessageModifiedAt + "\" INTEGER NOT NULL DEFAULT 0, "
+            + "\"" + sMessageReadAt + "\" INTEGER NOT NULL DEFAULT 0, "
             + "\"" + sMessageMessageId + "\" CHAR(14),"
             + "\"" + sMessageWidth + "\" INTEGER DEFAULT 0,"
             + "\"" + sMessageHeight + "\" INTEGER DEFAULT 0,"
@@ -108,6 +110,16 @@ public class MySQLiteHelperGood {
             + "\"" + sBusinessMuted + "\" CHAR(1) NOT NULL DEFAULT 'N', "
             + "\"" + sBusinessCreatedAt + "\" INTEGER NOT NULL );";
     private static final String tcIndex1 = "CREATE UNIQUE INDEX IF NOT EXISTS C_customerId on "  + TABLE_CV_CONTACTS + "(" + sBusinessCustomerId + ");";
+
+    // NOTIFICATIONS
+    public static final String sNotificationGroup = "group_id";
+    public static final String sNotificationCount = "count";
+
+    private static final String TABLE_NOTIFICATION_CREATE = "CREATE TABLE IF NOT EXISTS "
+            + TABLE_NOTIFICATION + "("
+            + "\"" + COLUMN_ID + "\" INTEGER PRIMARY KEY, "
+            + "\"" + sNotificationGroup + "\" CHAR(14) NOT NULL, "
+            + "\"" + sNotificationCount + "\" INTEGER NOT NULL DEFAULT 0);";
 
     // TRIGGERS
     private static final String NEW_MESSAGE_TRIGGER = "new_message_trigger";
@@ -411,9 +423,9 @@ public class MySQLiteHelperGood {
                         + " ORDER BY " + sMessageCreatedAt + " DESC LIMIT " + count + " OFFSET " + offset;
         Cursor cursor = openDatabase().rawQuery(query, new String[]{});
         cursor.moveToFirst();
+        ArrayList<dbMessage> messages = new ArrayList<>(cursor.getCount());
 
-
-        ArrayList<dbMessage> messages = new ArrayList<>(cursor.getCount());  while (!cursor.isAfterLast()) {
+        while (!cursor.isAfterLast()) {
             dbMessage contact = cursorToMessage(cursor);
             messages.add(contact);
             cursor.moveToNext();
@@ -446,6 +458,48 @@ public class MySQLiteHelperGood {
         return message;
     }
 
+    /* ******************************************* */
+    /* ******************************************* */
+    /* ******************************************* */
+
+    public int getGroupCount(String group_id) {
+        String query = "SELECT " + sNotificationCount + " FROM " + TABLE_NOTIFICATION + " WHERE " + sNotificationGroup + " = \'" + group_id + "\'";
+        Cursor cursor = openDatabase().rawQuery(query, new String[]{});
+        cursor.moveToFirst();
+        int count = -1;
+
+        while (!cursor.isAfterLast()) {
+            count = cursor.getInt(0);
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+        closeDatabase();
+
+        return count;
+    }
+
+    public void incrementGroupCount(String group, boolean create) {
+        if (create) {
+            // Create record
+            ContentValues record = new ContentValues();
+            record.put(sNotificationGroup, group);
+            record.put(sNotificationCount, 1);
+            openDatabase().insert(TABLE_NOTIFICATION, null, record);
+        } else {
+            // Update record
+            openDatabase().execSQL(String.format("UPDATE %s SET %s = (%s + 1) WHERE %s = \'%s\';",
+                    TABLE_NOTIFICATION, sNotificationCount, sNotificationCount, sNotificationGroup, group));
+        }
+        closeDatabase();
+    }
+
+    public void resetGroupCount(String group) {
+        openDatabase().execSQL(String.format("UPDATE %s SET %s = 0 WHERE %s = \'%s\';",
+                TABLE_NOTIFICATION, sNotificationCount, sNotificationGroup, group));
+        closeDatabase();
+    }
+
     /************************************************************/
     /*******************CREATE/UPGRADE METHODS*******************/
     /************************************************************/
@@ -458,34 +512,33 @@ public class MySQLiteHelperGood {
         messageListeners = null;
     }
 
-    @UiThread
-    public void notifyMessageListeners(MessageResponse response) {
+    public void notifyMessageListeners(int action_code, dbMessage response, List<dbMessage> list_response, ParseFile file) {
         if (messageListeners == null) {
             Log.e(TAG, "MessageListeners is null");
             return;
         }
 
-        if (response == null) {
+        if (response == null && list_response == null) {
             Log.e(TAG, "MessageResponse parameter is null");
             return;
         }
 
-        switch (response.getActionCode()) {
-            case dbMessage.ACTION_MESSAGE_SAVE:
-                messageListeners.MessageSent(response);
+        switch (action_code) {
+            case MessageIntentService.ACTION_MESSAGE_SAVE:
+                messageListeners.MessageSent(response, file);
                 break;
-            case dbMessage.ACTION_MESSAGE_UPDATE:
-            case dbMessage.ACTION_MESSAGE_UPDATE_UNREAD:
+            case MessageIntentService.ACTION_MESSAGE_UPDATE:
+            case MessageIntentService.ACTION_MESSAGE_UPDATE_UNREAD:
                 messageListeners.MessageUpdated(response);
                 break;
-            case dbMessage.ACTION_MESSAGE_DELETE:
+            case MessageIntentService.ACTION_MESSAGE_DELETE:
                 messageListeners.MessageDeleted(response);
                 break;
-            case dbMessage.ACTION_MESSAGE_RETRIEVE_ALL:
-                messageListeners.MessagesGetAll(response);
+            case MessageIntentService.ACTION_MESSAGE_RETRIEVE_ALL:
+                messageListeners.MessagesGetAll(list_response);
                 break;
             default:
-                Log.e(TAG, "Response action code(" + response.getActionCode() + ") not defined");
+                Log.e(TAG, "Response action code(" + action_code + ") not defined");
                 break;
         }
     }
@@ -498,33 +551,32 @@ public class MySQLiteHelperGood {
         contactListeners = null;
     }
 
-    @UiThread
-    public void notifyContactListeners(ContactResponse response) {
+    public void notifyContactListeners(int action_code, dCustomer response, List<dCustomer> list_response) {
         if (contactListeners == null) {
             Log.e(TAG, "ContactListeners is null");
             return;
         }
 
-        if (response == null) {
+        if (response == null && list_response == null) {
             Log.e(TAG, "ContactResponse parameter is null");
             return;
         }
 
-        switch (response.getActionCode()) {
-            case dCustomer.ACTION_MESSAGE_SAVE:
+        switch (action_code) {
+            case ContactIntentService.ACTION_MESSAGE_SAVE:
                 contactListeners.ContactAdded(response);
                 break;
-            case dCustomer.ACTION_MESSAGE_UPDATE:
+            case ContactIntentService.ACTION_MESSAGE_UPDATE:
                 contactListeners.ContactUpdated(response);
                 break;
-            case dCustomer.ACTION_MESSAGE_DELETE:
+            case ContactIntentService.ACTION_MESSAGE_DELETE:
                 contactListeners.ContactDeleted(response);
                 break;
-            case dCustomer.ACTION_MESSAGE_RETRIEVE_ALL:
-                contactListeners.ContactGetAll(response);
+            case ContactIntentService.ACTION_MESSAGE_RETRIEVE_ALL:
+                contactListeners.ContactGetAll(list_response);
                 break;
             default:
-                Log.e(TAG, "Response action code(" + response.getActionCode() + ") not defined");
+                Log.e(TAG, "Response action code(" + action_code + ") not defined");
                 break;
         }
     }
@@ -542,6 +594,7 @@ public class MySQLiteHelperGood {
             db.execSQL(tmIndex2);
             db.execSQL(TABLE_CONTACTS_CREATE);
             db.execSQL(tcIndex1);
+            db.execSQL(TABLE_NOTIFICATION_CREATE);
             db.execSQL(newMessageTrigger);
             db.execSQL(deleteUserTrigger);
         }

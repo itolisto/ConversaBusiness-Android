@@ -24,9 +24,13 @@
 
 package ee.app.conversabusiness.messageshandling;
 
-import ee.app.conversabusiness.ConversaApp;
+import android.content.Context;
+import android.content.Intent;
+
+import ee.app.conversabusiness.management.message.MessageIntentService;
 import ee.app.conversabusiness.model.Database.dbMessage;
 import ee.app.conversabusiness.model.Parse.Account;
+import ee.app.conversabusiness.receiver.FileUploadingReceiver;
 import ee.app.conversabusiness.utils.Const;
 
 /**
@@ -37,34 +41,40 @@ import ee.app.conversabusiness.utils.Const;
 
 public class SendMessageAsync {
 
-	public static void sendTextMessage(String customerId, String text) {
+	public static void sendTextMessage(Context context, String businessId, String text) {
 		// 1. Create local message
 		dbMessage message = new dbMessage();
-		message.setFromUserId(ConversaApp.getPreferences().getBusinessId());
-		message.setToUserId(customerId);
+		message.setFromUserId(Account.getCurrentUser().getObjectId());
+		message.setToUserId(businessId);
 		message.setMessageType(Const.kMessageTypeText);
 		message.setDeliveryStatus(dbMessage.statusUploading);
 		message.setBody(text);
 
 		// 2. Save locally on background
-		message.saveToLocalDatabase(dbMessage.ACTION_MESSAGE_SAVE);
+		Intent intent = new Intent(context, MessageIntentService.class);
+		intent.putExtra(MessageIntentService.INTENT_EXTRA_ACTION_CODE, MessageIntentService.ACTION_MESSAGE_SAVE);
+		intent.putExtra(MessageIntentService.INTENT_EXTRA_MESSAGE, message);
+		context.startService(intent);
 	}
 
-	public static void sendLocationMessage(String customerId, float lat, float lon) {
+	public static void sendLocationMessage(Context context, String businessId, double lat, double lon) {
 		// 1. Create local message
 		dbMessage message = new dbMessage();
-		message.setFromUserId(ConversaApp.getPreferences().getBusinessId());
-		message.setToUserId(customerId);
+		message.setFromUserId(Account.getCurrentUser().getObjectId());
+		message.setToUserId(businessId);
 		message.setMessageType(Const.kMessageTypeLocation);
 		message.setDeliveryStatus(dbMessage.statusUploading);
-		message.setLatitude(lat);
-		message.setLongitude(lon);
+		message.setLatitude((float)lat);
+		message.setLongitude((float)lon);
 
 		// 2. Save locally on background
-		message.saveToLocalDatabase(dbMessage.ACTION_MESSAGE_SAVE);
+		Intent intent = new Intent(context, MessageIntentService.class);
+		intent.putExtra(MessageIntentService.INTENT_EXTRA_ACTION_CODE, MessageIntentService.ACTION_MESSAGE_SAVE);
+		intent.putExtra(MessageIntentService.INTENT_EXTRA_MESSAGE, message);
+		context.startService(intent);
 	}
 
-	public static void sendImageMessage(String businessId, int width, int height, int size) {
+	public static void sendImageMessage(Context context, String businessId, int width, int height, int size, FileUploadingReceiver receiver) {
 		// 1. Create local message
 		dbMessage message = new dbMessage();
 		message.setFromUserId(Account.getCurrentUser().getObjectId());
@@ -74,14 +84,16 @@ public class SendMessageAsync {
 		message.setWidth(width);
 		message.setHeight(height);
 		message.setBytes(size);
-		// In here we must have a way to reference ParseFile associated with this message
-		// We probably need to add a variable to Message class to hold a reference
 
 		// 2. Save locally on background
-		message.saveToLocalDatabase(dbMessage.ACTION_MESSAGE_SAVE);
+		Intent intent = new Intent(context, MessageIntentService.class);
+		intent.putExtra(MessageIntentService.INTENT_EXTRA_ACTION_CODE, MessageIntentService.ACTION_MESSAGE_SAVE);
+		intent.putExtra(MessageIntentService.INTENT_EXTRA_MESSAGE, message);
+		intent.putExtra(MessageIntentService.INTENT_EXTRA_RECEIVER, receiver);
+		context.startService(intent);
 	}
 
-	public static void sendVideoAudioMessage(String businessId, int duration, int size) {
+	public static void sendVideoAudioMessage(Context context, String businessId, int duration, int size, FileUploadingReceiver receiver) {
 		// 1. Create local message
 		dbMessage message = new dbMessage();
 		message.setFromUserId(Account.getCurrentUser().getObjectId());
@@ -90,11 +102,13 @@ public class SendMessageAsync {
 		message.setDeliveryStatus(dbMessage.statusUploading);
 		message.setDuration(duration);
 		message.setBytes(size);
-		// In here we must have a way to reference ParseFile associated with this message
-		// We probably need to add a variable to Message class to hold a reference
 
 		// 2. Save locally on background
-		message.saveToLocalDatabase(dbMessage.ACTION_MESSAGE_SAVE);
+		Intent intent = new Intent(context, MessageIntentService.class);
+		intent.putExtra(MessageIntentService.INTENT_EXTRA_ACTION_CODE, MessageIntentService.ACTION_MESSAGE_SAVE);
+		intent.putExtra(MessageIntentService.INTENT_EXTRA_MESSAGE, message);
+		intent.putExtra(MessageIntentService.INTENT_EXTRA_RECEIVER, receiver);
+		context.startService(intent);
 	}
 
 }

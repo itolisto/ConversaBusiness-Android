@@ -52,8 +52,24 @@
             android:name="ee.app.conversabusiness.ActivitySignIn"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden"
-            android:launchMode="singleTop"
-            android:noHistory="true" />
+            android:launchMode="singleTask" />
+
+        <activity
+            android:name="ee.app.conversabusiness.ActivityLogIn"
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask" />
+
+        <activity
+            android:name="ee.app.conversabusiness.ActivitySignUp"
+            android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask" />
+
+        <activity
+            android:name="ee.app.conversabusiness.ActivityForgotPassword"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask" />
 
         <activity
             android:name="ee.app.conversabusiness.ActivityMain"
@@ -74,13 +90,6 @@
             android:name="ee.app.conversabusiness.ActivityCameraCrop"
             android:screenOrientation="portrait"
             android:launchMode="singleTask" />
-
-        <activity
-            android:name="ee.app.conversabusiness.notifications.NotificationReceiver"
-            android:noHistory="true"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTask" />
-
         <!-- **************************************************************************************** -->
         <receiver android:name="ee.app.conversabusiness.management.ConnectionChangeReceiver" >
             <intent-filter>
@@ -94,44 +103,25 @@
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBrWJZuAiphXpuktc39E-VxJKe7VjYKeQo" />
+            android:value="AIzaSyAwg-G3VTF0jS_dyyTcfdZ6pDA2UK9rgYQ" />
 
-        <!--[START gcm_receiver]-->
-        <receiver
-            android:name="com.google.android.gms.gcm.GcmReceiver"
-            android:exported="true"
-            android:permission="com.google.android.c2dm.permission.SEND" >
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <category android:name="com.example.gcm" />
-            </intent-filter>
-        </receiver>
-        <!--[END gcm_receiver]-->
-        <!--[START gcm_listener]-->
+        <!-- Receive data in the background with or without displaying a notification. -->
         <service
-            android:name=".notifications.MyGcmListenerService"
-            android:exported="false" >
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-            </intent-filter>
-        </service>
-        <!--[END gcm_listener]-->
-        <!--[START instanceId_listener]-->
-        <service
-            android:name=".notifications.MyInstanceIDListenerService"
+            android:name=".notifications.onesignal.CustomNotificationExtenderService"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.google.android.gms.iid.InstanceID"/>
+                <action android:name="com.onesignal.NotificationExtender" />
             </intent-filter>
         </service>
-        <!--[END instanceId_listener]-->
+        <!-- By default OneSignal will open or resume your launcher Activity when a notification is
+            tapped on. You can disable this behavior by adding the meta-data tag -->
+        <meta-data android:name="com.onesignal.NotificationOpened.DEFAULT" android:value="DISABLE" />
 
         <service
-            android:name="ee.app.conversabusiness.notifications.CustomNotificationExtenderService"
+            android:name=".management.contact.ContactIntentService"
             android:exported="false" />
-
         <service
-            android:name="ee.app.conversabusiness.notifications.RegistrationIntentService"
+            android:name=".management.message.MessageIntentService"
             android:exported="false" />
     </application>
 </manifest>
