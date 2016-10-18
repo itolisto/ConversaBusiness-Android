@@ -1,0 +1,149 @@
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/card_view"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:elevation="1dp" >
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="3">
+            <RelativeLayout
+                android:id="@+id/rlBusinessLeft"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="2" >
+
+                <com.facebook.drawee.view.SimpleDraweeView
+                    android:id="@+id/ivLogoImage"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginBottom="10dp" />
+
+                <TextView
+                    android:id="@+id/tvVerified"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_below="@+id/ivLogoImage"
+                    android:text="not verified" />
+
+                <ImageView
+                    android:id="@+id/ivVerified"
+                    android:layout_height="15dp"
+                    android:layout_width="15dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_below="@+id/ivLogoImage"
+                    android:layout_toRightOf="@+id/tvVerified"
+                    android:contentDescription="@null"
+                    android:background="@drawable/notification" />
+            </RelativeLayout>
+
+            <!-- *********************************************** -->
+            <!-- *********************************************** -->
+            <!-- *********************************************** -->
+
+            <RelativeLayout
+                android:id="@+id/rlBusinessRight"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1" >
+
+                <TextView
+                    android:id="@+id/tvBusinessName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="15dp"
+                    android:textSize="22sp"
+                    android:maxLines="2"
+                    android:text="fasdfsad" />
+
+                <TextView
+                    android:id="@+id/tvBusinessAbout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tvBusinessName"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="15dp"
+                    android:textSize="18sp"
+                    android:text="fasdfsad" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_centerHorizontal="true"
+                    android:layout_below="@+id/tvBusinessAbout"
+                    android:layout_marginTop="15dp"
+                    android:weightSum="3"
+                    android:gravity="bottom|center_horizontal" >
+
+                    <TextView
+                        android:id="@+id/tvCountry"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="8dp"
+                        android:layout_weight="1"
+                        android:textSize="14sp"
+                        android:text="fasdfsad"
+                        android:layout_gravity="bottom" />
+
+                    <TextView
+                        android:id="@+id/tvCity"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="8dp"
+                        android:layout_weight="1"
+                        android:textSize="14sp"
+                        android:text="fasdfsad"
+                        android:layout_gravity="bottom" />
+
+                    <TextView
+                        android:id="@+id/tvFounded"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="8dp"
+                        android:layout_weight="1"
+                        android:textSize="14sp"
+                        android:text="fasdfsad"
+                        android:layout_gravity="bottom" />
+                </LinearLayout>
+            </RelativeLayout>
+
+        </LinearLayout>
+    </android.support.v7.widget.CardView>
+
+    <RelativeLayout
+        android:id="@+id/rlGridView"
+        android:layout_below="@+id/card_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/srlStatistics"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <GridView xmlns:android="http://schemas.android.com/apk/res/android"
+                android:id="@+id/gvStatistics"
+                android:numColumns="4"
+                android:gravity="center"
+                android:columnWidth="100dp"
+                android:stretchMode="spacingWidthUniform"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+            </GridView>
+        </android.support.v4.widget.SwipeRefreshLayout>
+    </RelativeLayout>
+
+    <!-- *********************************************** -->
+    <!-- *********************************************** -->
+</RelativeLayout>

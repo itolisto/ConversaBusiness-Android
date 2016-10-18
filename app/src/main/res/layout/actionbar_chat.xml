@@ -1,28 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
-    android:background="@android:color/transparent"
-    android:padding="7dp"
-    android:gravity="center_vertical" >
+    android:background="#F7F7F7" >
 
-    <ee.app.conversabusiness.view.CircleImageView
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/ivAvatarChat"
-        android:src="@drawable/no_commerce"
-        android:layout_width="45dp"
-        android:layout_height="45dp"
+        android:layout_width="38dp"
+        android:layout_height="38dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
+        android:layout_marginLeft="7dp"
+        android:layout_marginStart="7dp"
         android:layout_marginRight="7dp"
         android:layout_marginEnd="7dp"
-        app:border_color="@android:color/transparent"/>
+        android:layout_centerVertical="true"
+        fresco:fadeDuration="300"
+        fresco:actualImageScaleType="fitCenter"
+        fresco:placeholderImage="@drawable/ic_user"
+        fresco:placeholderImageScaleType="fitCenter"
+        fresco:failureImage="@drawable/ic_user"
+        fresco:failureImageScaleType="fitCenter"
+        fresco:retryImage="@drawable/ic_user"
+        fresco:retryImageScaleType="fitCenter"
+        fresco:progressBarImage="@drawable/rotate_loading"
+        fresco:progressBarImageScaleType="centerInside"
+        fresco:progressBarAutoRotateInterval="1000"
+        fresco:roundAsCircle="true" />
+
+    <FrameLayout
+        android:id="@+id/flBack"
+        android:paddingRight="16dp"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"
+        android:paddingLeft="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_centerVertical="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" >
+
+        <ImageButton
+            android:id="@+id/ibBack"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:layout_gravity="center"
+            android:scaleType="centerInside"
+            android:background="@drawable/ic_arrow_back" />
+    </FrameLayout>
 
     <LinearLayout
         android:weightSum="3"
         android:orientation="vertical"
         android:layout_toLeftOf="@id/ivAvatarChat"
         android:layout_toStartOf="@id/ivAvatarChat"
+        android:layout_toRightOf="@id/flBack"
+        android:layout_toEndOf="@id/flBack"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -34,7 +68,7 @@
             android:gravity="center"
             android:textColor="@android:color/black"
             android:textSize="15sp"
-            android:text="@string/test_string"
+            android:ellipsize="end"
             android:maxLines="1" />
 
         <ee.app.conversabusiness.view.LightTextView
@@ -45,7 +79,6 @@
             android:gravity="center"
             android:textColor="@color/default_gray"
             android:textSize="13sp"
-            android:text="@string/test_string"
             android:visibility="gone"
             android:maxLines="1" />
     </LinearLayout>

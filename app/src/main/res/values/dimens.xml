@@ -1,11 +1,14 @@
 <resources>
-	<!-- For CircleImageView -->
-    <dimen name="base_padding">16dp</dimen>
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
     <dimen name="tab_max_width">264dp</dimen>
-    <dimen name="tab_padding_bottom">16dp</dimen>
-    <dimen name="tab_label">14sp</dimen>
-    <dimen name="custom_tab_layout_height">72dp</dimen>
+
+    <dimen name="business_item_divider_height" format="float">0.5dp</dimen>
+    <dimen name="user_item_divider_height" format="float">0.5dp</dimen>
+    
+    <!-- Settings -->
+    <dimen name="settings_main_height">65dp</dimen>
+    <dimen name="settings_main_avatar_size">21dp</dimen>
+    <dimen name="settings_main_next_size">14dp</dimen>
 </resources>

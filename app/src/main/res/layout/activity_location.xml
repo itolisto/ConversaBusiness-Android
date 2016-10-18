@@ -25,7 +25,7 @@
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
         android:textColor="@android:color/white"
-        android:background="@drawable/button_shape_green_border_default" />
+        android:background="@drawable/imagebutton_circular_chat_selector" />
 
     <include layout="@layout/push_notification"
         android:id="@+id/rlPushNotification"

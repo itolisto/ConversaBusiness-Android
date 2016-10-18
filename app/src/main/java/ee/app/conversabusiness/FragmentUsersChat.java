@@ -1,43 +1,46 @@
 package ee.app.conversabusiness;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.ActionMode;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import java.util.List;
 
+import ee.app.conversabusiness.actions.ContactAction;
 import ee.app.conversabusiness.adapters.ChatsAdapter;
-import ee.app.conversabusiness.dialog.CustomDeleteUserDialog;
-import ee.app.conversabusiness.interfaces.OnContactTaskCompleted;
-import ee.app.conversabusiness.model.Database.dCustomer;
-import ee.app.conversabusiness.notifications.onesignal.CustomNotificationExtenderService;
+import ee.app.conversabusiness.contact.ContactIntentService;
+import ee.app.conversabusiness.extendables.ConversaFragment;
+import ee.app.conversabusiness.messaging.MessageUpdateReason;
+import ee.app.conversabusiness.model.database.dbCustomer;
+import ee.app.conversabusiness.model.database.dbMessage;
 import ee.app.conversabusiness.utils.Const;
+import ee.app.conversabusiness.view.BoldTextView;
 
-public class FragmentUsersChat extends Fragment implements OnContactTaskCompleted, ChatsAdapter.OnItemClickListener, ChatsAdapter.OnLongClickListener {
+public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.OnItemClickListener,
+        ChatsAdapter.OnLongClickListener, View.OnClickListener, ActionMode.Callback {
 
-    public static RecyclerView mRvUsers;
-    public static RelativeLayout mRlNoUsers;
-    public static ChatsAdapter mUserListAdapter;
-    protected UsersReceiver receiver = new UsersReceiver();
-    private final IntentFilter mUserFilter = new IntentFilter(UsersReceiver.ACTION_RESP);
+    private RecyclerView mRvUsers;
+    private RelativeLayout mRlNoUsers;
+    private ChatsAdapter mUserListAdapter;
+    private boolean refresh;
+    private ActionMode actionMode;
 
     @Override
     public View onCreateView(LayoutInflater inflater,
                              @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
         View rootView = inflater.inflate(R.layout.fragment_users, container, false);
 
         mRvUsers = (RecyclerView) rootView.findViewById(R.id.lvUsers);
@@ -47,85 +50,43 @@ public class FragmentUsersChat extends Fragment implements OnContactTaskComplete
         mRvUsers.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRvUsers.setItemAnimator(new DefaultItemAnimator());
         mRvUsers.setAdapter(mUserListAdapter);
+        mRvUsers.setHasFixedSize(true);
 
-        // Register Listener on Database
-        ConversaApp.getDB().setContactListener(this);
-        dCustomer.getAllContacts(getContext());
+        refresh = false;
 
-        // Register receiver
-        ConversaApp.getLocalBroadcastManager().registerReceiver(receiver, mUserFilter);
+        BoldTextView mRtvStartBrowsing = (BoldTextView) rootView.findViewById(R.id.rtvStartBrowsing);
+        mRtvStartBrowsing.setOnClickListener(this);
+
+        unregisterListener = false;
+        dbCustomer.getAllContacts(getContext());
 
         return rootView;
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
-        ConversaApp.getLocalBroadcastManager().unregisterReceiver(receiver);
-    }
+    public void ContactGetAll(final List<dbCustomer> contacts) {
+        if (refresh) {
+            mUserListAdapter.clearItems();
+            refresh = false;
+        }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        menu.clear();
-    }
+        if(contacts.size() == 0) {
+            mRlNoUsers.setVisibility(View.VISIBLE);
+            mRvUsers.setVisibility(View.GONE);
+        } else {
+            if (mRlNoUsers.getVisibility() == View.VISIBLE) {
+                mRlNoUsers.setVisibility(View.GONE);
+                mRvUsers.setVisibility(View.VISIBLE);
+            }
 
-    @Override
-    public void ContactGetAll(final List<dCustomer> contacts) {
-        if (getActivity() != null) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    if(contacts.size() == 0) {
-                        mRlNoUsers.setVisibility(View.VISIBLE);
-                        mRvUsers.setVisibility(View.GONE);
-                    } else {
-                        if (mRlNoUsers.getVisibility() == View.VISIBLE) {
-                            mRlNoUsers.setVisibility(View.GONE);
-                            mRvUsers.setVisibility(View.VISIBLE);
-                        }
-
-                        mUserListAdapter.addItems(contacts);
-                    }
-                }
-            });
+            mUserListAdapter.setItems(contacts);
         }
     }
 
     @Override
-    public void ContactAdded(dCustomer response) {
-        ContactAddedFromBroadcast(response);
-    }
-
-    @Override
-    public void ContactDeleted(final dCustomer response) {
-        if (getActivity() != null) {
-            getActivity().runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    // 1. Get visible items and first visible item position
-                    int visibleItemCount = mRvUsers.getChildCount();
-                    int firstVisibleItem = ((LinearLayoutManager) mRvUsers.getLayoutManager()).findFirstVisibleItemPosition();
-                    // 2. Update message
-                    mUserListAdapter.removeContact(response, firstVisibleItem, visibleItemCount);
-                    // 3. Check visibility
-                    if (mUserListAdapter.getItemCount() == 0) {
-                        mRlNoUsers.setVisibility(View.VISIBLE);
-                        mRvUsers.setVisibility(View.GONE);
-                    }
-                }
-            });
-        }
-    }
-
-    @Override
-    public void ContactUpdated(dCustomer response) {
-
-    }
-
-    public void ContactAddedFromBroadcast(dCustomer business) {
+    public void ContactAdded(dbCustomer response) {
         // 0. Check business is defined
-        if (business == null)
+        if (response == null)
             return;
 
         // 1. Check visibility
@@ -135,47 +96,134 @@ public class FragmentUsersChat extends Fragment implements OnContactTaskComplete
         }
 
         // 2. Add contact to adapter
-        mUserListAdapter.newContactInserted(business);
+        mUserListAdapter.addContact(response);
     }
 
-    public class UsersReceiver extends BroadcastReceiver {
-        public static final String ACTION_RESP =
-                "conversabusiness.fragmentuserschat.action.USER_SAVED";
+    @Override
+    public void ContactDeleted(List<String> contacts) {
+        // 1. Update chats
+        mUserListAdapter.removeContacts();
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            dCustomer contact = intent.getParcelableExtra(CustomNotificationExtenderService.PARAM_OUT_MSG);
-            ContactAddedFromBroadcast(contact);
+        if (actionMode != null) {
+            actionMode.finish();
+        }
+
+        // 2. Check visibility
+        if (mUserListAdapter.getItemCount() == 0) {
+            mRlNoUsers.setVisibility(View.VISIBLE);
+            mRvUsers.setVisibility(View.GONE);
         }
     }
 
     @Override
-    public void onItemClick(dCustomer contact) {
-        Intent intent = new Intent(getActivity(), ActivityChatWall.class);
-        intent.putExtra(Const.kClassBusiness, contact);
-        intent.putExtra(Const.kYapDatabaseName, false);
-        startActivity(intent);
+    public void ContactUpdated(dbCustomer response) {
+
     }
 
     @Override
-    public void onItemLongClick(final dCustomer contact) {
-        final CustomDeleteUserDialog dialog = new CustomDeleteUserDialog(getContext());
-        dialog.setTitle("Test")
-                .setMessage("Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test Test")
-                //.dismissOnTouchOutside(false)
-                .setupPositiveButton("Accept", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //contact.removeContact();
-                        dialog.dismiss();
-                    }
-                })
-                .setupNegativeButton("Decline", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-
-                    }
-                });
-        dialog.show();
+    public void MessageReceived(dbMessage response) {
+        mUserListAdapter.updateContactPosition(response.getFromUserId());
     }
+
+    @Override
+    public void MessageSent(dbMessage response) {
+        mUserListAdapter.updateContactPosition(response.getToUserId());
+    }
+
+    @Override
+    public void MessageUpdated(dbMessage response, MessageUpdateReason reason) {
+        if (reason == MessageUpdateReason.VIEW) {
+            mUserListAdapter.updateContactView(response.getFromUserId());
+        }
+    }
+
+    @Override
+    public void onItemClick(dbCustomer contact, int position) {
+        if (actionMode == null) {
+            Intent intent = new Intent(getActivity(), ActivityChatWall.class);
+            intent.putExtra(Const.iExtraCustomer, contact);
+            intent.putExtra(Const.iExtraAddBusiness, false);
+            intent.putExtra(Const.iExtraPosition, position);
+            startActivity(intent);
+        } else {
+            myToggleSelection(position);
+        }
+    }
+
+    @Override
+    public void onItemLongClick(final dbCustomer contact, int position) {
+        if (actionMode == null) {
+            myToggleSelection(position);
+        }
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.rtvStartBrowsing:
+                ((ActivityMain)getActivity()).selectViewPagerTab(1);
+                break;
+        }
+    }
+
+    private void myToggleSelection(int position) {
+        // 1. First add/remove the position to the selected items list
+        mUserListAdapter.toggleSelection(position);
+        // 2. Check selected items list count
+        boolean hasCheckedItems = mUserListAdapter.getSelectedItemCount() > 0;
+
+        if (hasCheckedItems && actionMode == null) {
+            getActivity().startActionMode(this);
+        } else if (!hasCheckedItems && actionMode != null) {
+            actionMode.finish();
+        }
+
+        if (actionMode != null) {
+            actionMode.setTitle(getString(R.string.selected_count, mUserListAdapter.getSelectedItemCount()));
+        }
+    }
+
+    public void finishActionMode() {
+        if (actionMode != null) {
+            actionMode.finish();
+        }
+    }
+
+    @Override
+    public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        actionMode = mode;
+        MenuInflater inflater = mode.getMenuInflater();
+        inflater.inflate(R.menu.menu_items_selected, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
+        return false;
+    }
+
+    @Override
+    public boolean onActionItemClicked(ActionMode mode, MenuItem menuItem) {
+        switch (menuItem.getItemId()) {
+            case R.id.menu_delete:
+                Intent intent = new Intent(getActivity(), ContactIntentService.class);
+                intent.putExtra(ContactIntentService.INTENT_EXTRA_ACTION_CODE, ContactAction.ACTION_CONTACT_DELETE);
+                intent.putStringArrayListExtra(ContactIntentService.INTENT_EXTRA_CUSTOMER_LIST,
+                        mUserListAdapter.getSelectedItems());
+                getActivity().startService(intent);
+                return true;
+            default:
+                return false;
+        }
+    }
+
+    @Override
+    public void onDestroyActionMode(ActionMode mode) {
+        if (actionMode != null) {
+            actionMode = null;
+        }
+
+        mUserListAdapter.clearSelections();
+    }
+
 }

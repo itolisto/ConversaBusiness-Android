@@ -1,5 +1,6 @@
 package ee.app.conversabusiness;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -19,12 +20,11 @@ import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
-import ee.app.conversabusiness.dialog.CustomDeleteUserDialog;
+import ee.app.conversabusiness.extendables.BaseActivity;
 import ee.app.conversabusiness.utils.Const;
 import ee.app.conversabusiness.utils.Utils;
-import ee.app.conversabusiness.model.Parse.Account;
+import ee.app.conversabusiness.model.parse.Account;
 
 /**
  * Created by edgargomez on 8/12/16.
@@ -67,19 +67,21 @@ public class ActivityLogIn extends BaseActivity implements View.OnClickListener 
 
         if(mBtnSignInIn != null) {
             mBtnSignInIn.setOnClickListener(this);
-            mBtnSignInIn.setTypeface(ConversaApp.getTfRalewayMedium());
+            mBtnSignInIn.setTypeface(ConversaApp.getInstance(this).getTfRalewayMedium());
         }
 
         if(mBtnForgotPassword != null) {
             mBtnForgotPassword.setOnClickListener(this);
-            mBtnForgotPassword.setTypeface(ConversaApp.getTfRalewayLight());
+            mBtnForgotPassword.setTypeface(ConversaApp.getInstance(this).getTfRalewayLight());
         }
     }
 
     @Override
     public void yesInternetConnection() {
         super.yesInternetConnection();
-        mBtnSignInIn.setEnabled(true);
+        if (validateForm()) {
+            mBtnSignInIn.setEnabled(true);
+        }
     }
 
     @Override
@@ -102,101 +104,68 @@ public class ActivityLogIn extends BaseActivity implements View.OnClickListener 
                 startActivity(intent);
                 break;
             case R.id.btnSignInIn:
-                if(validateForm()) {
-                    final String mSignInEmail = mEtSignInEmail.getText().toString();
-                    final String mSignInPassword = mEtSignInPassword.getText().toString();
+                final String mSignInEmail = mEtSignInEmail.getText().toString();
+                final String mSignInPassword = mEtSignInPassword.getText().toString();
 
-                    ParseQuery<Account> subQuery2 = ParseQuery.getQuery(Account.class);
-                    subQuery2.whereEqualTo(Const.kUserEmailKey, mSignInEmail);
-                    subQuery2.whereEqualTo(Const.kUserTypeKey, 2);
+                ParseQuery<Account> query = ParseQuery.getQuery(Account.class);
+                query.whereEqualTo(Const.kUserEmailKey, mSignInEmail);
+                query.whereEqualTo(Const.kUserTypeKey, 2);
 
-                    ParseQuery<Account> subQuery1 = ParseQuery.getQuery(Account.class);
-                    subQuery1.whereEqualTo(Const.kUserUsernameKey, mSignInEmail);
-                    subQuery1.whereEqualTo(Const.kUserTypeKey, 2);
+                Collection<String> collection = new ArrayList<>();
+                collection.add(Const.kUserUsernameKey);
+                query.selectKeys(collection);
 
-                    List<ParseQuery<Account>> subList = new ArrayList<>();
-                    subList.add(subQuery1);
-                    subList.add(subQuery2);
+                final ProgressDialog progress = new ProgressDialog(this);
+                progress.show();
 
-                    ParseQuery<Account> query = ParseQuery.or(subList);
-                    Collection<String> collection = new ArrayList<>();
-                    collection.add(Const.kUserUsernameKey);
-                    query.selectKeys(collection);
-                    query.getFirstInBackground(new GetCallback<Account>() {
-                        @Override
-                        public void done(Account object, ParseException e) {
-                            if (e == null) {
-                                String username = object.getUsername();
-                                ParseUser.logInInBackground(username, mSignInPassword, new LogInCallback() {
-                                    public void done(ParseUser user, ParseException e) {
-                                        if (user != null) {
-                                            AuthListener(true, null);
-                                        } else {
-                                            AuthListener(false, e);
-                                        }
+                query.getFirstInBackground(new GetCallback<Account>() {
+                    @Override
+                    public void done(Account object, ParseException e) {
+                        progress.dismiss();
+
+                        if (e == null) {
+                            String username = object.getUsername();
+                            ParseUser.logInInBackground(username, mSignInPassword, new LogInCallback() {
+                                public void done(ParseUser user, ParseException e) {
+                                    if (user != null) {
+                                        AuthListener(true, null);
+                                    } else {
+                                        AuthListener(false, e);
                                     }
-                                });
-                            } else {
-                                AuthListener(false, e);
-                            }
-                        }
-                    });
-                } else {
-                    final CustomDeleteUserDialog dialog = new CustomDeleteUserDialog(this);
-                    dialog.setTitle(null)
-                            .setMessage("Please enter check email and password are ok")
-                            .setupPositiveButton("Accept", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    //contact.removeContact();
-                                    dialog.dismiss();
                                 }
                             });
-                    dialog.show();
-                }
+                        } else {
+                            AuthListener(false, e);
+                        }
+                    }
+                });
                 break;
         }
     }
 
     private boolean validateForm() {
         if (mEtSignInEmail.getText().toString().isEmpty() || mEtSignInPassword.getText().toString().isEmpty()) {
-            return false;
-        }
-
-        if (mTilSignInEmail.isErrorEnabled() || mTilSignInPassword.isErrorEnabled()) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private void isPasswordValid(String password) {
-        TextInputLayout layout = mTilSignInPassword;
-
-        if (password.isEmpty()) {
-            layout.setErrorEnabled(true);
-            layout.setError(getString(R.string.signup_password_length_error));
+            mBtnSignInIn.setEnabled(false);
+        } else if (mTilSignInEmail.isErrorEnabled() || mTilSignInPassword.isErrorEnabled()) {
+            mBtnSignInIn.setEnabled(false);
         } else {
-            if (Utils.checkPassword(password)) {
-                //layout.setErrorEnabled(false);
-                //layout.setError("");
-            } else {
-                layout.setErrorEnabled(false);
-                layout.setError("");
-            }
+            mBtnSignInIn.setEnabled(true);
+            return true;
         }
+
+        return false;
     }
 
     private void isEmailValid(String email) {
         TextInputLayout layout = mTilSignInEmail;
 
-        if (Utils.checkEmail(email)) {
-            layout.setErrorEnabled(false);
-            layout.setError("");
+        if (email.isEmpty()) {
+            layout.setErrorEnabled(true);
+            layout.setError(getString(R.string.sign_email_length_error));
         } else {
-            if (email.isEmpty()) {
-                layout.setErrorEnabled(true);
-                layout.setError(getString(R.string.sign_email_length_error));
+            if (Utils.checkEmail(email)) {
+                layout.setErrorEnabled(false);
+                layout.setError("");
             } else {
                 layout.setErrorEnabled(true);
                 layout.setError(getString(R.string.sign_email_not_valid_error));
@@ -204,9 +173,23 @@ public class ActivityLogIn extends BaseActivity implements View.OnClickListener 
         }
     }
 
+    private void isPasswordValid(String password) {
+        TextInputLayout layout = mTilSignInPassword;
+
+        if (password.isEmpty()) {
+            layout.setErrorEnabled(true);
+            layout.setError(getString(R.string.signup_password_empty_error));
+        } else {
+            layout.setErrorEnabled(false);
+            layout.setError("");
+        }
+    }
+
     public void AuthListener(boolean result, ParseException error) {
         if(result) {
             Intent intent = new Intent(this, ActivityMain.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             finish();
         } else {
@@ -227,17 +210,16 @@ public class ActivityLogIn extends BaseActivity implements View.OnClickListener 
         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) { }
 
         public void afterTextChanged(Editable editable) {
-//            if (editable.toString().isEmpty())
-//                return;
-
             switch (view.getId()) {
                 case R.id.etSignInEmail:
                     isEmailValid(editable.toString());
                     break;
                 case R.id.etSignInPassword:
-                    //isPasswordValid(editable.toString());
+                    isPasswordValid(editable.toString());
                     break;
             }
+
+            validateForm();
         }
     }
 }

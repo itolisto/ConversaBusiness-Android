@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="sett_chat_quality_entries">
+        <item>Alta</item>
+        <item>Media</item>
+        <item>Baja</item>
+    </string-array>
+
+    <string-array name="sett_chat_quality_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+
+    <string-array name="categories_titles">
+        <item name="Chats">Chats</item>
+        <item name="Analytics">Estadísticas</item>
+        <item name="Settings">Ajustes</item>
+    </string-array>
+</resources>

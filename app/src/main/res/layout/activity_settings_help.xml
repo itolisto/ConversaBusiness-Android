@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/actionbar_preference"/>
+
+    <Button
+        android:id="@+id/terms"
+        android:text="@string/sett_help_terms_privacy_title"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="?android:attr/buttonBarButtonStyle" />
+
+    <Button
+        android:id="@+id/help"
+        android:text="@string/sett_help_feedback_title"
+        android:layout_above="@id/terms"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="?android:attr/buttonBarButtonStyle" />
+
+    <Button
+        android:id="@+id/support"
+        android:text="@string/sett_help_support_title"
+        android:layout_above="@id/help"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="?android:attr/buttonBarButtonStyle" />
+
+    <FrameLayout
+        android:layout_marginTop="?attr/actionBarSize"
+        android:layout_above="@id/support"
+        android:background="@color/blue"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+        <ImageView
+            android:src="@mipmap/ic_launcher"
+            android:layout_gravity="center"
+            android:layout_width="100dp"
+            android:layout_height="100dp" />
+    </FrameLayout>
+</RelativeLayout>

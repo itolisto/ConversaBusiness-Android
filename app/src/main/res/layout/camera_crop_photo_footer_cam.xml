@@ -1,30 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="2">
 
-        <Button
-            android:id="@+id/btnCameraCancel"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:text="@string/back_button_label"
-            android:textColor="@android:color/white"
-            android:textSize="16sp" />
-        <!--android:background="@drawable/button_shape_red_rounded"-->
-
-        <Button
-            android:id="@+id/btnCameraOk"
-            android:layout_marginLeft="10dp"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:text="@string/SEND"
-            android:textColor="@android:color/white"
-            android:textSize="16sp" />
-        <!--android:background="@drawable/button_shape_green_rounded"-->
-    </LinearLayout>
-</RelativeLayout>
+    <Button
+        android:textSize="16sp"
+        android:id="@+id/btnCameraOk"
+        android:text="@string/SEND"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginBottom="14dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:textColor="@android:color/white"
+        android:background="@drawable/imagebutton_circular_chat_selector" />
+</merge>

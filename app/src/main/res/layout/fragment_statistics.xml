@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/default_white"
+    android:focusableInTouchMode="true"
+    android:orientation="vertical"
+    tools:context=".FragmentStatistics">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:divider="@drawable/divider"
+        android:showDividers="middle">
+
+        <android.support.percent.PercentRelativeLayout
+            android:layout_width="match_parent"
+            app:layout_marginLeftPercent="1%"
+            app:layout_marginStartPercent="1%"
+            app:layout_marginEndPercent="1%"
+            app:layout_marginRightPercent="1%"
+            android:layout_height="40dp">
+
+            <Button
+                app:layout_widthPercent="32%"
+                android:id="@+id/btnLastHours"
+                android:layout_height="match_parent" />
+
+            <View
+                app:layout_widthPercent="1%"
+                android:id="@+id/vDividerOne"
+                android:layout_height="match_parent"
+                android:background="@drawable/divider"
+                android:layout_toEndOf="@id/btnLastHours"
+                android:layout_toRightOf="@id/btnLastHours" />
+
+            <Button
+                app:layout_widthPercent="32%"
+                android:id="@+id/btnLastWeek"
+                android:layout_height="match_parent"
+                android:layout_toEndOf="@id/vDividerOne"
+                android:layout_toRightOf="@id/vDividerOne" />
+
+            <View
+                app:layout_widthPercent="1%"
+                android:id="@+id/vDividerTwo"
+                android:layout_height="match_parent"
+                android:background="@drawable/divider"
+                android:layout_toEndOf="@id/btnLastWeek"
+                android:layout_toRightOf="@id/btnLastWeek" />
+
+            <Button
+                app:layout_widthPercent="32%"
+                android:id="@+id/btnLastMonth"
+                android:layout_height="match_parent"
+                android:layout_toEndOf="@id/vDividerTwo"
+                android:layout_toRightOf="@id/vDividerTwo" />
+        </android.support.percent.PercentRelativeLayout>
+
+        <com.github.mikephil.charting.charts.LineChart
+            android:id="@+id/lcMessageChart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <LinearLayout
+                android:weightSum="2"
+                android:layout_marginTop="18dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:gravity="center"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:orientation="vertical"
+                    android:layout_height="match_parent">
+
+                    <ee.app.conversabusiness.view.RegularTextView
+                        android:text="@string/test_string"
+                        android:textColor="@color/default_gray"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <ee.app.conversabusiness.view.MediumTextView
+                        android:text="@string/test_string"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:gravity="center"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:orientation="vertical"
+                    android:layout_height="match_parent">
+
+                    <ee.app.conversabusiness.view.RegularTextView
+                        android:text="@string/test_string"
+                        android:textColor="@color/default_gray"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <ee.app.conversabusiness.view.MediumTextView
+                        android:text="@string/test_string"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:weightSum="2"
+                android:layout_marginTop="18dp"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+                <LinearLayout
+                    android:gravity="center"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:orientation="vertical"
+                    android:layout_height="match_parent">
+
+                    <ee.app.conversabusiness.view.RegularTextView
+                        android:text="@string/test_string"
+                        android:textColor="@color/default_gray"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <ee.app.conversabusiness.view.MediumTextView
+                        android:text="@string/test_string"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:gravity="center"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:orientation="vertical"
+                    android:layout_height="match_parent">
+
+                    <ee.app.conversabusiness.view.RegularTextView
+                        android:text="@string/test_string"
+                        android:textColor="@color/default_gray"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+
+                    <ee.app.conversabusiness.view.MediumTextView
+                        android:text="@string/test_string"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content" />
+                </LinearLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

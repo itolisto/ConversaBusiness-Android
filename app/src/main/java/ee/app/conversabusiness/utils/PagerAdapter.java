@@ -7,13 +7,12 @@ package ee.app.conversabusiness.utils;
 
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
 
-import ee.app.conversabusiness.FragmentHome;
-import ee.app.conversabusiness.FragmentSettings;
+import ee.app.conversabusiness.FragmentPreferences;
+import ee.app.conversabusiness.FragmentStatistics;
 import ee.app.conversabusiness.FragmentUsersChat;
 
-public class PagerAdapter extends FragmentStatePagerAdapter {
+public class PagerAdapter extends SmartFragmentStatePagerAdapter<Fragment> {
 
     public PagerAdapter(FragmentManager fm) {
         super(fm);
@@ -28,10 +27,10 @@ public class PagerAdapter extends FragmentStatePagerAdapter {
                 fragment = new FragmentUsersChat();
                 break;
             case 1:
-                fragment = new FragmentHome();
+                fragment = new FragmentStatistics();
                 break;
             case 2:
-                fragment = new FragmentSettings();
+                fragment = new FragmentPreferences();
                 break;
             default:
                 fragment = new FragmentUsersChat();

@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package ee.app.conversabusiness.model.Database;
+package ee.app.conversabusiness.model.database;
 
 /**
  * Location

@@ -1,86 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:fresco="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/rlUserLayout"
-    android:background="@android:color/white"
+    android:background="@drawable/statelist_item_background"
     android:layout_width="match_parent"
-    android:layout_height="85dp">
+    android:layout_height="80dp">
 
-    <RelativeLayout
-        android:id="@+id/rlImage"
-        android:layout_width="70dp"
-        android:layout_height="70dp"
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/sdvContactAvatar"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_centerVertical="true"
-        android:layout_marginLeft="15dp"
-        android:layout_marginStart="15dp"
+        android:layout_marginLeft="14dp"
+        android:layout_marginStart="14dp"
         android:layout_marginRight="10dp"
         android:layout_marginEnd="10dp"
-        android:layout_marginTop="5dp"
-        android:gravity="center" >
+        fresco:fadeDuration="300"
+        fresco:actualImageScaleType="centerInside"
+        fresco:placeholderImage="@drawable/ic_user"
+        fresco:placeholderImageScaleType="centerInside"
+        fresco:failureImage="@drawable/ic_user"
+        fresco:failureImageScaleType="centerInside"
+        fresco:retryImage="@drawable/ic_user"
+        fresco:retryImageScaleType="centerInside"
+        fresco:progressBarImage="@drawable/rotate_loading"
+        fresco:progressBarImageScaleType="centerInside"
+        fresco:progressBarAutoRotateInterval="1000"
+        fresco:roundAsCircle="true" />
 
-        <com.facebook.drawee.view.SimpleDraweeView
-            android:id="@+id/sdvContactAvatar"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            fresco:fadeDuration="300"
-            fresco:actualImageScaleType="focusCrop"
-            fresco:placeholderImage="@drawable/business_default"
-            fresco:placeholderImageScaleType="fitCenter"
-            fresco:failureImage="@drawable/username_icon"
-            fresco:failureImageScaleType="centerInside"
-            fresco:retryImage="@drawable/refresh_icon"
-            fresco:retryImageScaleType="centerCrop"
-            fresco:progressBarImage="@drawable/rotate_loading"
-            fresco:progressBarImageScaleType="centerInside"
-            fresco:progressBarAutoRotateInterval="1000"
-            fresco:roundAsCircle="true" />
-    </RelativeLayout>
-
-    <ImageView
-        android:id="@+id/ivUnread"
-        android:layout_height="15dp"
-        android:layout_width="15dp"
-        android:contentDescription="@null"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:weightSum="1"
-        android:layout_marginRight="5dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/notification"
-        android:textColor="@color/hookup_alert"
-        android:textSize="16sp"
-        android:layout_gravity="bottom" />
-
-    <ee.app.conversabusiness.view.MediumTextView
-        android:id="@+id/tvUser"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:textColor="#444444"
-        android:layout_toRightOf="@id/rlImage"
-        android:layout_toEndOf="@id/rlImage"
-        android:layout_toLeftOf="@id/ivUnread"
-        android:layout_toStartOf="@id/ivUnread"
-        android:layout_marginRight="5dp"
-        android:layout_marginEnd="5dp"
-        android:textSize="18sp" />
+    <View
+        android:visibility="invisible"
+        android:id="@+id/vDivider"
+        android:layout_height="1dp"
+        android:layout_marginTop="1dp"
+        android:layout_marginEnd="14dp"
+        android:layout_marginRight="14dp"
+        android:layout_marginBottom="1dp"
+        android:layout_width="match_parent"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/sdvContactAvatar"
+        android:layout_toEndOf="@id/sdvContactAvatar" />
 
     <ee.app.conversabusiness.view.RegularTextView
-        android:id="@+id/tvLastMessage"
-        android:layout_below="@+id/tvUser"
+        android:textSize="11.5sp"
+        android:id="@+id/rtvDate"
+        android:text="11:45 AM"
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_marginTop="5dp"
-        android:textColor="@color/light_gray_subtext"
-        android:maxLines="2"
-        android:layout_toRightOf="@id/rlImage"
-        android:layout_toEndOf="@id/rlImage"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/vDivider"
+        android:layout_alignEnd="@id/vDivider"
+        android:layout_alignRight="@id/vDivider" />
+
+    <ee.app.conversabusiness.view.MediumTextView
+        android:id="@+id/mtvUser"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/default_black"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textSize="16sp"
+        android:layout_above="@id/vDivider"
+        android:layout_toLeftOf="@id/rtvDate"
+        android:layout_toStartOf="@id/rtvDate"
+        android:layout_alignLeft="@id/vDivider"
+        android:layout_alignStart="@id/vDivider" />
+
+    <ImageView
+        android:visibility="visible"
+        android:id="@+id/ivUnread"
+        android:layout_width="14dp"
+        android:layout_height="14dp"
+        android:contentDescription="@null"
+        android:background="@drawable/notification"
+        android:layout_below="@id/vDivider"
+        android:layout_alignEnd="@id/vDivider"
+        android:layout_alignRight="@id/vDivider" />
+
+    <ee.app.conversabusiness.view.RegularTextView
+        android:id="@+id/rtvLastMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/default_gray"
+        android:maxLines="1"
+        android:minLines="1"
+        android:ellipsize="end"
+        android:textSize="13sp"
+        android:singleLine="true"
+        android:layout_below="@id/vDivider"
         android:layout_toLeftOf="@id/ivUnread"
         android:layout_toStartOf="@id/ivUnread"
-        android:layout_marginRight="5dp"
-        android:layout_marginEnd="5dp"
-        android:layout_marginBottom="7dp"
-        android:textSize="14sp" />
+        android:layout_alignLeft="@id/vDivider"
+        android:layout_alignStart="@id/vDivider" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/divider"
+        android:layout_alignParentBottom="true"
+        android:layout_toEndOf="@id/sdvContactAvatar"
+        android:layout_toRightOf="@id/sdvContactAvatar"
+        android:layout_height="@dimen/user_item_divider_height"/>
 </RelativeLayout>

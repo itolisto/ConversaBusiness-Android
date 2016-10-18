@@ -1,34 +1,54 @@
 package ee.app.conversabusiness;
 
-import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
+import com.onesignal.OneSignal;
+import com.parse.ParseCloud;
+import com.parse.ParseException;
+
+import org.json.JSONObject;
+
+import java.lang.ref.WeakReference;
+import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import ee.app.conversabusiness.extendables.ConversaActivity;
-import ee.app.conversabusiness.management.Ably.Connection;
-import ee.app.conversabusiness.model.Parse.Account;
+import ee.app.conversabusiness.management.AblyConnection;
+import ee.app.conversabusiness.model.parse.Account;
+import ee.app.conversabusiness.utils.Foreground;
 import ee.app.conversabusiness.utils.Logger;
 import ee.app.conversabusiness.utils.PagerAdapter;
+import ee.app.conversabusiness.utils.Utils;
 
-public class ActivityMain extends ConversaActivity {
+public class ActivityMain extends ConversaActivity implements Foreground.Listener {
 
     private ViewPager mViewPager;
     private TabLayout tabLayout;
     private String titles[];
-    private int[] tabIcons = {
-            R.drawable.chats,
-            R.drawable.basket,
-            R.drawable.settings
+    private Timer timer;
+
+    private final int[] tabIcons = {
+            R.drawable.tab_chat_inactive,
+            R.drawable.tab_trending_inactive,
+            R.drawable.tab_store_inactive
+    };
+
+    private final int[] tabSelectedIcons = {
+            R.drawable.tab_chat_active,
+            R.drawable.tab_trending_active,
+            R.drawable.tab_store_active
     };
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Connection.getInstance().initAbly();
+        AblyConnection.getInstance().initAbly();
 
         // Remove internet connection check
         checkInternetConnection = false;
@@ -38,7 +58,7 @@ public class ActivityMain extends ConversaActivity {
 
         mViewPager = (ViewPager) findViewById(R.id.pager);
         titles = getResources().getStringArray(R.array.categories_titles);
-        PagerAdapter mPagerAdapter = new PagerAdapter(getSupportFragmentManager());
+        final PagerAdapter mPagerAdapter = new PagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mPagerAdapter);
         mViewPager.setOffscreenPageLimit(2);
 
@@ -52,102 +72,128 @@ public class ActivityMain extends ConversaActivity {
             getSupportActionBar().setTitle(titles[0]);
         }
 
-        tabLayout.getTabAt(0).setIcon(tabIcons[0]);
+        tabLayout.getTabAt(0).setIcon(tabSelectedIcons[0]);
         tabLayout.getTabAt(1).setIcon(tabIcons[1]);
         tabLayout.getTabAt(2).setIcon(tabIcons[2]);
 
-        tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                mViewPager.setCurrentItem(tab.getPosition());
                 int p = tab.getPosition();
+                mViewPager.setCurrentItem(p);
+                tab.setIcon(tabSelectedIcons[p]);
 
-                try {
-                    getSupportActionBar().setTitle(titles[p]);
-                    getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-                    supportInvalidateOptionsMenu();
-                } catch (NullPointerException e) {
-                    Logger.error(this.toString(), e.getMessage());
-                }
-
-                switch (p) {
-                    case 2:
-                        tab.setIcon(R.drawable.settings_active);
-
-                        if (Build.VERSION.SDK_INT >= 23) {
-                            getSupportActionBar().setBackgroundDrawable(
-                                    new ColorDrawable(getResources().getColor(R.color.settings_tab, null)));
-                            tabLayout.setBackground(new ColorDrawable(getResources().getColor(R.color.settings_tab, null)));
-                            mViewPager.setBackground(new ColorDrawable(getResources().getColor(R.color.settings_background, null)));
-                        } else {
-                            getSupportActionBar().setBackgroundDrawable(
-                                    new ColorDrawable(getResources().getColor(R.color.settings_tab)));
-                            tabLayout.setBackgroundColor(getResources().getColor(R.color.settings_tab));
-                            mViewPager.setBackgroundColor(getResources().getColor(R.color.settings_background));
-                        }
-                        break;
-                    default:
-                        if (p == 1) {
-                            tab.setIcon(R.drawable.actuales_active);
-                        } else {
-                            tab.setIcon(R.drawable.chats_active);
-                        }
-
-                        if (Build.VERSION.SDK_INT >= 23) {
-                            getSupportActionBar().setBackgroundDrawable(
-                                    new ColorDrawable(getResources().getColor(R.color.regular_tabs, null)));
-                            tabLayout.setBackground(new ColorDrawable(getResources().getColor(R.color.regular_tabs, null)));
-                            mViewPager.setBackground(new ColorDrawable(getResources().getColor(R.color.normal_background, null)));
-                        } else {
-                            getSupportActionBar().setBackgroundDrawable(
-                                    new ColorDrawable(getResources().getColor(R.color.regular_tabs))
-                            );
-                            tabLayout.setBackgroundColor(getResources().getColor(R.color.regular_tabs));
-                            mViewPager.setBackgroundColor(getResources().getColor(R.color.normal_background));
-                        }
-                        break;
-                }
+                getSupportActionBar().setTitle(titles[p]);
+                getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+                supportInvalidateOptionsMenu();
             }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
                 int position = tab.getPosition();
-                switch (position) {
-                    case 0:
-                        tab.setIcon(R.drawable.chats_inactive);
-                        break;
-                    case 1:
-                        tab.setIcon(R.drawable.actuales_inactive);
-                        break;
-                    case 2:
-                        if (Build.VERSION.SDK_INT >= 23) {
-                            tabLayout.setBackground(new ColorDrawable(getResources().getColor(R.color.regular_tabs, null)));
-                            mViewPager.setBackground(new ColorDrawable(getResources().getColor(R.color.normal_background, null)));
-                        } else {
-                            tabLayout.setBackgroundColor(getResources().getColor(R.color.regular_tabs));
-                            mViewPager.setBackgroundColor(getResources().getColor(R.color.normal_background));
-                        }
-                        tab.setIcon(R.drawable.settings_inactive);
 
-                        break;
+                if (position == 0) {
+                    if (mPagerAdapter.getRegisteredFragment(0) != null) {
+                        ((FragmentUsersChat)mPagerAdapter.getRegisteredFragment(0)).finishActionMode();
+                    }
                 }
+
+                tab.setIcon(tabIcons[position]);
             }
 
             @Override
-            public void onTabReselected(TabLayout.Tab tab) { }
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
         });
 
-        if (ConversaApp.getPreferences().getBusinessId().isEmpty()) {
+        if (ConversaApp.getInstance(this).getPreferences().getBusinessId().isEmpty()) {
             // 1. Get Customer Id
-            Account.getBusinessId();
+            Account.getBusinessId(new WeakReference<AppCompatActivity>(this));
+        } else {
+            OneSignal.getTags(new OneSignal.GetTagsHandler() {
+                @Override
+                public void tagsAvailable(JSONObject tags) {
+                    if (tags == null || tags.length() == 0) {
+                        OneSignal.setSubscription(true);
+                        Utils.subscribeToTags(ConversaApp.getInstance(getApplicationContext())
+                                .getPreferences().getBusinessId());
+                    }
+                }
+            });
         }
 
         initialization();
 	}
 
     @Override
-    protected void openFromNotification(Bundle extras) {
+    protected void initialization() {
+        super.initialization();
+        startTimer();
+        Foreground.get(this).addListener(this);
+    }
 
+    public void onDestroy() {
+        super.onDestroy();
+        Foreground.get(this).removeListener(this);
+    }
+
+    public void selectViewPagerTab(int tab) {
+        if (tab > 2 || tab < 0) {
+            return;
+        }
+
+        mViewPager.setCurrentItem(tab);
+    }
+
+    public void startTimer() {
+        if (timer != null) {
+            return;
+        }
+
+        // Set a new Timer
+        timer = new Timer();
+        timer.scheduleAtFixedRate(new TimerTask() {
+            public void run() {
+                Logger.error("ActivityMain", "Status update begin");
+                HashMap<String, Object> params = new HashMap<>(5);
+                params.put("bId", ConversaApp
+                            .getInstance(getApplicationContext())
+                            .getPreferences()
+                            .getBusinessId()
+                );
+
+                params.put("status", (Foreground.get().isBackground()) ? Integer.valueOf(1) : Integer.valueOf(0));
+
+                try {
+                    ParseCloud.callFunction("updateStatus", params);
+                } catch (ParseException e) {
+                    Logger.error("ActivityMain", "Status update error: " + e.getMessage());
+                }
+            }
+        }, 0, 30000);
+    }
+
+    public void stoptimertask() {
+        //stop the timer, if it's not already null
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
+    }
+
+    @Override
+    @SuppressWarnings("ConstantConditions")
+    public void onBecameForeground() {
+        startTimer();
+        AblyConnection.getInstance().connectAbly();
+    }
+
+    @Override
+    @SuppressWarnings("ConstantConditions")
+    public void onBecameBackground() {
+        stoptimertask();
+        AblyConnection.getInstance().disconnectAbly();
     }
 
 }

@@ -1,4 +1,4 @@
-package ee.app.conversabusiness.model.Parse;
+package ee.app.conversabusiness.model.parse;
 
 import com.parse.ParseClassName;
 import com.parse.ParseFile;
@@ -16,10 +16,6 @@ public class Customer extends ParseObject {
 
     public String getDisplayName() {
         return getString("displayName");
-    }
-
-    public String getStatus() {
-        return getString("status");
     }
 
     public ParseFile getAvatar() {

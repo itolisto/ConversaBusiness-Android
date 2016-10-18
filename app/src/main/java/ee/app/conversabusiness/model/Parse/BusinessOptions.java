@@ -1,4 +1,4 @@
-package ee.app.conversabusiness.model.Parse;
+package ee.app.conversabusiness.model.parse;
 
 import com.parse.ParseClassName;
 import com.parse.ParseObject;

@@ -1,179 +1,166 @@
 package ee.app.conversabusiness.extendables;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.widget.RelativeLayout;
 
-import com.parse.ParseFile;
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
-import ee.app.conversabusiness.BaseActivity;
-import ee.app.conversabusiness.ConversaApp;
-import ee.app.conversabusiness.R;
-import ee.app.conversabusiness.adapters.MessagesAdapter;
-import ee.app.conversabusiness.dialog.PushNotification;
+import ee.app.conversabusiness.dialog.InAppPushNotification;
+import ee.app.conversabusiness.events.TypingEvent;
+import ee.app.conversabusiness.events.contact.ContactDeleteEvent;
+import ee.app.conversabusiness.events.contact.ContactRetrieveEvent;
+import ee.app.conversabusiness.events.contact.ContactSaveEvent;
+import ee.app.conversabusiness.events.contact.ContactUpdateEvent;
+import ee.app.conversabusiness.events.message.MessageDeleteEvent;
+import ee.app.conversabusiness.events.message.MessageIncomingEvent;
+import ee.app.conversabusiness.events.message.MessageOutgoingEvent;
+import ee.app.conversabusiness.events.message.MessageRetrieveEvent;
+import ee.app.conversabusiness.events.message.MessageUpdateEvent;
+import ee.app.conversabusiness.interfaces.OnContactTaskCompleted;
 import ee.app.conversabusiness.interfaces.OnMessageTaskCompleted;
-import ee.app.conversabusiness.management.Ably.Connection;
-import ee.app.conversabusiness.model.Database.dbMessage;
-import ee.app.conversabusiness.notifications.onesignal.CustomNotificationExtenderService;
+import ee.app.conversabusiness.messaging.MessageUpdateReason;
+import ee.app.conversabusiness.model.database.dbCustomer;
+import ee.app.conversabusiness.model.database.dbMessage;
+import ee.app.conversabusiness.utils.Logger;
 
-public class ConversaActivity extends BaseActivity implements OnMessageTaskCompleted {
+public class ConversaActivity extends BaseActivity implements OnMessageTaskCompleted,
+        OnContactTaskCompleted {
 
-    private boolean activityPaused = false;
     protected RelativeLayout mRlPushNotification;
-    private boolean mPushHandledOnNewIntent = false;
-    public final static String PUSH = "ee.app.conversabusiness.ConversaActivity.UPDATE";
-    protected MessageReceiver receiver = new MessageReceiver();
-    protected final IntentFilter newMessageFilter = new IntentFilter(MessageReceiver.ACTION_RESP);
-    protected final IntentFilter mPushFilter = new IntentFilter(MessagesAdapter.PUSH);
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // Register Listener on Database
-        ConversaApp.getDB().setMessageListener(this);
-    }
 
     @Override
     protected void onNewIntent(Intent intent) {
-        setIntent(intent);
-        mPushHandledOnNewIntent = true;
+        Logger.error("onNewIntent", "\nIntent: " + intent);
         super.onNewIntent(intent);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        if (mPushHandledOnNewIntent) {
-            mPushHandledOnNewIntent = false;
-            final Bundle extras = getIntent().getExtras();
-            if (extras != null) {
-                openFromNotification(extras);
-            }
+        if (intent != null) {
+            openFromNotification(intent);
         }
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-
-        if (activityPaused) {
-            Connection.getInstance().reconnectAbly();
-            activityPaused = false;
-        }
-
-        ConversaApp.getLocalBroadcastManager().registerReceiver(mPushReceiver, mPushFilter);
-        ConversaApp.getLocalBroadcastManager().registerReceiver(receiver, newMessageFilter);
+        EventBus.getDefault().register(this);
     }
 
     @Override
     protected void onStop() {
+        EventBus.getDefault().unregister(this);
         super.onStop();
-        activityPaused = true;
-        Connection.getInstance().disconnectAbly();
-        ConversaApp.getLocalBroadcastManager().unregisterReceiver(mPushReceiver);
-        ConversaApp.getLocalBroadcastManager().unregisterReceiver(receiver);
     }
 
-    @Override
-    protected void initialization() {
-        super.initialization();
-        if (mRlPushNotification == null) {
-            mRlPushNotification = (RelativeLayout) findViewById(R.id.rlPushNotification);
-        }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onTypingEvent(TypingEvent event) {
+        onTypingMessage(event.getFrom(), event.isTyping());
     }
 
-    private BroadcastReceiver mPushReceiver = new BroadcastReceiver() {
-        public void onReceive(Context context, Intent intent) {
-            handlePushNotification(intent);
-        }
-    };
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageOutgoingEvent(MessageOutgoingEvent event) {
+        MessageSent(event.getMessage());
+    }
 
-    protected void openFromNotification(Bundle extras) {
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageIncomingEvent(MessageIncomingEvent event) {
+        MessageReceived(event.getMessage());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageUpdateEvent(MessageUpdateEvent event) {
+        MessageUpdated(event.getMessage(), event.getReason());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageDeleteEvent(MessageDeleteEvent event) {
+        MessageDeleted(event.getMessageList());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onMessageRetrieveEvent(MessageRetrieveEvent event) {
+        MessagesGetAll(event.getMessageList());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onContactSaveEvent(ContactSaveEvent event) {
+        ContactAdded(event.getContact());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onContactUpdateEvent(ContactUpdateEvent event) {
+        ContactUpdated(event.getContact());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onContactDeleteEvent(ContactDeleteEvent event) {
+        ContactDeleted(event.getContactList());
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onContactRetrieveEvent(ContactRetrieveEvent event) {
+        ContactGetAll(event.getListResponse());
+    }
+
+    /* ********************************************************************** */
+    /* ********************************************************************** */
+
+    protected void openFromNotification(Intent intent) {
         /* Child activities override this method */
     }
 
-    protected void handlePushNotification(Intent intent) {
+    @Override
+    public void onTypingMessage(String from, boolean isTyping) {
         /* Child activities override this method */
     }
 
     @Override
     public void MessagesGetAll(final List<dbMessage> response) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                messagesGetAll(response);
-            }
-        });
-    }
-
-    public void messagesGetAll(final List<dbMessage> response) {
         /* Child activities override this method */
     }
 
     @Override
-    public void MessageSent(final dbMessage response, final ParseFile file) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                messageSent(response, file);
-            }
-        });
-    }
-
-    public void messageSent(dbMessage response, ParseFile file) {
+    public void MessageSent(final dbMessage response) {
         /* Child activities override this method */
     }
 
     @Override
-    public void MessageDeleted(final dbMessage response) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                messageDeleted(response);
-            }
-        });
-    }
-
-    public void messageDeleted(dbMessage response) {
-        /* Child activities override this method */
-    }
-
-    @Override
-    public void MessageUpdated(final dbMessage response) {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                messageUpdated(response);
-            }
-        });
-    }
-
-    public void messageUpdated(dbMessage response) {
-        /* Child activities override this method */
-    }
-
-    public void MessageReceived(dbMessage message) {
+    public void MessageReceived(dbMessage response) {
         // Show in-app notification
         if (mRlPushNotification != null) {
-            PushNotification.make(getApplicationContext(), mRlPushNotification).show(message.getBody(), message.getFromUserId());
+            InAppPushNotification.make(getApplicationContext(), mRlPushNotification).show(response.getBody(), response.getFromUserId());
         }
     }
 
-    public class MessageReceiver extends BroadcastReceiver {
-        public static final String ACTION_RESP =
-                "conversa.conversaactivity.action.MESSAGE_RECEIVED";
+    @Override
+    public void MessageDeleted(final List<String> response) {
+        /* Child activities override this method */
+    }
 
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            dbMessage message = intent.getParcelableExtra(CustomNotificationExtenderService.PARAM_OUT_MSG);
-            MessageReceived(message);
-        }
+    @Override
+    public void MessageUpdated(final dbMessage response, MessageUpdateReason reason) {
+        /* Child activities override this method */
+    }
+
+    @Override
+    public void ContactGetAll(List<dbCustomer> response) {
+        /* Child activities override this method */
+    }
+
+    @Override
+    public void ContactAdded(dbCustomer response) {
+        /* Child activities override this method */
+    }
+
+    @Override
+    public void ContactDeleted(List<String> response) {
+        /* Child activities override this method */
+    }
+
+    @Override
+    public void ContactUpdated(dbCustomer response) {
+        /* Child activities override this method */
     }
 
 }

@@ -27,55 +27,151 @@ package ee.app.conversabusiness.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.support.annotation.ArrayRes;
+import android.support.annotation.NonNull;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
+import ee.app.conversabusiness.R;
+import ee.app.conversabusiness.settings.PreferencesKeys;
 
 /**
  * Preferences
  * 
  * Holds and managed application's preferences.
  */
-
 public class Preferences {
+
+    private final Context context;
+    private SharedPreferences sharedPreferences;
 
     // Defining SharedPreferences entries
     private static final String BUSINESS_ID = "business_id";
-    private static final String FIRST_USER_SERVER_CALL = "first_users_server_call";
-    private static final String SENT_TOKEN_TO_SERVER = "sentTokenToServer";
-
-    private SharedPreferences sharedPreferences;
 
     /**
      * Gets a SharedPreferences instance that points to the default file that is
      * used by the preference framework in the given context.
      */
     public Preferences(Context context) {
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        this.context = context;
+        this.sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+    }
+
+    public void cleanSharedPreferences() {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.apply();
     }
 
     /* ******************************************************************************** */
 	/* ************************************ GETTERS *********************************** */
 	/* ******************************************************************************** */
+    public String getDisplayName() {
+        return getStringPreference(PreferencesKeys.PREFERENCE_MAIN_LANGUAGE_KEY, "es");
+    }
+
+    public String getConversaId() {
+        return getStringPreference(PreferencesKeys.PREFERENCE_MAIN_LANGUAGE_KEY, "es");
+    }
+
+    public String getAvatarUrl() {
+        return getStringPreference(PreferencesKeys.PREFERENCE_MAIN_LANGUAGE_KEY, "es");
+    }
+
     public String getBusinessId() {
-        return sharedPreferences.getString(BUSINESS_ID, "");
+        return getStringPreference(BUSINESS_ID, "");
     }
 
-    public boolean isFirstCallForUsers() {
-        return sharedPreferences.getBoolean(FIRST_USER_SERVER_CALL, true);
+    public String getLanguage() {
+        return getStringPreference(PreferencesKeys.PREFERENCE_MAIN_LANGUAGE_KEY, "es");
     }
 
-    public boolean getRegistrationToServer() {
-        return !(sharedPreferences.getString(SENT_TOKEN_TO_SERVER, "").isEmpty());
+    public String getLanguageName() {
+        String language = getStringPreference(PreferencesKeys.PREFERENCE_MAIN_LANGUAGE_KEY, "es");
+        if (language.equals("zz")) {
+            return context.getResources().getStringArray(R.array.language_entries)[0];
+        } else if (language.equals("en")) {
+            return context.getResources().getStringArray(R.array.language_entries)[1];
+        } else {
+            return context.getResources().getStringArray(R.array.language_entries)[2];
+        }
     }
 
-    public String getRegistrationToken() {
-        return sharedPreferences.getString(SENT_TOKEN_TO_SERVER, "");
+    public int getLanguagePosition() {
+        String language = getStringPreference(PreferencesKeys.PREFERENCE_MAIN_LANGUAGE_KEY, "es");
+        if (language.equals("zz")) {
+            return 0;
+        } else if (language.equals("en")) {
+            return 1;
+        } else {
+            return 2;
+        }
     }
 
-
-    public boolean cleanSharedPreferences() {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.clear();
-        return editor.commit();
+    public int getUploadQualityPosition() {
+        int position = getIntegerPreference(PreferencesKeys.CHAT_QUALITY_KEY, -1);
+        if (position == -1) {
+            return 1;
+        } else {
+            return position;
+        }
     }
+
+    public String getUploadQuality() {
+        int position = getIntegerPreference(PreferencesKeys.CHAT_QUALITY_KEY, -1);
+        if (position == -1) {
+            return context.getResources().getStringArray(R.array.sett_chat_quality_entries)[1];
+        } else {
+            return context.getResources().getStringArray(R.array.sett_chat_quality_entries)[position];
+        }
+    }
+
+    public String getUploadQualityFromNewValue(int position) {
+        if (position < 0 || position > context.getResources().getStringArray(R.array.sett_chat_quality_entries).length) {
+            return context.getResources().getStringArray(R.array.sett_chat_quality_entries)[1];
+        } else {
+            return context.getResources().getStringArray(R.array.sett_chat_quality_entries)[position];
+        }
+    }
+
+    public boolean getDownloadAutomatically() {
+        return getBooleanPreference(PreferencesKeys.CHAT_DOWNLOAD_KEY, true);
+    }
+
+    public boolean getPlaySoundWhenSending() {
+        return getBooleanPreference(PreferencesKeys.CHAT_SOUND_SENDING_KEY, true);
+    }
+
+    public boolean getPlaySoundWhenReceiving() {
+        return getBooleanPreference(PreferencesKeys.CHAT_SOUND_RECEIVING_KEY, true);
+    }
+
+    public boolean getPushNotificationSound() {
+        return getBooleanPreference(PreferencesKeys.NOTIFICATION_SOUND_KEY, true);
+    }
+
+    public boolean getPushNotificationPreview() {
+        return getBooleanPreference(PreferencesKeys.NOTIFICATION_PREVIEW_KEY, true);
+    }
+
+    public boolean getInAppNotificationSound() {
+        return getBooleanPreference(PreferencesKeys.NOTIFICATION_INAPP_SOUND_KEY, true);
+    }
+
+    public boolean getInAppNotificationPreview() {
+        return getBooleanPreference(PreferencesKeys.NOTIFICATION_INAPP_PREVIEW_KEY, true);
+    }
+
+    private @NonNull
+    Set<String> getMediaDownloadAllowed(Context context, String key, @ArrayRes int defaultValuesRes) {
+        return getStringSetPreference(
+                key,
+                new HashSet<>(Arrays.asList(context.getResources().getStringArray(defaultValuesRes))));
+    }
+
     /* ******************************************************************************** */
 	/* ************************************ SETTERS *********************************** */
 	/* ******************************************************************************** */
@@ -88,17 +184,85 @@ public class Preferences {
             editor.commit();
         }
     }
-
-    public void setIsFirstCallForUsers(boolean isFirst) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putBoolean(FIRST_USER_SERVER_CALL, isFirst);
-        editor.apply();
+    
+    public void setLanguage(String language) {
+        setStringPreference(PreferencesKeys.PREFERENCE_MAIN_LANGUAGE_KEY, language);
     }
 
-    public void setRegistrationToServer(String value) {
-        SharedPreferences.Editor editor = sharedPreferences.edit();
-        editor.putString(SENT_TOKEN_TO_SERVER, value);
-        editor.apply();
+    public void setUploadQuality(int position) {
+        if (position >= 0 || position < context.getResources().getStringArray(R.array.sett_chat_quality_entries).length) {
+            setIntegerPrefrence(PreferencesKeys.CHAT_QUALITY_KEY, position);
+        }
+    }
+
+    public void setDownloadAutomatically(boolean value) {
+        setBooleanPreference(PreferencesKeys.CHAT_DOWNLOAD_KEY, value);
+    }
+
+    public void setPlaySoundWhenSending(boolean value) {
+        setBooleanPreference(PreferencesKeys.CHAT_SOUND_SENDING_KEY, value);
+    }
+
+    public void setPlaySoundWhenReceiving(boolean value) {
+        setBooleanPreference(PreferencesKeys.CHAT_SOUND_RECEIVING_KEY, value);
+    }
+
+    public void setPushNotificationSound(boolean value) {
+        setBooleanPreference(PreferencesKeys.NOTIFICATION_SOUND_KEY, value);
+    }
+
+    public void setPushNotificationPreview(boolean value) {
+        setBooleanPreference(PreferencesKeys.NOTIFICATION_PREVIEW_KEY, value);
+    }
+
+    public void setInAppNotificationSound(boolean value) {
+        setBooleanPreference(PreferencesKeys.NOTIFICATION_INAPP_SOUND_KEY, value);
+    }
+
+    public void setInAppNotificationPreview(boolean value) {
+        setBooleanPreference(PreferencesKeys.NOTIFICATION_INAPP_PREVIEW_KEY, value);
+    }
+
+    /* ******************************************************************************** */
+	/* ******************************************************************************** */
+    private void setBooleanPreference(String key, boolean value) {
+        sharedPreferences.edit().putBoolean(key, value).apply();
+    }
+
+    private boolean getBooleanPreference(String key, boolean defaultValue) {
+        return sharedPreferences.getBoolean(key, defaultValue);
+    }
+
+    private void setStringPreference(String key, String value) {
+        sharedPreferences.edit().putString(key, value).apply();
+    }
+
+    private String getStringPreference(String key, String defaultValue) {
+        return sharedPreferences.getString(key, defaultValue);
+    }
+
+    private int getIntegerPreference(String key, int defaultValue) {
+        return sharedPreferences.getInt(key, defaultValue);
+    }
+
+    private void setIntegerPrefrence(String key, int value) {
+        sharedPreferences.edit().putInt(key, value).apply();
+    }
+
+    private long getLongPreference(String key, long defaultValue) {
+        return sharedPreferences.getLong(key, defaultValue);
+    }
+
+    private void setLongPreference(String key, long value) {
+        sharedPreferences.edit().putLong(key, value).apply();
+    }
+
+    private Set<String> getStringSetPreference(String key, Set<String> defaultValues) {
+        if (sharedPreferences.contains(key)) {
+            return sharedPreferences.getStringSet(key, Collections.<String>emptySet());
+        } else {
+            return defaultValues;
+        }
     }
 
 }

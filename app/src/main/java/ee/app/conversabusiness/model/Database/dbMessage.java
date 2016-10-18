@@ -22,17 +22,18 @@
  * SOFTWARE.
  */
 
-package ee.app.conversabusiness.model.Database;
+package ee.app.conversabusiness.model.database;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import ee.app.conversabusiness.management.message.MessageIntentService;
+import ee.app.conversabusiness.messaging.MessageIntentService;
+import ee.app.conversabusiness.actions.MessageAction;
 
 /**
- * pMessage
+ * dbMessage
  * 
  * Model class for messages.
  */
@@ -44,26 +45,19 @@ public class dbMessage implements Parcelable {
 	private String mMessageType;
 	private String mDeliveryStatus;
 	private String mBody;
-	private String mFileId;
+	private String mLocalUrl;
+	private String mRemoteUrl;
 	private float mLongitude;
 	private float mLatitude;
 	private long mCreated;
-	private long mModified;
+	private long mViewAt;
 	private long mReadAt;
 	private String mMessageId;
 	private int mWidth;
 	private int mHeight;
 	private int mDuration;
 	private int mBytes;
-
-	// MESSAGE STATUS
-	// Error
-	public static final String statusParseError = "1";
-	// No error
-	public static final String statusAllDelivered = "2";
-	public static final String statusReceived = "3";
-	public static final String statusDownloading = "4";
-	public static final String statusUploading = "5";
+	private int mProgress;
 
 	public dbMessage() {
 		this.mId = -1;
@@ -72,17 +66,19 @@ public class dbMessage implements Parcelable {
 		this.mMessageType = null;
 		this.mDeliveryStatus = null;
 		this.mBody = null;
-		this.mFileId = null;
+		this.mLocalUrl = null;
+		this.mRemoteUrl = null;
 		this.mLongitude = 0;
 		this.mLatitude = 0;
 		this.mCreated = System.currentTimeMillis();
-		this.mModified = 0;
+		this.mViewAt = 0;
 		this.mReadAt = 0;
 		this.mMessageId = null;
 		this.mWidth = 0;
 		this.mHeight = 0;
 		this.mDuration = 0;
 		this.mBytes = 0;
+		this.mProgress = 0;
 	}
 
 	public long getId() { return mId; }
@@ -91,17 +87,19 @@ public class dbMessage implements Parcelable {
 	public String getMessageType() { return mMessageType; }
 	public String getDeliveryStatus() { return mDeliveryStatus; }
 	public String getBody() { return mBody; }
-	public String getFileId() { return mFileId; }
+	public String getLocalUrl() { return mLocalUrl; }
+	public String getRemoteUrl() { return mRemoteUrl; }
 	public float getLongitude() { return mLongitude; }
 	public float getLatitude() { return mLatitude; }
 	public long getCreated() { return mCreated; }
-	public long getModified() { return mModified; }
+	public long getViewAt() { return mViewAt; }
 	public long getReadAt() { return mReadAt; }
 	public String getMessageId() { return  mMessageId; }
 	public int getWidth() { return mWidth; }
 	public int getHeight() { return mHeight; }
 	public int getDuration() { return mDuration; }
 	public int getBytes() { return mBytes; }
+	public int getProgress() { return mProgress; }
 
 	public void setId(long id) { this.mId = id; }
 	public void setFromUserId(String fromUserId) { this.mFromUserId = fromUserId; }
@@ -109,28 +107,30 @@ public class dbMessage implements Parcelable {
 	public void setMessageType(String type) { this.mMessageType = type; }
 	public void setDeliveryStatus(String status) { this.mDeliveryStatus = status; }
 	public void setBody(String body) { this.mBody = body; }
-	public void setFileId(String mFileId) { this.mFileId = mFileId; }
+	public void setLocalUrl(String mFileId) { this.mLocalUrl = mFileId; }
+	public void setRemoteUrl(String mRemoteUrl) { this.mRemoteUrl = mRemoteUrl; }
 	public void setLongitude(float longitude) { this.mLongitude = longitude; }
 	public void setLatitude(float latitude) { this.mLatitude = latitude; }
 	public void setCreated(long created) { this.mCreated = created; }
-	public void setModified(long modified) { this.mModified = modified; }
+	public void setViewAt(long mViewAt) { this.mViewAt = mViewAt; }
 	public void setReadAt(long mReadAt) { this.mReadAt = mReadAt; }
 	public void setMessageId(String mMessageId) { this.mMessageId = mMessageId; }
 	public void setWidth(int mWidth) { this.mWidth = mWidth; }
 	public void setHeight(int mHeight) { this.mHeight = mHeight; }
 	public void setDuration(int mDuration) { this.mDuration = mDuration; }
 	public void setBytes(int mBytes) { this.mBytes = mBytes; }
+	public void setProgress(int mProgress) { this.mProgress = mProgress; }
 
 	/* ******************************************************************************************* */
 	/* ******************************************************************************************* */
-	public void updateDelivery(Context context, String status) {
+	public void updateMessageStatus(Context context, String status) {
 		if (context == null) {
 			return;
 		}
 
 		Intent broadcastIntent = new Intent(context, MessageIntentService.class);
 		broadcastIntent.putExtra(MessageIntentService.INTENT_EXTRA_MESSAGE, this);
-		broadcastIntent.putExtra(MessageIntentService.INTENT_EXTRA_ACTION_CODE, MessageIntentService.ACTION_MESSAGE_UPDATE);
+		broadcastIntent.putExtra(MessageIntentService.INTENT_EXTRA_ACTION_CODE, MessageAction.ACTION_MESSAGE_UPDATE_STATUS);
 		broadcastIntent.putExtra(MessageIntentService.INTENT_EXTRA_UPDATE_STATUS, status);
 		context.startService(broadcastIntent);
 	}
@@ -141,20 +141,20 @@ public class dbMessage implements Parcelable {
 		}
 
 		Intent broadcastIntent = new Intent(context, MessageIntentService.class);
-		broadcastIntent.putExtra(MessageIntentService.INTENT_EXTRA_ACTION_CODE, MessageIntentService.ACTION_MESSAGE_RETRIEVE_ALL);
+		broadcastIntent.putExtra(MessageIntentService.INTENT_EXTRA_ACTION_CODE, MessageAction.ACTION_MESSAGE_RETRIEVE_ALL);
 		broadcastIntent.putExtra(MessageIntentService.INTENT_EXTRA_CONTACT_ID, businessId);
 		broadcastIntent.putExtra(MessageIntentService.INTENT_EXTRA_MESSAGE_COUNT, count);
 		broadcastIntent.putExtra(MessageIntentService.INTENT_EXTRA_MESSAGE_SKIP, skip);
 		context.startService(broadcastIntent);
 	}
 
-	public static void updateUnreadMessages(Context context, String businessId) {
+	public static void updateViewMessages(Context context, String businessId) {
 		if (context == null) {
 			return;
 		}
 
 		Intent broadcastIntent = new Intent(context, MessageIntentService.class);
-		broadcastIntent.putExtra(MessageIntentService.INTENT_EXTRA_ACTION_CODE, MessageIntentService.ACTION_MESSAGE_UPDATE_UNREAD);
+		broadcastIntent.putExtra(MessageIntentService.INTENT_EXTRA_ACTION_CODE, MessageAction.ACTION_MESSAGE_UPDATE_VIEW);
 		broadcastIntent.putExtra(MessageIntentService.INTENT_EXTRA_CONTACT_ID, businessId);
 		context.startService(broadcastIntent);
 	}
@@ -174,17 +174,19 @@ public class dbMessage implements Parcelable {
 		dest.writeString(this.mMessageType);
 		dest.writeString(this.mDeliveryStatus);
 		dest.writeString(this.mBody);
-		dest.writeString(this.mFileId);
+		dest.writeString(this.mLocalUrl);
+		dest.writeString(this.mRemoteUrl);
 		dest.writeFloat(this.mLongitude);
 		dest.writeFloat(this.mLatitude);
 		dest.writeLong(this.mCreated);
-		dest.writeLong(this.mModified);
+		dest.writeLong(this.mViewAt);
 		dest.writeLong(this.mReadAt);
 		dest.writeString(this.mMessageId);
 		dest.writeInt(this.mWidth);
 		dest.writeInt(this.mHeight);
 		dest.writeInt(this.mDuration);
 		dest.writeInt(this.mBytes);
+		dest.writeInt(this.mProgress);
 	}
 
 	protected dbMessage(Parcel in) {
@@ -194,17 +196,19 @@ public class dbMessage implements Parcelable {
 		this.mMessageType = in.readString();
 		this.mDeliveryStatus = in.readString();
 		this.mBody = in.readString();
-		this.mFileId = in.readString();
+		this.mLocalUrl = in.readString();
+		this.mRemoteUrl = in.readString();
 		this.mLongitude = in.readFloat();
 		this.mLatitude = in.readFloat();
 		this.mCreated = in.readLong();
-		this.mModified = in.readLong();
+		this.mViewAt = in.readLong();
 		this.mReadAt = in.readLong();
 		this.mMessageId = in.readString();
 		this.mWidth = in.readInt();
 		this.mHeight = in.readInt();
 		this.mDuration = in.readInt();
 		this.mBytes = in.readInt();
+		this.mProgress = in.readInt();
 	}
 
 	public static final Parcelable.Creator<dbMessage> CREATOR = new Parcelable.Creator<dbMessage>() {

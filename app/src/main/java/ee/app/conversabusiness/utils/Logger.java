@@ -26,63 +26,65 @@ package ee.app.conversabusiness.utils;
 
 import android.util.Log;
 
+import ee.app.conversabusiness.BuildConfig;
+
 /**
  * Logger
- * 
+ *
  * Prints tag and value to LogCat.
  */
 
 public class Logger {
 
-    @SuppressWarnings("unused")
+	@SuppressWarnings("unused")
 	public static void debug(String tag, String value) {
 
-		if (Const.IS_DEBUG) {
+		if (BuildConfig.DEV_BUILD) {
 			Log.d(tag, value);
 		}
 	}
 
-    @SuppressWarnings("unused")
+	@SuppressWarnings("unused")
 	public static void info(String tag, String value) {
 
-		if (Const.IS_DEBUG) {
+		if (BuildConfig.DEV_BUILD) {
 			Log.i(tag, value);
 		}
 	}
 
 	public static void error(String tag, String value, Exception e) {
 
-		if (Const.IS_DEBUG) {
+		if (BuildConfig.DEV_BUILD) {
 			Log.e(tag, value, e);
 		}
 	}
 
 	public static void error(String tag, String value) {
 
-		if (Const.IS_DEBUG) {
+		if (BuildConfig.DEV_BUILD) {
 			Log.e(tag, value);
 		}
 	}
 
 	public static void error(String tag, Exception e) {
 
-		if (Const.IS_DEBUG) {
+		if (BuildConfig.DEV_BUILD) {
 			Log.e(tag, "", e);
 		}
 	}
 
-    @SuppressWarnings("unused")
+	@SuppressWarnings("unused")
 	public static void warning(String tag, String value) {
 
-		if (Const.IS_DEBUG) {
+		if (BuildConfig.DEV_BUILD) {
 			Log.w(tag, value);
 		}
 	}
 
-    @SuppressWarnings("unused")
+	@SuppressWarnings("unused")
 	public static void view(String tag, String value) {
 
-		if (Const.IS_DEBUG) {
+		if (BuildConfig.DEV_BUILD) {
 			Log.v(tag, value);
 		}
 	}

@@ -1,23 +1,30 @@
 package ee.app.conversabusiness;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.parse.ParseException;
 import com.parse.SignUpCallback;
 
-import ee.app.conversabusiness.dialog.CustomDeleteUserDialog;
-import ee.app.conversabusiness.model.Parse.Account;
+import ee.app.conversabusiness.extendables.BaseActivity;
+import ee.app.conversabusiness.model.parse.Account;
 import ee.app.conversabusiness.utils.Const;
 import ee.app.conversabusiness.utils.Utils;
+
+import static ee.app.conversabusiness.R.id.btnSignUpUp;
 
 /**
  * Created by edgargomez on 8/12/16.
@@ -25,10 +32,8 @@ import ee.app.conversabusiness.utils.Utils;
 public class ActivitySignUp extends BaseActivity implements View.OnClickListener {
 
     private Button mBtnSignUpUp;
-    private EditText mEtSignUpName;
     private EditText mEtSignUpEmail;
     private EditText mEtSignUpPassword;
-    private TextInputLayout mTilSignUpUsername;
     private TextInputLayout mTilSignUpEmail;
     private TextInputLayout mTilSignUpPassword;
 
@@ -42,40 +47,30 @@ public class ActivitySignUp extends BaseActivity implements View.OnClickListener
     @Override
     protected void initialization() {
         super.initialization();
-        mEtSignUpName = (EditText) findViewById(R.id.etSignUpName);
         mEtSignUpEmail = (EditText) findViewById(R.id.etSignUpEmail);
         mEtSignUpPassword = (EditText) findViewById(R.id.etSignUpPassword);
-        mTilSignUpUsername = (TextInputLayout) findViewById(R.id.tilNameSignUp);
+
         mTilSignUpEmail = (TextInputLayout) findViewById(R.id.tilEmailSignUp);
         mTilSignUpPassword = (TextInputLayout) findViewById(R.id.tilPasswordSignUp);
-        mBtnSignUpUp = (Button) findViewById(R.id.btnSignUpUp);
 
-        mEtSignUpName.addTextChangedListener(new MyTextWatcher(mEtSignUpName));
+        mBtnSignUpUp = (Button) findViewById(btnSignUpUp);
+
         mEtSignUpEmail.addTextChangedListener(new MyTextWatcher(mEtSignUpEmail));
         mEtSignUpPassword.addTextChangedListener(new MyTextWatcher(mEtSignUpPassword));
 
-        if (mTilSignUpUsername != null) {
-            mTilSignUpUsername.setOnClickListener(this);
-        }
+        mTilSignUpEmail.setOnClickListener(this);
+        mTilSignUpPassword.setOnClickListener(this);
 
-        if (mTilSignUpEmail != null) {
-            mTilSignUpEmail.setOnClickListener(this);
-        }
-
-        if (mTilSignUpPassword != null) {
-            mTilSignUpPassword.setOnClickListener(this);
-        }
-
-        if(mBtnSignUpUp != null) {
-            mBtnSignUpUp.setOnClickListener(this);
-            mBtnSignUpUp.setTypeface(ConversaApp.getTfRalewayMedium());
-        }
+        mBtnSignUpUp.setOnClickListener(this);
+        mBtnSignUpUp.setTypeface(ConversaApp.getInstance(this).getTfRalewayMedium());
     }
 
     @Override
     public void yesInternetConnection() {
         super.yesInternetConnection();
-        mBtnSignUpUp.setEnabled(true);
+        if (validateForm()) {
+            mBtnSignUpUp.setEnabled(true);
+        }
     }
 
     @Override
@@ -87,72 +82,72 @@ public class ActivitySignUp extends BaseActivity implements View.OnClickListener
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.tilNameSignUp:
-                mEtSignUpName.requestFocus();
-                break;
-            case R.id.tilEmailSignUp:
+            case R.id.tilEmailSignUp: {
                 mEtSignUpEmail.requestFocus();
                 break;
-            case R.id.tilPasswordSignUp:
+            }
+            case R.id.tilPasswordSignUp: {
                 mEtSignUpPassword.requestFocus();
                 break;
-            case R.id.btnSignUpUp:
-                if (validateForm()) {
-                    Account user = new Account();
-                    user.setEmail(mEtSignUpEmail.getText().toString());
-                    user.setUsername(mEtSignUpName.getText().toString());
-                    user.setPassword(mEtSignUpPassword.getText().toString());
-                    user.put(Const.kUserTypeKey, 1);
+            }
+            case btnSignUpUp: {
+                Account user = new Account();
 
-                    user.signUpInBackground(new SignUpCallback() {
-                        public void done(ParseException e) {
-                            if (e == null) {
-                                // Hooray! Let them use the app now.
-                                AuthListener(true, null);
-                            } else {
-                                // Sign up didn't succeed. Look at the ParseException
-                                // to figure out what went wrong
-                                AuthListener(false, e);
-                            }
+                String username = TextUtils.split(mEtSignUpEmail.getText().toString(), "@")[0];
+
+                user.setEmail(mEtSignUpEmail.getText().toString());
+                user.setUsername(username);
+                user.setPassword(mEtSignUpPassword.getText().toString());
+                user.put(Const.kUserTypeKey, 2);
+
+                final ProgressDialog progress = new ProgressDialog(this);
+                progress.show();
+
+                user.signUpInBackground(new SignUpCallback() {
+                    public void done(ParseException e) {
+                        progress.dismiss();
+                        if (e == null) {
+                            // Hooray! Let them use the app now.
+                            AuthListener(true, null);
+                        } else {
+                            // Sign up didn't succeed. Look at the ParseException
+                            // to figure out what went wrong
+                            AuthListener(false, e);
                         }
-                    });
-                } else {
-                    final CustomDeleteUserDialog dialog = new CustomDeleteUserDialog(this);
-                    dialog.setTitle(null)
-                            .setMessage("Please enter check username, email and password are ok")
-                            .setupPositiveButton("Accept", new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    //contact.removeContact();
-                                    dialog.dismiss();
-                                }
-                            });
-                    dialog.show();
-                }
+                    }
+                });
                 break;
+            }
         }
     }
 
     private boolean validateForm() {
-        if (mEtSignUpEmail.getText().toString().isEmpty() || mEtSignUpName.getText().toString().isEmpty()
-                || mEtSignUpPassword.getText().toString().isEmpty()) {
-            return false;
+        if (mEtSignUpEmail.getText().toString().isEmpty() || mEtSignUpPassword.getText().toString().isEmpty()) {
+            mBtnSignUpUp.setEnabled(false);
+        } else if (mTilSignUpEmail.isErrorEnabled() || mTilSignUpPassword.isErrorEnabled()) {
+            mBtnSignUpUp.setEnabled(false);
+        } else {
+            mBtnSignUpUp.setEnabled(true);
+            return true;
         }
 
-        if (mTilSignUpUsername.isErrorEnabled() || mTilSignUpEmail.isErrorEnabled() || mTilSignUpPassword.isErrorEnabled()) {
-            return false;
-        }
-
-        return true;
+        return false;
     }
 
-    private void isNameValid(String name) {
-        if (Utils.checkName(name)) {
-            mTilSignUpUsername.setErrorEnabled(false);
-            mTilSignUpUsername.setError("");
+    private void isEmailValid(String email) {
+        TextInputLayout layout = mTilSignUpEmail;
+
+        if (email.isEmpty()) {
+            layout.setErrorEnabled(true);
+            layout.setError(getString(R.string.sign_email_length_error));
         } else {
-            mTilSignUpUsername.setErrorEnabled(true);
-            mTilSignUpUsername.setError(getString(R.string.signup_name_error));
+            if (Utils.checkEmail(email)) {
+                layout.setErrorEnabled(false);
+                layout.setError("");
+            } else {
+                layout.setErrorEnabled(true);
+                layout.setError(getString(R.string.sign_email_not_valid_error));
+            }
         }
     }
 
@@ -161,31 +156,19 @@ public class ActivitySignUp extends BaseActivity implements View.OnClickListener
 
         if (password.isEmpty()) {
             layout.setErrorEnabled(true);
-            layout.setError(getString(R.string.signup_password_length_error));
+            layout.setError(getString(R.string.signup_password_empty_error));
         } else {
-            if (Utils.checkPassword(password)) {
-                //layout.setErrorEnabled(false);
-                //layout.setError("");
-            } else {
-                //layout.setErrorEnabled(true);
-                //layout.setError(getString(R.string.signup_password_regex_error));
-            }
-        }
-    }
-
-    private void isEmailValid(String email) {
-        TextInputLayout layout = mTilSignUpEmail;
-
-        if (Utils.checkEmail(email)) {
-            layout.setErrorEnabled(false);
-            layout.setError("");
-        } else {
-            if (email.isEmpty()) {
+            if (password.length() < 6) {
                 layout.setErrorEnabled(true);
-                layout.setError(getString(R.string.sign_email_length_error));
+                layout.setError(getString(R.string.signup_password_length_error));
             } else {
-                layout.setErrorEnabled(true);
-                layout.setError(getString(R.string.sign_email_not_valid_error));
+                if (Utils.checkPassword(password)) {
+                    layout.setErrorEnabled(false);
+                    layout.setError("");
+                } else {
+                    layout.setErrorEnabled(true);
+                    layout.setError(getString(R.string.signup_password_regex_error));
+                }
             }
         }
     }
@@ -193,10 +176,33 @@ public class ActivitySignUp extends BaseActivity implements View.OnClickListener
     public void AuthListener(boolean result, ParseException error) {
         if(result) {
             Intent intent = new Intent(this, ActivityMain.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             finish();
         } else {
-            Toast.makeText(this, getString(R.string.no_user_registered), Toast.LENGTH_SHORT).show();
+            int colorPositive;
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                colorPositive = getResources().getColor(R.color.default_black, null);
+            } else {
+                colorPositive = getResources().getColor(R.color.default_black);
+            }
+
+            MaterialDialog.Builder builder = new MaterialDialog.Builder(this)
+                    .title("")
+                    .content(getString(R.string.signup_register_error))
+                    .positiveText(getString(android.R.string.ok))
+                    .positiveColor(colorPositive)
+                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                            dialog.dismiss();
+                        }
+                    });
+
+            MaterialDialog dialog = builder.build();
+            dialog.show();
         }
     }
 
@@ -214,16 +220,15 @@ public class ActivitySignUp extends BaseActivity implements View.OnClickListener
 
         public void afterTextChanged(Editable editable) {
             switch (view.getId()) {
-                case R.id.etSignUpName:
-                    isNameValid(editable.toString());
-                    break;
                 case R.id.etSignUpEmail:
                     isEmailValid(editable.toString());
                     break;
                 case R.id.etSignUpPassword:
-                    //isPasswordValid(editable.toString());
+                    isPasswordValid(editable.toString());
                     break;
             }
+
+            validateForm();
         }
     }
 }
