@@ -24,6 +24,7 @@ import ee.app.conversabusiness.model.database.NotificationInformation;
 import ee.app.conversabusiness.model.database.dbCustomer;
 import ee.app.conversabusiness.model.database.dbMessage;
 import ee.app.conversabusiness.model.parse.Customer;
+import ee.app.conversabusiness.utils.AppActions;
 import ee.app.conversabusiness.utils.Const;
 import ee.app.conversabusiness.utils.Foreground;
 import ee.app.conversabusiness.utils.Logger;
@@ -80,7 +81,6 @@ public class ReceiveMessageJob extends Job {
             Collection<String> collection = new ArrayList<>();
             collection.add(Const.kCustomerNameKey);
             collection.add(Const.kCustomerDisplayNameKey);
-            collection.add(Const.kCustomerAvatarKey);
             query.selectKeys(collection);
 
             Customer customer = query.get(contactId);
@@ -90,16 +90,6 @@ public class ReceiveMessageJob extends Job {
             dbcustomer.setCustomerId(contactId);
             dbcustomer.setName(customer.getName());
             dbcustomer.setDisplayName(customer.getDisplayName());
-
-            try {
-                if (customer.getAvatar() != null) {
-                    dbcustomer.setAvatarThumbFileId(customer.getAvatar().getUrl());
-                } else {
-                    dbcustomer.setAvatarThumbFileId("");
-                }
-            } catch (IllegalStateException e) {
-                dbcustomer.setAvatarThumbFileId("");
-            }
 
             ConversaApp.getInstance(getApplicationContext()).getDB().saveContact(dbcustomer);
 
@@ -112,7 +102,7 @@ public class ReceiveMessageJob extends Job {
         // 2. Save to Local Database
         dbMessage dbmessage = new dbMessage();
         dbmessage.setFromUserId(contactId);
-        dbmessage.setToUserId(ConversaApp.getInstance(getApplicationContext()).getPreferences().getBusinessId());
+        dbmessage.setToUserId(ConversaApp.getInstance(getApplicationContext()).getPreferences().getAccountBusinessId());
         dbmessage.setMessageType(messageType);
         dbmessage.setDeliveryStatus(DeliveryStatus.statusAllDelivered);
         dbmessage.setMessageId(messageId);
@@ -147,33 +137,37 @@ public class ReceiveMessageJob extends Job {
         }
 
         if (Foreground.get().isBackground()) {
-            // Autoincrement count
-            NotificationInformation summary = ConversaApp.getInstance(getApplicationContext())
-                    .getDB().getGroupInformation(contactId);
+            if (ConversaApp.getInstance(getApplicationContext())
+                    .getPreferences().getPushNotificationPreview()) {
 
-            if (summary.getNotificationId() == -1) {
-                summary = ConversaApp.getInstance(getApplicationContext()).getDB()
-                        .incrementGroupCount(summary, true);
-            } else {
-                ConversaApp.getInstance(getApplicationContext()).getDB()
-                        .incrementGroupCount(summary, false);
-            }
+                // Autoincrement count
+                NotificationInformation summary = ConversaApp.getInstance(getApplicationContext())
+                        .getDB().getGroupInformation(contactId);
 
-            PushNotification.showMessageNotification(
-                    getApplicationContext(),
-                    dbcustomer.getDisplayName(),
-                    additionalData.toString(),
-                    dbmessage,
-                    summary
-            );
-        } else {
-            // 4. Broadcast results as from IntentService ain't possible to access ui thread
-            EventBus.getDefault().post(new MessageIncomingEvent(dbmessage));
+                if (summary.getNotificationId() == -1) {
+                    ConversaApp.getInstance(getApplicationContext()).getDB()
+                            .incrementGroupCount(summary, true);
+                } else {
+                    ConversaApp.getInstance(getApplicationContext()).getDB()
+                            .incrementGroupCount(summary, false);
+                }
 
-            if (newContact) {
-                EventBus.getDefault().post(new ContactSaveEvent(dbcustomer));
+                PushNotification.showMessageNotification(
+                        getApplicationContext(),
+                        dbcustomer.getDisplayName(),
+                        additionalData.toString(),
+                        dbmessage,
+                        summary
+                );
             }
         }
+
+        // 4. Broadcast results as from IntentService ain't possible to access ui thread
+        if (newContact) {
+            EventBus.getDefault().post(new ContactSaveEvent(dbcustomer));
+        }
+
+        EventBus.getDefault().post(new MessageIncomingEvent(dbmessage));
 
         if (dbmessage.getMessageType().equals(Const.kMessageTypeAudio) ||
                 dbmessage.getMessageType().equals(Const.kMessageTypeVideo) ||
@@ -195,6 +189,7 @@ public class ReceiveMessageJob extends Job {
         if (throwable instanceof ParseException) {
             ParseException exception = (ParseException) throwable;
             Logger.error(TAG, exception.getMessage());
+            AppActions.validateParseException(getApplicationContext(), exception);
 
             if (exception.getCode() == INTERNAL_SERVER_ERROR ||
                     exception.getCode() == CONNECTION_FAILED ||

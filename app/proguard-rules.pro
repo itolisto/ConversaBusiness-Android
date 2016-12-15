@@ -15,19 +15,24 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
--keep class com.github.mikephil.charting.** { *; }
 
-# EventBus ProGuard
+#
+# EventBus
+#
 -keepattributes *Annotation*
 -keepclassmembers class ** {
     @org.greenrobot.eventbus.Subscribe <methods>;
 }
 -keep enum org.greenrobot.eventbus.ThreadMode { *; }
-
-# Only required if you use AsyncExecutor
--keepclassmembers class * extends org.greenrobot.eventbus.util.ThrowableFailureEvent {
-    <init>(java.lang.Throwable);
-}
+#
+#AVLoadingIndicatorView
+#
+-keep class com.wang.avi.** { *; }
+-keep class com.wang.avi.indicators.** { *; }
+#
+#Branch
+#
+-keep class com.google.android.gms.ads.identifier.** { *; }
 #
 # MPAndroidChart
 #

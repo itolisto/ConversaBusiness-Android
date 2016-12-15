@@ -20,6 +20,7 @@ import com.parse.ParseException;
 import java.util.HashMap;
 
 import ee.app.conversabusiness.extendables.ConversaFragment;
+import ee.app.conversabusiness.utils.AppActions;
 import ee.app.conversabusiness.utils.Logger;
 
 /**
@@ -91,7 +92,7 @@ public class FragmentStatistics extends ConversaFragment implements View.OnClick
     @Override
     public void onResume() {
         super.onResume();
-        if (!load && !ConversaApp.getInstance(getActivity()).getPreferences().getBusinessId().isEmpty()) {
+        if (!load && !ConversaApp.getInstance(getActivity()).getPreferences().getAccountBusinessId().isEmpty()) {
             // Change load value so next time this fragment is loaded
             // we don't call Parse Server for information automatically
             load = true;
@@ -102,12 +103,17 @@ public class FragmentStatistics extends ConversaFragment implements View.OnClick
     private void changeStatisticsPeriod(int value) {
         loading = true;
         HashMap<String, Object> params = new HashMap<>();
-        params.put("business", ConversaApp.getInstance(getActivity()).getPreferences().getBusinessId());
+        params.put("business", ConversaApp.getInstance(getActivity()).getPreferences().getAccountBusinessId());
         params.put("timeperiod", value);
         ParseCloud.callFunctionInBackground("businessStatistics", params, new FunctionCallback<String>() {
             @Override
             public void done(String object, ParseException e) {
                 Logger.error("changeStatisticsPeriod", "\nResult: " + object);
+                if (e == null) {
+
+                } else {
+                    AppActions.validateParseException(getActivity(), e);
+                }
             }
         });
     }

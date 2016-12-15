@@ -1,11 +1,11 @@
 package ee.app.conversabusiness;
 
+import android.Manifest;
 import android.app.ActivityOptions;
 import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.net.Uri;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.BottomSheetDialogFragment;
@@ -17,22 +17,14 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
-import com.facebook.drawee.backends.pipeline.Fresco;
-import com.facebook.drawee.backends.pipeline.PipelineDraweeController;
-import com.facebook.drawee.view.SimpleDraweeView;
-import com.facebook.imagepipeline.request.BasePostprocessor;
-import com.facebook.imagepipeline.request.ImageRequest;
-import com.facebook.imagepipeline.request.ImageRequestBuilder;
-import com.facebook.imagepipeline.request.Postprocessor;
+import com.afollestad.materialcamera.MaterialCamera;
 
 import java.util.List;
 import java.util.Timer;
@@ -40,6 +32,7 @@ import java.util.TimerTask;
 
 import ee.app.conversabusiness.adapters.MessagesAdapter;
 import ee.app.conversabusiness.extendables.ConversaActivity;
+import ee.app.conversabusiness.interfaces.OnMessageClickListener;
 import ee.app.conversabusiness.management.AblyConnection;
 import ee.app.conversabusiness.messaging.MessageUpdateReason;
 import ee.app.conversabusiness.messaging.SendMessageAsync;
@@ -53,7 +46,7 @@ import ee.app.conversabusiness.view.MediumTextView;
 import ee.app.conversabusiness.view.MyBottomSheetDialogFragment;
 
 public class ActivityChatWall extends ConversaActivity implements View.OnClickListener,
-		View.OnTouchListener, MessagesAdapter.OnItemClickListener {
+		View.OnTouchListener, OnMessageClickListener {
 
 	private dbCustomer businessObject;
 	private MessagesAdapter gMessagesAdapter;
@@ -68,15 +61,16 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 	private Handler isUserTypingHandler = new Handler();
 	private LightTextView mSubTitleTextView;
 	private RecyclerView mRvWallMessages;
-	private TextView mTvNoMessages;
 	private EditText mEtMessageText;
 	private BottomSheetDialogFragment myBottomSheet;
 	private ImageButton mBtnWallSend;
-	private Bitmap bmAvatar;
+	private MediumTextView mTitleTextView;
 
 	private Timer timer;
-	private final static int CAMERA_RQ = 6969;
-	private final static int PERMISSION_RQ = 84;
+	private Timer typingTimer;
+
+	public final static int CAMERA_RQ = 6969;
+	public final static int PERMISSION_RQ = 84;
 
 	public ActivityChatWall() {
 		this.loading = true;
@@ -91,6 +85,8 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 
 		// Deactivate check internet connection
 		checkInternetConnection = false;
+		// EventBus should not unregister on onStop
+		unregisterListener = false;
 
 		if (savedInstanceState == null) {
 			Bundle extras = getIntent().getExtras();
@@ -112,12 +108,20 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 	}
 
 	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		outState.putParcelable(Const.iExtraCustomer, businessObject);
+		outState.putBoolean(Const.iExtraAddBusiness, addAsContact);
+		outState.putInt(Const.iExtraPosition, itemPosition);
+		super.onSaveInstanceState(outState);
+	}
+
+	@Override
 	protected void openFromNotification(Intent intent) {
-		Log.e("openFromNotification", "New intent with flags " + intent.getFlags());
+		Logger.error("openFromNotification", "New intent: " + intent.toString());
 		dbCustomer business = intent.getParcelableExtra(Const.iExtraCustomer);
 
 		if (business == null) {
-			super.onBackPressed();
+			finish();
 		} else {
 			addAsContact = intent.getBooleanExtra(Const.iExtraAddBusiness, false);
 			itemPosition = intent.getIntExtra(Const.iExtraPosition, -1);
@@ -128,12 +132,15 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 				newMessagesFromNewIntent = true;
 				dbMessage.getAllMessageForChat(this, businessObject.getCustomerId(), count, 0);
 			} else {
+				// Change name and avatar
+				mTitleTextView.setText(business.getDisplayName());
 				// Set new business reference
 				businessObject = business;
-				// Change from id
-				gMessagesAdapter.updateFromId(business.getCustomerId());
 				// Clean list of current messages and get new messages
-				dbMessage.getAllMessageForChat(this, businessObject.getCustomerId(), 20, 0);
+				loadMore = true;
+				gMessagesAdapter.clearMessages();
+				mRvWallMessages.setEnabled(false);
+				dbMessage.getAllMessageForChat(this, business.getCustomerId(), 20, 0);
 			}
 		}
 	}
@@ -237,42 +244,15 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 	protected void initialization() {
 		super.initialization();
 		Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-		MediumTextView mTitleTextView = (MediumTextView) toolbar.findViewById(R.id.tvChatName);
+		mTitleTextView = (MediumTextView) toolbar.findViewById(R.id.tvChatName);
 		FrameLayout mBackButton = (FrameLayout) toolbar.findViewById(R.id.flBack);
 		ImageButton mIbBackButton = (ImageButton) toolbar.findViewById(R.id.ibBack);
 		mSubTitleTextView = (LightTextView) toolbar.findViewById(R.id.tvChatStatus);
-		SimpleDraweeView ivContactAvatar = (SimpleDraweeView) toolbar.findViewById(R.id.ivAvatarChat);
-
-		Uri uri = Utils.getUriFromString(businessObject.getAvatarThumbFileId());
-		Postprocessor redMeshPostprocessor = new BasePostprocessor() {
-			@Override
-			public String getName() {
-				return "redMeshPostprocessor";
-			}
-
-			@Override
-			public void process(Bitmap bitmap) {
-				if (bitmap != null) {
-					bmAvatar = bitmap;
-				}
-			}
-		};
-
-		ImageRequest request = ImageRequestBuilder.newBuilderWithSource(uri)
-				.setPostprocessor(redMeshPostprocessor)
-				.build();
-
-		PipelineDraweeController controller = (PipelineDraweeController)
-				Fresco.newDraweeControllerBuilder()
-						.setImageRequest(request)
-						.setOldController(ivContactAvatar.getController())
-						.build();
-		ivContactAvatar.setController(controller);
+		mTitleTextView.setText(businessObject.getDisplayName());
 
 		setSupportActionBar(toolbar);
 
 		mRvWallMessages = (RecyclerView) findViewById(R.id.rvWallMessages);
-		mTvNoMessages = (TextView) findViewById(R.id.tvNoMessages);
 		mEtMessageText = (EditText) findViewById(R.id.etWallMessage);
 		mBtnWallSend = (ImageButton) findViewById(R.id.btnWallSend);
 
@@ -283,7 +263,9 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 		mEtMessageText.setTypeface(ConversaApp.getInstance(this).getTfRalewayRegular());
 		mEtMessageText.addTextChangedListener(isUserTypingTextWatcher);
 
-		gMessagesAdapter = new MessagesAdapter(this, businessObject.getCustomerId(), this);
+		gMessagesAdapter = new MessagesAdapter(this,
+				ConversaApp.getInstance(this).getPreferences().getAccountBusinessId(),
+				this);
 		LinearLayoutManager manager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 		manager.setReverseLayout(true);
 		mRvWallMessages.setLayoutManager(manager);
@@ -316,17 +298,14 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 
 		mRvWallMessages.setAdapter(gMessagesAdapter);
 
-		mTitleTextView.setText(businessObject.getDisplayName());
-
 		mBtnWallSend.setOnClickListener(this);
 		mBtnOpenSlidingDrawer.setOnClickListener(this);
 		mIbBackButton.setOnClickListener(this);
 		mBackButton.setOnClickListener(this);
-		ivContactAvatar.setOnClickListener(this);
 
-		if (ContextCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+		if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
 			// Request permission to save videos in external storage
-			ActivityCompat.requestPermissions(this, new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_RQ);
+			ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, PERMISSION_RQ);
 		}
 	}
 
@@ -375,7 +354,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 	}
 
 	@Override
-	public void onItemClick(dbMessage message, View view, int position) {
+	public void onMessageClick(dbMessage message, View view, int position) {
 		switch (message.getMessageType()) {
 			case Const.kMessageTypeText: {
 
@@ -390,7 +369,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 				break;
 			}
 			case Const.kMessageTypeImage: {
-				final Intent i = new Intent(this, ActivityImageDetail.class);
+				Intent i = new Intent(this, ActivityImageDetail.class);
 				i.putExtra(ActivityImageDetail.EXTRA_IMAGE, message.getLocalUrl());
 				ActivityOptions options = ActivityOptions.makeScaleUpAnimation(
 						view, 0, 0, view.getWidth(), view.getHeight());
@@ -447,7 +426,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 							data.getStringExtra("result"),
 							data.getIntExtra("width", 0),
 							data.getIntExtra("height", 0),
-							data.getIntExtra("bytes", 0),
+							data.getLongExtra("bytes", 0),
 							addAsContact,
 							businessObject);
 					break;
@@ -460,6 +439,37 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 							addAsContact,
 							businessObject);
 					break;
+				}
+				case CAMERA_RQ: {
+					if (data.getType().equals("image/jpeg")) {
+						BitmapFactory.Options options = new BitmapFactory.Options();
+						options.inJustDecodeBounds = true;
+						BitmapFactory.decodeFile(data.getData().getPath(), options);
+						SendMessageAsync.sendImageMessage(
+								this,
+								data.getData().toString(),
+								options.outWidth,
+								options.outHeight,
+								data.getLongExtra(MaterialCamera.SIZE_EXTRA, 0),
+								addAsContact,
+								businessObject);
+					}
+//					else {
+//						MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+//						retriever.setDataSource(data.getData().getPath());
+//						int width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
+//						int height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
+//						int duration = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
+//						retriever.release();
+//					}
+					break;
+				}
+			}
+		} else if (requestCode == CAMERA_RQ) {
+			if (data != null && data.getSerializableExtra(MaterialCamera.ERROR_EXTRA) != null) {
+				Exception e = (Exception) data.getSerializableExtra(MaterialCamera.ERROR_EXTRA);
+				if (e != null) {
+					Logger.error("onActivityResult", e.getMessage());
 				}
 			}
 		}
@@ -483,6 +493,8 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 	public void MessagesGetAll(List<dbMessage> messages) {
 		// 1. Add messages
 		if (mRvWallMessages.getLayoutManager().getItemCount() == 0) {
+			mRvWallMessages.setEnabled(true);
+
 			// If messages size is zero there's no need to do anything
 			if (messages.size() > 0) {
 				// Update unread incoming messages
@@ -490,7 +502,6 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 				// Set messages
 				gMessagesAdapter.setMessages(messages);
 				// As this is the first time we load messages, change visibility
-				mTvNoMessages.setVisibility(View.GONE);
 				mRvWallMessages.setVisibility(View.VISIBLE);
 			}
 
@@ -502,7 +513,6 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 			if (newMessagesFromNewIntent) {
 				newMessagesFromNewIntent = false;
 				gMessagesAdapter.addMessages(messages, 0);
-				mRvWallMessages.scrollToPosition(0);
 			} else {
 				gMessagesAdapter.addLoad(false);
 
@@ -521,15 +531,14 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 	}
 
 	@Override
-	public void MessageSent(final dbMessage response) {
+	public void MessageSent(dbMessage response) {
 		// 1. Check visibility
-		if (mTvNoMessages.getVisibility() == View.VISIBLE) {
-			mTvNoMessages.setVisibility(View.GONE);
+		if (mRvWallMessages.getVisibility() == View.GONE) {
 			mRvWallMessages.setVisibility(View.VISIBLE);
 		}
 
 		// 2. Check if user needs to be added
-		if(addAsContact) {
+		if (addAsContact) {
 			addAsContact = false;
 		}
 
@@ -568,8 +577,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 			dbMessage.updateViewMessages(this, businessObject.getCustomerId());
 
 			// 2. Check visibility
-			if (mTvNoMessages.getVisibility() == View.VISIBLE) {
-				mTvNoMessages.setVisibility(View.GONE);
+			if (mRvWallMessages.getVisibility() == View.GONE) {
 				mRvWallMessages.setVisibility(View.VISIBLE);
 			}
 
@@ -588,19 +596,41 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 	public void onTypingMessage(String from, boolean isTyping) {
 		if (from.equals(businessObject.getCustomerId())) {
 			if (isTyping) {
-				mSubTitleTextView.setVisibility(View.VISIBLE);
-				mSubTitleTextView.setText(R.string.is_typing);
+				showIsTyping(true);
+
+				if (typingTimer != null) {
+					typingTimer.cancel();
+					typingTimer = null;
+				}
+
+				typingTimer = new Timer();
+				typingTimer.schedule(new TimerTask() {
+					public void run() {
+						runOnUiThread(new Runnable() {
+							@Override
+							public void run() {
+								showIsTyping(false);
+							}
+						});
+					}
+				}, 6000);
 			} else {
-				mSubTitleTextView.setVisibility(View.GONE);
-				mSubTitleTextView.setText("");
+				if (typingTimer != null) {
+					typingTimer.cancel();
+					typingTimer = null;
+				}
+
+				showIsTyping(false);
 			}
 		}
 	}
 
-	@Override
-	public void ContactAdded(dbCustomer response) {
-		if (response.getCustomerId().equals(businessObject.getCustomerId())) {
-			Utils.saveAvatarToInternalStorage(this, bmAvatar, response.getId());
+	public void showIsTyping(boolean show) {
+		if (show) {
+			mSubTitleTextView.setText(R.string.is_typing);
+			mSubTitleTextView.setVisibility(View.VISIBLE);
+		} else {
+			mSubTitleTextView.setVisibility(View.GONE);
 		}
 	}
 

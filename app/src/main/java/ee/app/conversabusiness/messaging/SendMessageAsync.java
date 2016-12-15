@@ -19,11 +19,11 @@ import ee.app.conversabusiness.utils.Const;
 
 public class SendMessageAsync {
 
-	public static void sendTextMessage(Context context, String text, boolean addContact, dbCustomer business) {
+	public static void sendTextMessage(Context context, String text, boolean addContact, dbCustomer customer) {
 		// 1. Create local message
 		dbMessage message = new dbMessage();
-		message.setFromUserId(ConversaApp.getInstance(context).getPreferences().getBusinessId());
-		message.setToUserId(business.getCustomerId());
+		message.setFromUserId(ConversaApp.getInstance(context).getPreferences().getAccountBusinessId());
+		message.setToUserId(customer.getCustomerId());
 		message.setMessageType(Const.kMessageTypeText);
 		message.setDeliveryStatus(DeliveryStatus.statusUploading);
 		message.setBody(text);
@@ -35,15 +35,15 @@ public class SendMessageAsync {
 		context.startService(intent);
 
 		if (addContact) {
-			SaveContactAsync.saveCustomerAsContact(context, business);
+			SaveContactAsync.saveCustomerAsContact(context, customer);
 		}
 	}
 
-	public static void sendLocationMessage(Context context, double lat, double lon, boolean addContact, dbCustomer business) {
+	public static void sendLocationMessage(Context context, double lat, double lon, boolean addContact, dbCustomer customer) {
 		// 1. Create local message
 		dbMessage message = new dbMessage();
-		message.setFromUserId(ConversaApp.getInstance(context).getPreferences().getBusinessId());
-		message.setToUserId(business.getCustomerId());
+		message.setFromUserId(ConversaApp.getInstance(context).getPreferences().getAccountBusinessId());
+		message.setToUserId(customer.getCustomerId());
 		message.setMessageType(Const.kMessageTypeLocation);
 		message.setDeliveryStatus(DeliveryStatus.statusUploading);
 		message.setLatitude((float)lat);
@@ -56,15 +56,20 @@ public class SendMessageAsync {
 		context.startService(intent);
 
 		if (addContact) {
-			SaveContactAsync.saveCustomerAsContact(context, business);
+			SaveContactAsync.saveCustomerAsContact(context, customer);
 		}
 	}
 
-	public static void sendImageMessage(Context context, String path, int width, int height, int size, boolean addContact, dbCustomer business) {
+	public static void sendImageMessage(Context context, String path, int width, int height,
+										long size, boolean addContact, dbCustomer customer) {
+		if (width <= 0 || height <= 0) {
+			return;
+		}
+
 		// 1. Create local message
 		dbMessage message = new dbMessage();
-		message.setFromUserId(ConversaApp.getInstance(context).getPreferences().getBusinessId());
-		message.setToUserId(business.getCustomerId());
+		message.setFromUserId(ConversaApp.getInstance(context).getPreferences().getAccountBusinessId());
+		message.setToUserId(customer.getCustomerId());
 		message.setMessageType(Const.kMessageTypeImage);
 		message.setDeliveryStatus(DeliveryStatus.statusUploading);
 		message.setLocalUrl(path);
@@ -79,7 +84,7 @@ public class SendMessageAsync {
 		context.startService(intent);
 
 		if (addContact) {
-			SaveContactAsync.saveCustomerAsContact(context, business);
+			SaveContactAsync.saveCustomerAsContact(context, customer);
 		}
 	}
 

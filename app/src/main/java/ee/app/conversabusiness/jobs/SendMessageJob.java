@@ -17,6 +17,7 @@ import ee.app.conversabusiness.ConversaApp;
 import ee.app.conversabusiness.delivery.DeliveryStatus;
 import ee.app.conversabusiness.management.AblyConnection;
 import ee.app.conversabusiness.model.database.dbMessage;
+import ee.app.conversabusiness.utils.AppActions;
 import ee.app.conversabusiness.utils.Const;
 import ee.app.conversabusiness.utils.Logger;
 
@@ -96,6 +97,7 @@ public class SendMessageJob extends Job {
             message.updateMessageStatus(getApplicationContext(), DeliveryStatus.statusAllDelivered);
         } catch (ParseException e) {
             message.updateMessageStatus(getApplicationContext(), DeliveryStatus.statusParseError);
+            AppActions.validateParseException(getApplicationContext(), e);
         }
     }
 
@@ -106,7 +108,6 @@ public class SendMessageJob extends Job {
 
     @Override
     protected RetryConstraint shouldReRunOnThrowable(@NonNull Throwable throwable, int runCount, int maxRunCount) {
-        // This method will never be called as all exceptions are being caught in onRun method
         return RetryConstraint.CANCEL;
     }
 

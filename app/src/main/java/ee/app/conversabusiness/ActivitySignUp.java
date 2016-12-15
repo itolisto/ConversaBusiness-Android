@@ -1,12 +1,12 @@
 package ee.app.conversabusiness;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
+import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -14,8 +14,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.afollestad.materialdialogs.DialogAction;
-import com.afollestad.materialdialogs.MaterialDialog;
 import com.parse.ParseException;
 import com.parse.SignUpCallback;
 
@@ -181,27 +179,18 @@ public class ActivitySignUp extends BaseActivity implements View.OnClickListener
             startActivity(intent);
             finish();
         } else {
-            int colorPositive;
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(getString(R.string.signup_register_error));
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                colorPositive = getResources().getColor(R.color.default_black, null);
-            } else {
-                colorPositive = getResources().getColor(R.color.default_black);
-            }
-
-            MaterialDialog.Builder builder = new MaterialDialog.Builder(this)
-                    .title("")
-                    .content(getString(R.string.signup_register_error))
-                    .positiveText(getString(android.R.string.ok))
-                    .positiveColor(colorPositive)
-                    .onPositive(new MaterialDialog.SingleButtonCallback() {
+            String positiveText = getString(android.R.string.ok);
+            builder.setPositiveButton(positiveText,
+                    new DialogInterface.OnClickListener() {
                         @Override
-                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
                         }
                     });
-
-            MaterialDialog dialog = builder.build();
+            AlertDialog dialog = builder.create();
             dialog.show();
         }
     }

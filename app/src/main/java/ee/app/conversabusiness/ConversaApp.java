@@ -56,7 +56,7 @@ import ee.app.conversabusiness.notifications.onesignal.CustomNotificationOpenedH
 import ee.app.conversabusiness.notifications.onesignal.CustomNotificationReceivedHandler;
 import ee.app.conversabusiness.utils.Const;
 import ee.app.conversabusiness.utils.Foreground;
-import ee.app.conversabusiness.utils.Preferences;
+import ee.app.conversabusiness.settings.Preferences;
 import io.branch.referral.Branch;
 
 /**
@@ -195,7 +195,7 @@ public class ConversaApp extends Application {
 						//Log.e(TAG, String.format(text, args));
 					}
 				})
-				.id("ConversaAppJobs")
+				.id("ConversaBusinessAppJobs")
 				.minConsumerCount(1)//always keep at least one consumer alive
 				.maxConsumerCount(3)//up to 3 consumers at a time
 				.loadFactor(3)//3 jobs per consumer
@@ -225,7 +225,7 @@ public class ConversaApp extends Application {
 	private void initializeBugShaker() {
 		BugShaker.get(this)
 				.setEmailAddresses("appconversa@gmail.com")   // required
-				.setEmailSubjectLine("Bug reported") // optional
+				.setEmailSubjectLine("Bug reported [Business]") // optional
 				.setAlertDialogType(AlertDialogType.NATIVE) // optional
 				.setLoggingEnabled(BuildConfig.DEV_BUILD)   // optional
 				.setIgnoreFlagSecure(true)                  // optional

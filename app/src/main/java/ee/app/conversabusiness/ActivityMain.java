@@ -1,9 +1,10 @@
 package ee.app.conversabusiness;
 
+import android.app.NotificationManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import com.onesignal.OneSignal;
@@ -12,14 +13,15 @@ import com.parse.ParseException;
 
 import org.json.JSONObject;
 
-import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import ee.app.conversabusiness.extendables.ConversaActivity;
+import ee.app.conversabusiness.jobs.BusinessInfoJob;
 import ee.app.conversabusiness.management.AblyConnection;
 import ee.app.conversabusiness.model.parse.Account;
+import ee.app.conversabusiness.utils.AppActions;
 import ee.app.conversabusiness.utils.Foreground;
 import ee.app.conversabusiness.utils.Logger;
 import ee.app.conversabusiness.utils.PagerAdapter;
@@ -27,10 +29,12 @@ import ee.app.conversabusiness.utils.Utils;
 
 public class ActivityMain extends ConversaActivity implements Foreground.Listener {
 
+    private final String TAG = ActivityMain.class.getSimpleName();
     private ViewPager mViewPager;
     private TabLayout tabLayout;
     private String titles[];
     private Timer timer;
+    private boolean resetNotifications;
 
     private final int[] tabIcons = {
             R.drawable.tab_chat_inactive,
@@ -72,6 +76,8 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
             getSupportActionBar().setTitle(titles[0]);
         }
 
+        resetNotifications = true;
+
         tabLayout.getTabAt(0).setIcon(tabSelectedIcons[0]);
         tabLayout.getTabAt(1).setIcon(tabIcons[1]);
         tabLayout.getTabAt(2).setIcon(tabIcons[2]);
@@ -102,14 +108,14 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
             }
 
             @Override
-            public void onTabReselected(TabLayout.Tab tab) {
-
-            }
+            public void onTabReselected(TabLayout.Tab tab) { }
         });
 
-        if (ConversaApp.getInstance(this).getPreferences().getBusinessId().isEmpty()) {
+        if (ConversaApp.getInstance(this).getPreferences().getAccountBusinessId().isEmpty()) {
             // 1. Get Customer Id
-            Account.getBusinessId(new WeakReference<AppCompatActivity>(this));
+            ConversaApp.getInstance(this)
+                    .getJobManager()
+                    .addJobInBackground(new BusinessInfoJob(Account.getCurrentUser().getObjectId()));
         } else {
             OneSignal.getTags(new OneSignal.GetTagsHandler() {
                 @Override
@@ -117,7 +123,7 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
                     if (tags == null || tags.length() == 0) {
                         OneSignal.setSubscription(true);
                         Utils.subscribeToTags(ConversaApp.getInstance(getApplicationContext())
-                                .getPreferences().getBusinessId());
+                                .getPreferences().getAccountBusinessId());
                     }
                 }
             });
@@ -133,9 +139,31 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
         Foreground.get(this).addListener(this);
     }
 
+    @Override
     public void onDestroy() {
         super.onDestroy();
         Foreground.get(this).removeListener(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Clear notifications
+        if (resetNotifications) {
+            resetNotifications = false;
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    Logger.error(TAG, "Resetting counts and clear all notifications");
+                    ConversaApp.getInstance(getApplicationContext())
+                            .getDB()
+                            .resetAllCounts();
+                    NotificationManager notificationManager =
+                            (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    notificationManager.cancelAll();
+                }
+            }).start();
+        }
     }
 
     public void selectViewPagerTab(int tab) {
@@ -160,7 +188,7 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
                 params.put("bId", ConversaApp
                             .getInstance(getApplicationContext())
                             .getPreferences()
-                            .getBusinessId()
+                            .getAccountBusinessId()
                 );
 
                 params.put("status", (Foreground.get().isBackground()) ? Integer.valueOf(1) : Integer.valueOf(0));
@@ -168,10 +196,11 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
                 try {
                     ParseCloud.callFunction("updateStatus", params);
                 } catch (ParseException e) {
+                    AppActions.validateParseException(getApplicationContext(), e);
                     Logger.error("ActivityMain", "Status update error: " + e.getMessage());
                 }
             }
-        }, 0, 30000);
+        }, 0, 60000);
     }
 
     public void stoptimertask() {
@@ -183,14 +212,12 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
     }
 
     @Override
-    @SuppressWarnings("ConstantConditions")
     public void onBecameForeground() {
         startTimer();
         AblyConnection.getInstance().connectAbly();
     }
 
     @Override
-    @SuppressWarnings("ConstantConditions")
     public void onBecameBackground() {
         stoptimertask();
         AblyConnection.getInstance().disconnectAbly();

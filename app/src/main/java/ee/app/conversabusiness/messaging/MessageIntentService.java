@@ -3,7 +3,6 @@ package ee.app.conversabusiness.messaging;
 import android.app.IntentService;
 import android.content.Intent;
 import android.database.SQLException;
-import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -17,6 +16,7 @@ import ee.app.conversabusiness.events.message.MessageRetrieveEvent;
 import ee.app.conversabusiness.events.message.MessageUpdateEvent;
 import ee.app.conversabusiness.jobs.SendMessageJob;
 import ee.app.conversabusiness.model.database.dbMessage;
+import ee.app.conversabusiness.utils.Logger;
 
 /**
  * Created by edgargomez on 8/17/16.
@@ -99,7 +99,7 @@ public class MessageIntentService extends IntentService {
                 }
             }
         } catch (SQLException e) {
-            Log.e(TAG, "No se pudo guardar mensaje porque ocurrio el siguiente error: " + e.getMessage());
+            Logger.error(TAG, "No se pudo guardar mensaje porque ocurrio el siguiente error: " + e.getMessage());
         }
     }
 

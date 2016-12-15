@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="default_white">#FFFFFF</color>
+    <color name="default_white">#F7F7F7</color>
     <color name="default_green">#37FF77</color>
     <color name="default_purple">#ba8cea</color>
     <color name="default_purple_darker">#581b96</color>
@@ -8,6 +8,10 @@
     <color name="default_gray">#A3A3A3</color>
     <color name="default_red">#F1015D</color>
     <color name="default_light_gray">#d3d3d3</color>
+
+    <!-- Status bar colors -->
+    <color name="status_bar_default">#581b96</color>
+    <color name="status_bar_chat">#DEDEDE</color>
 
     <!-- Status colors -->
     <color name="status_offline">#F44336</color>
@@ -20,27 +24,13 @@
     <color name="tab_indicator">#6F726D</color>
 
     <!-- Backgrounds -->
-    <color name="normal_background">#FFFFFF</color>
-    <color name="settings_background">#8F8F8F</color>
+    <color name="setting_main_header">#FAF9F6</color>
     <color name="no_connection_background">#CDe81757</color>
     <color name="push_notification_background">#E61D1D1D</color>
     <color name="image_view_background">#000000</color>
-    <color name="loading_background">#ebebeb</color>
-
-    <!-- Buttons -->
-   	<color name="sign_in_light_gray">#7d7d7d</color>
-   	<color name="button_neutral_off">#333333</color>
-    <color name="button_neutral_on">#999999</color>
-    <color name="button_positive_off">#2fcb72</color>
-    <color name="button_positive_on">#97e5b9</color>
-    <color name="button_alert_off">#f1015d</color>
-    <color name="button_alert_on">#fa80ae</color>
-    <color name="hookup_light_neutral">#c8c8c8</color>
-    <color name="hookup_neutral">#333333</color>
-    <color name="sidemenu_button">#090909</color>
+    <color name="profile_light_background">#80505050</color>
 
     <!-- TextViews -->
-    <color name="image_view_text">#FFFFFF</color>
    	<color name="text_gray">#222222</color>
 
     <!-- Alerts and Dialogs -->

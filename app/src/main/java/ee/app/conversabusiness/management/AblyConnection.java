@@ -221,7 +221,7 @@ public class AblyConnection implements Channel.MessageListener, Presence.Presenc
     }
 
     public void subscribeToChannels() {
-        String channelname = ConversaApp.getInstance(context).getPreferences().getBusinessId();
+        String channelname = ConversaApp.getInstance(context).getPreferences().getAccountBusinessId();
         if (!channelname.isEmpty()) {
             for (int i = 0; i < 2; i++) {
                 Channel channel;
@@ -287,7 +287,7 @@ public class AblyConnection implements Channel.MessageListener, Presence.Presenc
         try {
             JsonObject payload = new JsonObject();
             payload.addProperty("isTyping", true);
-            payload.addProperty("from", ConversaApp.getInstance(context).getPreferences().getBusinessId());
+            payload.addProperty("from", ConversaApp.getInstance(context).getPreferences().getAccountBusinessId());
 
             if (!ablyRealtime.channels.isEmpty()) {
                 Channel channel = ablyRealtime.channels.get("upbc:" + channelName);
@@ -307,7 +307,7 @@ public class AblyConnection implements Channel.MessageListener, Presence.Presenc
         try {
             JsonObject payload = new JsonObject();
             payload.addProperty("isTyping", false);
-            payload.addProperty("from", ConversaApp.getInstance(context).getPreferences().getBusinessId());
+            payload.addProperty("from", ConversaApp.getInstance(context).getPreferences().getAccountBusinessId());
 
             if (!ablyRealtime.channels.isEmpty()) {
                 Channel channel = ablyRealtime.channels.get("upbc:" + channelName);

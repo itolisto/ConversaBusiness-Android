@@ -33,7 +33,7 @@ public class MySQLiteHelper {
     private DatabaseHelper myDbHelper;
 
     private static final String DATABASE_NAME1 = "conversabusinessdb.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 1;
 
     private static final String TABLE_MESSAGES = "message";
     private static final String TABLE_CV_CONTACTS = "cv_contact";
@@ -92,7 +92,6 @@ public class MySQLiteHelper {
     private static final String sBusinessRecent = "recent";
     private static final String sBusinessName = "name";
     private static final String sBusinessComposingMessage = "composingMessageString";
-    private static final String sBusinessAvatarFile = "avatar_file_url";
     private static final String sBusinessBlocked = "blocked";
     private static final String sBusinessMuted = "muted";
     private static final String sBusinessCreatedAt = "created_at";
@@ -105,7 +104,6 @@ public class MySQLiteHelper {
             + "\"" + sBusinessRecent + "\" INTEGER, "
             + "\"" + sBusinessName + "\" VARCHAR(100) NOT NULL, "
             + "\"" + sBusinessComposingMessage + "\" VARCHAR(255), "
-            + "\"" + sBusinessAvatarFile + "\" VARCHAR(355), "
             + "\"" + sBusinessBlocked + "\" CHAR(1) NOT NULL DEFAULT 'N', "
             + "\"" + sBusinessMuted + "\" CHAR(1) NOT NULL DEFAULT 'N', "
             + "\"" + sBusinessCreatedAt + "\" INTEGER NOT NULL );";
@@ -176,13 +174,16 @@ public class MySQLiteHelper {
         openDatabase();
     }
 
-    public SQLiteDatabase openDatabase() throws SQLException {
+    private SQLiteDatabase openDatabase() throws SQLException {
         return myDbHelper.getWritableDatabase();
     }
 
     public boolean deleteDatabase() {
-        context.deleteDatabase(DATABASE_NAME1);
-        return true;
+        return context.deleteDatabase(DATABASE_NAME1);
+    }
+
+    public void refreshDbHelper() {
+        myDbHelper = new DatabaseHelper(context);
     }
 
     /************************************************************/
@@ -195,7 +196,6 @@ public class MySQLiteHelper {
         contact.put(sBusinessRecent, user.getRecent());
         contact.put(sBusinessName, user.getName());
         contact.put(sBusinessComposingMessage, "");
-        contact.put(sBusinessAvatarFile, user.getAvatarThumbFileId());
         contact.put(sBusinessBlocked, "N");
         contact.put(sBusinessMuted, "N");
         contact.put(sBusinessCreatedAt, user.getCreated());
@@ -207,12 +207,6 @@ public class MySQLiteHelper {
         }
 
         return user;
-    }
-
-    public synchronized int updateContactAvatar(long contactId, String avatarUrl) {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(sBusinessAvatarFile, avatarUrl);
-        return openDatabase().update(TABLE_CV_CONTACTS, contentValues, COLUMN_ID + " = ?", new String[]{Long.toString(contactId)});
     }
 
     public List<dbCustomer> getAllContacts() {
@@ -234,45 +228,6 @@ public class MySQLiteHelper {
 
     @WorkerThread
     public void deleteDataAssociatedWithUser(String ids, int total) {
-        String query = "SELECT " + sBusinessAvatarFile + "," + sBusinessCustomerId + " FROM "
-                + TABLE_CV_CONTACTS + " WHERE " + COLUMN_ID + " IN (" + ids + ")";
-
-        Cursor cursor = openDatabase().rawQuery(query, new String[]{});
-        cursor.moveToFirst();
-        List<String> avatars = new ArrayList<>(total);
-        List<String> business = new ArrayList<>(total);
-
-        while (!cursor.isAfterLast()) {
-            avatars.add(cursor.getString(0));
-            business.add(cursor.getString(1));
-            cursor.moveToNext();
-        }
-
-        cursor.close();
-        int i = 0;
-
-        for (i = 0; i < avatars.size(); i++) {
-            if (avatars.get(i) != null) {
-                File file = new File(avatars.get(i));
-                try {
-                    file.delete();
-                } catch (SecurityException e) {
-                    Logger.error("deleteDataAssociated", e.getMessage());
-                }
-            }
-        }
-
-        // 132 is the min string. It happens when only one user is deleted
-        StringBuilder objectIds = new StringBuilder(15);
-        for (i = 0; i < business.size(); i++) {
-            objectIds.append("\'");
-            objectIds.append(business.get(i));
-            objectIds.append("\'");
-            if (i + 1 < business.size()) {
-                objectIds.append(",");
-            }
-        }
-
         StringBuilder sb = new StringBuilder(132);
         // Delete data associated with messages
         sb.append("SELECT ");
@@ -289,21 +244,20 @@ public class MySQLiteHelper {
         sb.append(" AND (");
         sb.append(sMessageFromUserId);
         sb.append(" IN (");
-        sb.append(objectIds);
+        sb.append(ids);
         sb.append(")");
         sb.append(" OR ");
         sb.append(sMessageToUserId);
         sb.append(" IN (");
-        sb.append(objectIds);
+        sb.append(ids);
         sb.append(")");
         sb.append(")");
 
-        query = sb.toString();
-
-        cursor = openDatabase().rawQuery(query, new String[]{});
+        String query = sb.toString();
+        Cursor cursor = openDatabase().rawQuery(query, new String[]{});
         cursor.moveToFirst();
 
-        for (i = 0; i < cursor.getCount(); i++) {
+        for (int i = 0; i < cursor.getCount(); i++) {
             if (cursor.getString(0) != null) {
                 File file = new File(cursor.getString(0));
                 try {
@@ -349,12 +303,11 @@ public class MySQLiteHelper {
         contact.setRecent(cursor.getLong(3));
         contact.setName(cursor.getString(4));
         contact.setComposingMessage(cursor.getString(5));
-        contact.setAvatarThumbFileId(cursor.getString(6));
-        boolean b = cursor.getString(7).contentEquals("Y");
+        boolean b = cursor.getString(6).contentEquals("Y");
         contact.setBlocked(b);
-        b = cursor.getString(8).contentEquals("Y");
+        b = cursor.getString(7).contentEquals("Y");
         contact.setMuted(b);
-        contact.setCreated(cursor.getLong(9));
+        contact.setCreated(cursor.getLong(8));
         return contact;
     }
 
@@ -403,46 +356,44 @@ public class MySQLiteHelper {
     }
 
     public nChatItem getLastMessageAndUnredCount(String fromId) {
-        String id = ConversaApp.getInstance(context).getPreferences().getBusinessId();
+        String id = ConversaApp.getInstance(context).getPreferences().getAccountBusinessId();
 
-        StringBuilder sbQuery = new StringBuilder(565);
-        sbQuery.append("SELECT *, ");
-        sbQuery.append("(");
-        sbQuery.append("SELECT COUNT(*) FROM ");
-        sbQuery.append(TABLE_MESSAGES);
-        sbQuery.append(" WHERE ");
-        sbQuery.append(sMessageFromUserId);
-        sbQuery.append(" = \'");
-        sbQuery.append(fromId);
-        sbQuery.append("\' AND ");
-        sbQuery.append(sMessageViewAt);
-        sbQuery.append(" = 0) FROM (");
-        sbQuery.append("SELECT * FROM ");
-        sbQuery.append(TABLE_MESSAGES);
-        sbQuery.append(" WHERE ");
-        sbQuery.append(sMessageFromUserId);
-        sbQuery.append(" = \'");
-        sbQuery.append(fromId);
-        sbQuery.append("\' AND ");
-        sbQuery.append(sMessageToUserId);
-        sbQuery.append(" = \'");
-        sbQuery.append(id);
-        sbQuery.append("\'");
-        sbQuery.append(" OR ");
-        sbQuery.append(sMessageFromUserId);
-        sbQuery.append(" = \'");
-        sbQuery.append(id);
-        sbQuery.append("\' AND ");
-        sbQuery.append(sMessageToUserId);
-        sbQuery.append(" = \'");
-        sbQuery.append(fromId);
-        sbQuery.append("\'");
-        sbQuery.append(" ORDER BY ");
-        sbQuery.append(sMessageCreatedAt);
-        sbQuery.append(" DESC LIMIT 1 ");
-        sbQuery.append(")");
+        String query = "SELECT *, " +
+                "(" +
+                "SELECT COUNT(*) FROM " +
+                TABLE_MESSAGES +
+                " WHERE " +
+                sMessageFromUserId +
+                " = \'" +
+                fromId +
+                "\' AND " +
+                sMessageViewAt +
+                " = 0) FROM (" +
+                "SELECT * FROM " +
+                TABLE_MESSAGES +
+                " WHERE " +
+                sMessageFromUserId +
+                " = \'" +
+                fromId +
+                "\' AND " +
+                sMessageToUserId +
+                " = \'" +
+                id +
+                "\'" +
+                " OR " +
+                sMessageFromUserId +
+                " = \'" +
+                id +
+                "\' AND " +
+                sMessageToUserId +
+                " = \'" +
+                fromId +
+                "\'" +
+                " ORDER BY " +
+                sMessageCreatedAt +
+                " DESC LIMIT 1 " +
+                ")";
 
-        String query = sbQuery.toString();
         Cursor cursor = openDatabase().rawQuery(query, new String[]{});
         cursor.moveToFirst();
         dbMessage message = null;
@@ -464,7 +415,7 @@ public class MySQLiteHelper {
         ContentValues contentValues = new ContentValues();
         long currentTimestamp = System.currentTimeMillis();
         contentValues.put(sMessageViewAt, currentTimestamp);
-        String fromId = ConversaApp.getInstance(context).getPreferences().getBusinessId();
+        String fromId = ConversaApp.getInstance(context).getPreferences().getAccountBusinessId();
         return openDatabase().update(TABLE_MESSAGES, contentValues,
                 "(" + sMessageFromUserId + " = ? AND " + sMessageToUserId + " = ?)"
                         + " OR "
@@ -476,7 +427,7 @@ public class MySQLiteHelper {
         ContentValues contentValues = new ContentValues();
         long currentTimestamp = System.currentTimeMillis();
         contentValues.put(sMessageReadAt, currentTimestamp);
-        String fromId = ConversaApp.getInstance(context).getPreferences().getBusinessId();
+        String fromId = ConversaApp.getInstance(context).getPreferences().getAccountBusinessId();
         return openDatabase().update(TABLE_MESSAGES, contentValues,
                 "(" + sMessageFromUserId + " = ? AND " + sMessageToUserId + " = ?)"
                         + " OR "
@@ -485,7 +436,7 @@ public class MySQLiteHelper {
     }
 
     private int deleteAllMessagesById(String id) {
-        String fromId = ConversaApp.getInstance(context).getPreferences().getBusinessId();
+        String fromId = ConversaApp.getInstance(context).getPreferences().getAccountBusinessId();
         int result = openDatabase().delete(TABLE_MESSAGES,
                 "(" + sMessageFromUserId + " = ? AND " + sMessageToUserId + " = ?)"
                 + " OR "
@@ -496,7 +447,7 @@ public class MySQLiteHelper {
     }
 
     public List<dbMessage> getMessagesByContact(String id, int count, int offset) throws SQLException {
-        String fromId = ConversaApp.getInstance(context).getPreferences().getBusinessId();
+        String fromId = ConversaApp.getInstance(context).getPreferences().getAccountBusinessId();
         String query = "SELECT m.* FROM "
                         + TABLE_MESSAGES + " m"
                         + " WHERE m." + sMessageFromUserId + " = \'" + id + "\' AND m." + sMessageToUserId + " = \'" + fromId + "\'"
@@ -555,7 +506,7 @@ public class MySQLiteHelper {
         message.setWidth(cursor.getInt(14));
         message.setHeight(cursor.getInt(15));
         message.setDuration(cursor.getInt(16));
-        message.setBytes(cursor.getInt(17));
+        message.setBytes(cursor.getLong(17));
         message.setProgress(cursor.getInt(18));
         return message;
     }
@@ -691,7 +642,7 @@ public class MySQLiteHelper {
         return information;
     }
 
-    public NotificationInformation incrementGroupCount(NotificationInformation information, boolean create) {
+    public void incrementGroupCount(NotificationInformation information, boolean create) {
         if (create) {
             // Create record
             ContentValues record = new ContentValues();
@@ -701,11 +652,10 @@ public class MySQLiteHelper {
             information.setNotificationId(openDatabase().insert(TABLE_NOTIFICATION, null, record));
         } else {
             // Update record
+            information.setCount(information.getCount() + 1);
             openDatabase().execSQL(String.format(Locale.US, "UPDATE %s SET %s = (%s + 1) WHERE %s = %d;",
                     TABLE_NOTIFICATION, sNotificationCount, sNotificationCount, COLUMN_ID, information.getNotificationId()));
         }
-
-        return information;
     }
 
     public void resetGroupCount(long notificationId) {

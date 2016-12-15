@@ -45,7 +45,6 @@ public class dbCustomer implements Parcelable {
     private String mName;
     private String mDisplayName;
     private String mComposingMessageString;
-    private String mAvatarThumbFileId;
     private boolean mBlocked;
     private boolean mMuted;
     private long mRecent;
@@ -53,9 +52,6 @@ public class dbCustomer implements Parcelable {
 
     public dbCustomer() {
         this.mId = -1;
-        this.mComposingMessageString = "";
-        this.mBlocked = false;
-        this.mMuted = false;
         this.mCreated = System.currentTimeMillis();
         this.mRecent = this.mCreated;
     }
@@ -65,7 +61,6 @@ public class dbCustomer implements Parcelable {
     public String getName() { return mName; }
     public String getDisplayName() { return mDisplayName; }
     public String getComposingMessage() { return mComposingMessageString; }
-    public String getAvatarThumbFileId() { return mAvatarThumbFileId; }
     public boolean isBlocked() { return mBlocked; }
     public boolean isMuted() { return mMuted; }
     public long getRecent() { return mRecent; }
@@ -76,7 +71,6 @@ public class dbCustomer implements Parcelable {
     public void setName(String mName) { this.mName = mName; }
     public void setDisplayName(String mDisplayName) { this.mDisplayName = mDisplayName; }
     public void setComposingMessage(String mComposingMessageString) { this.mComposingMessageString = mComposingMessageString; }
-    public void setAvatarThumbFileId(String mAvatarThumbFileId) { this.mAvatarThumbFileId = mAvatarThumbFileId; }
     public void setBlocked(boolean mBlocked) { this.mBlocked = mBlocked; }
     public void setMuted(boolean mMuted) { this.mMuted = mMuted; }
     public void setRecent(long mRecent) { this.mRecent = mRecent; }
@@ -111,7 +105,6 @@ public class dbCustomer implements Parcelable {
         dest.writeString(this.mName);
         dest.writeString(this.mDisplayName);
         dest.writeString(this.mComposingMessageString);
-        dest.writeString(this.mAvatarThumbFileId);
         dest.writeByte(this.mBlocked ? (byte) 1 : (byte) 0);
         dest.writeByte(this.mMuted ? (byte) 1 : (byte) 0);
         dest.writeLong(this.mRecent);
@@ -127,7 +120,6 @@ public class dbCustomer implements Parcelable {
         this.mName = in.readString();
         this.mDisplayName = in.readString();
         this.mComposingMessageString = in.readString();
-        this.mAvatarThumbFileId = in.readString();
         this.mBlocked = in.readByte() != 0;
         this.mMuted = in.readByte() != 0;
         this.mRecent = in.readLong();

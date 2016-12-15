@@ -21,15 +21,18 @@ import java.util.List;
 import ee.app.conversabusiness.actions.ContactAction;
 import ee.app.conversabusiness.adapters.ChatsAdapter;
 import ee.app.conversabusiness.contact.ContactIntentService;
+import ee.app.conversabusiness.contact.ContactUpdateReason;
 import ee.app.conversabusiness.extendables.ConversaFragment;
+import ee.app.conversabusiness.interfaces.OnContactClickListener;
+import ee.app.conversabusiness.interfaces.OnContactLongClickListener;
 import ee.app.conversabusiness.messaging.MessageUpdateReason;
 import ee.app.conversabusiness.model.database.dbCustomer;
 import ee.app.conversabusiness.model.database.dbMessage;
 import ee.app.conversabusiness.utils.Const;
 import ee.app.conversabusiness.view.BoldTextView;
 
-public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.OnItemClickListener,
-        ChatsAdapter.OnLongClickListener, View.OnClickListener, ActionMode.Callback {
+public class FragmentUsersChat extends ConversaFragment implements OnContactClickListener,
+        OnContactLongClickListener, View.OnClickListener, ActionMode.Callback {
 
     private RecyclerView mRvUsers;
     private RelativeLayout mRlNoUsers;
@@ -47,10 +50,10 @@ public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.
         mRlNoUsers = (RelativeLayout) rootView.findViewById(R.id.rlNoChats);
 
         mUserListAdapter = new ChatsAdapter((AppCompatActivity) getActivity(), this, this);
+        mRvUsers.setHasFixedSize(true);
         mRvUsers.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRvUsers.setItemAnimator(new DefaultItemAnimator());
         mRvUsers.setAdapter(mUserListAdapter);
-        mRvUsers.setHasFixedSize(true);
 
         refresh = false;
 
@@ -58,9 +61,14 @@ public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.
         mRtvStartBrowsing.setOnClickListener(this);
 
         unregisterListener = false;
-        dbCustomer.getAllContacts(getContext());
 
         return rootView;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        dbCustomer.getAllContacts(getContext());
     }
 
     @Override
@@ -116,7 +124,7 @@ public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.
     }
 
     @Override
-    public void ContactUpdated(dbCustomer response) {
+    public void ContactUpdated(dbCustomer response, ContactUpdateReason reason) {
 
     }
 
@@ -138,7 +146,7 @@ public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.
     }
 
     @Override
-    public void onItemClick(dbCustomer contact, int position) {
+    public void onContactClick(dbCustomer contact, View v, int position) {
         if (actionMode == null) {
             Intent intent = new Intent(getActivity(), ActivityChatWall.class);
             intent.putExtra(Const.iExtraCustomer, contact);
@@ -151,7 +159,7 @@ public class FragmentUsersChat extends ConversaFragment implements ChatsAdapter.
     }
 
     @Override
-    public void onItemLongClick(final dbCustomer contact, int position) {
+    public void onContactLongClick(dbCustomer contact, View v, int position) {
         if (actionMode == null) {
             myToggleSelection(position);
         }

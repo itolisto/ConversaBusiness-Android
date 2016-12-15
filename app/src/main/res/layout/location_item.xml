@@ -11,7 +11,7 @@
         android:shadowColor="@android:color/background_dark"
         android:enabled="true"
         android:padding="4dp" />
-    <ee.app.conversabusiness.view.MediumTextView android:id="@+id/crime_list_item_titleTextView"
+    <ee.app.conversa.view.MediumTextView android:id="@+id/crime_list_item_titleTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toLeftOf="@id/crime_list_item_solvedCheckBox"
@@ -20,7 +20,7 @@
         android:paddingRight="4dp"
         android:textColor="@android:color/darker_gray"
         android:text="Crime title" />
-    <ee.app.conversabusiness.view.LightTextView android:id="@+id/crime_list_item_dateTextView"
+    <ee.app.conversa.view.LightTextView android:id="@+id/crime_list_item_dateTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/crime_list_item_titleTextView"

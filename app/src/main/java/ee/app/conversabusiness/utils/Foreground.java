@@ -5,7 +5,6 @@ import android.app.Application;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -45,7 +44,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class Foreground implements Application.ActivityLifecycleCallbacks {
 
-    public static final long CHECK_DELAY = 600;
+    public static final long CHECK_DELAY = 650;
     public static final String TAG = Foreground.class.getSimpleName();
 
     public interface Listener {
@@ -130,16 +129,16 @@ public class Foreground implements Application.ActivityLifecycleCallbacks {
             handler.removeCallbacks(check);
 
         if (wasBackground){
-            Log.i(TAG, "went foreground");
+            Logger.error(TAG, "went foreground");
             for (Listener l : listeners) {
                 try {
                     l.onBecameForeground();
                 } catch (Exception exc) {
-                    Log.e(TAG, "Listener threw exception!", exc);
+                    Logger.error(TAG, "Listener threw exception!", exc);
                 }
             }
         } else {
-            Log.i(TAG, "still foreground");
+            Logger.error(TAG, "still foreground");
         }
     }
 
@@ -155,16 +154,16 @@ public class Foreground implements Application.ActivityLifecycleCallbacks {
             public void run() {
                 if (foreground && paused) {
                     foreground = false;
-                    Log.i(TAG, "went background");
+                    Logger.error(TAG, "went background");
                     for (Listener l : listeners) {
                         try {
                             l.onBecameBackground();
                         } catch (Exception exc) {
-                            Log.e(TAG, "Listener threw exception!", exc);
+                            Logger.error(TAG, "Listener threw exception!", exc);
                         }
                     }
                 } else {
-                    Log.i(TAG, "still foreground");
+                    Logger.error(TAG, "still foreground");
                 }
             }
         }, CHECK_DELAY);

@@ -18,15 +18,15 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ee.app.conversabusiness.view.MediumTextView
+            <ee.app.conversabusiness.view.BoldTextView
                 android:text="@string/sett_chat_message_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
             <View
-                android:background="@color/blue"
+                android:background="@color/default_black"
                 android:layout_width="match_parent"
-                android:layout_height="1dp" />
+                android:layout_height="@dimen/settings_title_divider_height" />
 
             <LinearLayout
                 android:id="@+id/llQualityUpload"
@@ -48,7 +48,7 @@
             <View
                 android:background="@drawable/divider"
                 android:layout_width="match_parent"
-                android:layout_height="1dp"/>
+                android:layout_height="@dimen/settings_divider_height"/>
 
             <RelativeLayout
                 android:gravity="center_vertical"
@@ -69,7 +69,7 @@
             <View
                 android:background="@drawable/divider"
                 android:layout_width="match_parent"
-                android:layout_height="1dp"/>
+                android:layout_height="@dimen/settings_divider_height"/>
 
             <RelativeLayout
                 android:gravity="center_vertical"

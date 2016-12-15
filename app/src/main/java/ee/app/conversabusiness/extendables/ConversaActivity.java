@@ -9,7 +9,10 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
-import ee.app.conversabusiness.dialog.InAppPushNotification;
+import ee.app.conversabusiness.ConversaApp;
+import ee.app.conversabusiness.R;
+import ee.app.conversabusiness.contact.ContactUpdateReason;
+import ee.app.conversabusiness.dialog.InAppNotification;
 import ee.app.conversabusiness.events.TypingEvent;
 import ee.app.conversabusiness.events.contact.ContactDeleteEvent;
 import ee.app.conversabusiness.events.contact.ContactRetrieveEvent;
@@ -30,6 +33,7 @@ import ee.app.conversabusiness.utils.Logger;
 public class ConversaActivity extends BaseActivity implements OnMessageTaskCompleted,
         OnContactTaskCompleted {
 
+    protected boolean unregisterListener = true;
     protected RelativeLayout mRlPushNotification;
 
     @Override
@@ -42,15 +46,33 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        EventBus.getDefault().register(this);
+    protected void initialization() {
+        super.initialization();
+        if (mRlPushNotification == null) {
+            mRlPushNotification = (RelativeLayout) findViewById(R.id.rlPushNotification);
+        }
     }
 
     @Override
-    protected void onStop() {
-        EventBus.getDefault().unregister(this);
+    public void onStart() {
+        super.onStart();
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
+    }
+
+    @Override
+    public void onStop() {
+        if (unregisterListener) {
+            EventBus.getDefault().unregister(this);
+        }
         super.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        EventBus.getDefault().unregister(this);
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -90,7 +112,7 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onContactUpdateEvent(ContactUpdateEvent event) {
-        ContactUpdated(event.getContact());
+        ContactUpdated(event.getContact(), event.getReason());
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
@@ -129,7 +151,9 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
     public void MessageReceived(dbMessage response) {
         // Show in-app notification
         if (mRlPushNotification != null) {
-            InAppPushNotification.make(getApplicationContext(), mRlPushNotification).show(response.getBody(), response.getFromUserId());
+            if (ConversaApp.getInstance(this).getPreferences().getInAppNotificationPreview())
+                InAppNotification.make(this, mRlPushNotification)
+                        .show(response);
         }
     }
 
@@ -159,7 +183,7 @@ public class ConversaActivity extends BaseActivity implements OnMessageTaskCompl
     }
 
     @Override
-    public void ContactUpdated(dbCustomer response) {
+    public void ContactUpdated(dbCustomer response, ContactUpdateReason reason) {
         /* Child activities override this method */
     }
 

@@ -43,7 +43,7 @@
                     android:layout_below="@+id/ivLogoImage"
                     android:layout_toRightOf="@+id/tvVerified"
                     android:contentDescription="@null"
-                    android:background="@drawable/notification" />
+                    android:background="@drawable/ic_unread_message" />
             </RelativeLayout>
 
             <!-- *********************************************** -->

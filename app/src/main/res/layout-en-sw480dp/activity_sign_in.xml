@@ -12,7 +12,7 @@
 		android:layout_marginTop="?attr/actionBarSize"
 		android:contentDescription="@null"
 		android:scaleType="centerInside"
-		android:src="@drawable/image_logo_text" />
+		android:src="@drawable/im_logo_text" />
 
 	<RelativeLayout
 		android:layout_below="@id/ivConversa"
@@ -108,16 +108,11 @@
 		android:layout_alignParentTop="true"
 		android:layout_alignParentEnd="true"
 		android:layout_alignParentRight="true"
-		android:layout_marginRight="16dp"
-		android:layout_marginEnd="16dp"
-		android:layout_marginTop="16dp"
-		android:layout_width="25dp"
-		android:layout_height="25dp" />
-
-	<include android:id="@+id/rlNoInternetNotification"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"
-		android:visibility="gone"
-		layout="@layout/no_internet_notification" />
+		android:layout_marginRight="6dp"
+		android:layout_marginEnd="6dp"
+		android:layout_marginTop="6dp"
+		android:padding="10dp"
+		android:layout_width="45dp"
+		android:layout_height="45dp" />
 
 </RelativeLayout>

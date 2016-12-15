@@ -1,16 +1,17 @@
 package ee.app.conversabusiness;
 
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
 import ee.app.conversabusiness.extendables.BaseActivity;
-import ee.app.conversabusiness.utils.Utils;
+import ee.app.conversabusiness.utils.Const;
+import ee.app.conversabusiness.utils.Logger;
 
 /**
  * ActivitySignIn
@@ -25,13 +26,38 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
+        checkInternetConnection = false;
         initialization();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Utils.hideKeyboard(this);
+        Intent intent = getIntent();
+        if (intent != null && intent.getExtras() != null) {
+            if (intent.getExtras().getInt(Const.ACTION, -1) != -1) {
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Logger.error("ActivitySignIn", "Refreshing database");
+                        ConversaApp.getInstance(getApplicationContext())
+                                .getDB()
+                                .refreshDbHelper();
+                    }
+                }).start();
+
+                AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+                dialogBuilder.setTitle(getString(R.string.sett_account_logout_title));
+                dialogBuilder.setMessage(getString(R.string.parse_logout_reason));
+                dialogBuilder.setPositiveButton(getString(android.R.string.ok), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog b = dialogBuilder.create();
+                b.show();
+            }
+        }
     }
 
     protected void initialization() {
@@ -67,7 +93,7 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
                 break;
             }
             case R.id.ivLanguage: {
-                int index;
+                final int index;
 
                 switch(ConversaApp.getInstance(getBaseContext()).getPreferences().getLanguage()) {
                     case "en":
@@ -86,10 +112,12 @@ public class ActivitySignIn extends BaseActivity implements View.OnClickListener
                 b.setSingleChoiceItems(R.array.language_entries, index, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        ConversaApp.getInstance(getBaseContext()).getPreferences()
-                                .setLanguage(getResources().getStringArray(R.array.language_values)[which]);
-                        recreate();
                         dialog.dismiss();
+                        if (which != index) {
+                            ConversaApp.getInstance(getBaseContext()).getPreferences()
+                                    .setLanguage(getResources().getStringArray(R.array.language_values)[which]);
+                            recreate();
+                        }
                     }
                 });
                 b.show();

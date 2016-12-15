@@ -14,8 +14,8 @@
     </string-array>
 
     <string-array name="categories_titles">
-        <item name="Chats">Chats</item>
         <item name="Analytics">Estadísticas</item>
-        <item name="Settings">Ajustes</item>
+        <item name="Account">Cuenta</item>
     </string-array>
+
 </resources>

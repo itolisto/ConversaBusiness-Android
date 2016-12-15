@@ -66,7 +66,6 @@ public class Const {
 	public static final String kCustomerUserInfoKey = "userInfo";
 	public static final String kCustomerActiveKey = "active";
 	public static final String kCustomerDisplayNameKey = "displayName";
-	public static final String kCustomerAvatarKey = "avatar";
 	public static final String kCustomerNameKey = "name";
 
 	// dbCustomer class

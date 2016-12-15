@@ -1,15 +1,19 @@
 package ee.app.conversabusiness.utils;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.os.AsyncTask;
+import android.support.annotation.AnyRes;
+import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.view.WindowManager;
@@ -126,24 +130,45 @@ public class Utils {
 	}
 
 	public static Uri getUriFromString(String path) {
-		Uri uri;
-		if(path.isEmpty()) {
-			uri = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.ic_user);
+		if (TextUtils.isEmpty(path)) {
+			return null;
 		} else {
 			try {
 				new URL(path);
-				uri = Uri.parse(path);
+				return Uri.parse(path);
 			} catch (MalformedURLException e) {
 				File file = new File(path);
 				if (file.exists()) {
-					uri = Uri.fromFile(file);
+					return Uri.fromFile(file);
 				} else {
-					uri = Uri.parse("android.resource://ee.app.conversa/" + R.drawable.ic_user);
+					return null;
 				}
 			}
 		}
+	}
 
-		return uri;
+	/**
+	 * Get uri to any resource type [from: http://stackoverflow.com/a/36062748/5349296]
+	 * @param context - context
+	 * @param resId - resource id
+	 * @throws Resources.NotFoundException if the given ID does not exist.
+	 * @return - Uri to resource by given id
+	 */
+	public static Uri getDefaultImage(@NonNull Context context, @AnyRes int resId)
+			throws Resources.NotFoundException, NullPointerException {
+		/** Return a Resources instance for your application's package. */
+		Resources res = context.getResources();
+		/**
+		 * Creates a Uri which parses the given encoded URI string.
+		 * @param uriString an RFC 2396-compliant, encoded URI
+		 * @throws NullPointerException if uriString or context is null
+		 * @throws Resources.NotFoundException if resId couldn't be found
+		 * @return Uri for this given uri string
+		 */
+		return Uri.parse(ContentResolver.SCHEME_ANDROID_RESOURCE +
+				"://" + res.getResourcePackageName(resId)
+				+ '/' + res.getResourceTypeName(resId)
+				+ '/' + res.getResourceEntryName(resId));
 	}
 
 	// As described in StackOverflow answer: http://stackoverflow.com/a/9274868/5349296
@@ -228,49 +253,6 @@ public class Utils {
 
 		return mediaDirectory.getPath() + File.separator
 				+ "IMG_" + timeStamp + ".jpg";
-	}
-
-	public static void saveAvatarToInternalStorage(Context context, Bitmap bitmapImage, long id) {
-		new AsyncTask<Object, Void, Bitmap>() {
-			@Override
-			protected Bitmap doInBackground(Object... params) {
-				if (params.length == 0) {
-					return null;
-				}
-
-				Bitmap bitmap = (Bitmap) params[0];
-				Context context = (Context) params[1];
-
-				if (bitmap == null || context == null) {
-					return null;
-				}
-
-				String path;
-
-				try {
-					path = Utils.getResourceName(Utils.getMediaDirectory(context, "avatars"));
-					// Create imageDir
-					File mypath = new File(path);
-
-					FileOutputStream fos = new FileOutputStream(mypath);
-					// Use the compress method on the BitMap object to write image to the OutputStream
-					bitmap.compress(Bitmap.CompressFormat.JPEG, 85, fos);
-					fos.close();
-				} catch (Exception e) {
-					Logger.error("saveAvatarToInternalStorage", e.getMessage());
-					return null;
-				}
-
-				long id = (long) params[2];
-
-				if (id != -1) {
-					// Update contact url
-					ConversaApp.getInstance(context).getDB().updateContactAvatar(id, path);
-				}
-
-				return bitmap;
-			}
-		}.execute(bitmapImage, context, id);
 	}
 
 	@WorkerThread

@@ -67,7 +67,6 @@ import ee.app.conversabusiness.view.CroppedImageView;
  *
  * Creates cropped image from a gallery photo using a square frame.
  */
-
 public class ActivityCameraCrop extends AppCompatActivity implements View.OnTouchListener, View.OnClickListener {
 
 	// These matrices will be used to move and zoom image
@@ -96,9 +95,6 @@ public class ActivityCameraCrop extends AppCompatActivity implements View.OnTouc
 	// Uri for captured image so we can get image path
 	private String _path;
 	private CroppedImageView mCropImageView;
-
-	// directory name to store captured images and videos
-	private static final String IMAGE_DIRECTORY_NAME = "images";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -313,7 +309,7 @@ public class ActivityCameraCrop extends AppCompatActivity implements View.OnTouc
 	public void scaleView(Bitmap mBitmap) {
 		View top_view = findViewById(R.id.topView);
 		View bottom_view = findViewById(R.id.bottomView);
-		RelativeLayout footer = (RelativeLayout) findViewById(R.id.llFooter);
+		Button footer = (Button) findViewById(R.id.btnCameraOk);
 		LinearLayout crop_frame = (LinearLayout) findViewById(R.id.llCropFrame);
 		Display display = getWindowManager().getDefaultDisplay();
 		int width = display.getWidth();
@@ -450,4 +446,5 @@ public class ActivityCameraCrop extends AppCompatActivity implements View.OnTouc
 
 		return mBitmap;
 	}
+
 }
