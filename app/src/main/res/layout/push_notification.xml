@@ -30,7 +30,7 @@
         android:layout_height="1dp"
         android:layout_centerVertical="true"/>
 
-    <ee.app.conversabusiness.view.MediumTextView
+    <ee.app.conversamanager.view.MediumTextView
         android:id="@+id/tvUserName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -48,7 +48,7 @@
         android:textColor="@android:color/white"
         android:textSize="16sp" />
 
-    <ee.app.conversabusiness.view.RegularTextView
+    <ee.app.conversamanager.view.RegularTextView
         android:id="@+id/tvNotification"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

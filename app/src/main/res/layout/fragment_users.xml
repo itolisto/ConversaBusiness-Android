@@ -3,7 +3,7 @@
     android:background="@android:color/white"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".FragmentUsersChat" >
+    tools:context="ee.app.conversamanager.FragmentUsersChat" >
 
     <RelativeLayout
         android:gravity="center"
@@ -12,10 +12,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
-        <ee.app.conversabusiness.view.MediumTextView
+        <ee.app.conversamanager.view.MediumTextView
             android:id="@+id/tvNoMessages"
             android:text="@string/no_messages"
-            android:textColor="@color/default_gray"
+            android:textColor="@color/gray"
             android:layout_centerInParent="true"
             android:textSize="24sp"
             android:layout_width="wrap_content"
@@ -31,39 +31,35 @@
             android:layout_above="@id/tvNoMessages"
             android:scaleType="fitCenter" />
 
-        <ee.app.conversabusiness.view.LightTextView
+        <ee.app.conversamanager.view.LightTextView
             android:id="@+id/tvNoMessagesDescription"
             android:text="@string/no_messages_description_one"
-            android:textColor="@color/default_gray"
+            android:textColor="@color/light_gray"
             android:layout_centerInParent="true"
             android:textSize="14sp"
+            android:gravity="center"
             android:layout_marginTop="14dp"
             android:layout_below="@id/tvNoMessages"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 
-        <ee.app.conversabusiness.view.LightTextView
-            android:id="@+id/tvNoMessagesDescriptionTwo"
-            android:text="@string/no_messages_description_two"
-            android:textColor="@color/default_gray"
-            android:layout_centerInParent="true"
-            android:textSize="14sp"
-            android:layout_below="@id/tvNoMessagesDescription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <ee.app.conversabusiness.view.BoldTextView
-            android:padding="9dp"
-            android:textSize="18sp"
+        <Button
+            android:textSize="11sp"
             android:layout_marginTop="14dp"
-            android:id="@+id/rtvStartBrowsing"
+            android:id="@+id/btnShareConversa"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/start_browsing"
+            android:layout_height="35dp"
+            android:paddingEnd="14dp"
+            android:paddingLeft="14dp"
+            android:paddingRight="14dp"
+            android:paddingStart="14dp"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:text="@string/chats_share_conversalink"
             android:layout_centerHorizontal="true"
-            android:textColor="@color/default_green"
-            android:background="@drawable/border_textview"
-            android:layout_below="@id/tvNoMessagesDescriptionTwo" />
+            android:layout_below="@id/tvNoMessagesDescription"
+            android:textColor="@drawable/textcolor_purple_state"
+            android:background="@drawable/button_shape_purple_border" />
     </RelativeLayout>
 
     <android.support.v7.widget.RecyclerView

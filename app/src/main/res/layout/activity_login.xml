@@ -3,21 +3,22 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 	android:fitsSystemWindows="true"
-	android:background="@color/default_white"
-	tools:context="ee.app.conversabusiness.ActivityLogIn" >
+	android:fillViewport="true"
+	android:background="@android:color/white"
+	tools:context="ee.app.conversamanager.login.ActivityLogIn" >
 
 	<RelativeLayout
 		android:focusableInTouchMode="true"
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content" >
 
-		<ee.app.conversabusiness.view.BoldTextView
+		<ee.app.conversamanager.view.MediumTextView
 			android:id="@+id/btvTitle"
 			android:text="@string/SIGN_IN"
 			android:layout_marginTop="40dp"
 			android:textSize="18sp"
 			android:textAllCaps="true"
-			android:textColor="@color/default_black"
+			android:textColor="@android:color/black"
 			android:layout_alignParentTop="true"
 			android:layout_centerHorizontal="true"
 			android:layout_width="wrap_content"
@@ -29,7 +30,7 @@
 			android:layout_below="@id/btvTitle"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:theme="@style/MyTheme.Blue"
+			android:theme="@style/MyTheme.Gray"
 			android:padding="14dp" >
 
 			<EditText
@@ -38,11 +39,12 @@
 				android:layout_height="wrap_content"
 				android:gravity="bottom"
 				android:hint="@string/email"
+				android:imeOptions="actionNext"
 				android:textCursorDrawable="@null"
 				android:inputType="textEmailAddress"
-				android:textColor="@color/default_black"
-				android:textColorHint="@color/default_gray"
-				android:textSize="18sp" />
+				android:textColor="@android:color/black"
+				android:textColorHint="@color/light_gray"
+				android:textSize="14sp" />
 		</android.support.design.widget.TextInputLayout>
 
 		<android.support.design.widget.TextInputLayout
@@ -50,7 +52,7 @@
 			android:layout_below="@id/tilEmail"
 			android:layout_width="match_parent"
 			android:layout_height="wrap_content"
-			android:theme="@style/MyTheme.Blue"
+			android:theme="@style/MyTheme.Gray"
 			android:padding="14dp" >
 
 			<EditText
@@ -59,11 +61,12 @@
 				android:layout_height="wrap_content"
 				android:gravity="bottom"
 				android:hint="@string/password"
+				android:imeOptions="actionDone"
 				android:textCursorDrawable="@null"
 				android:inputType="textPassword"
-				android:textColor="@color/default_black"
-				android:textColorHint="@color/default_gray"
-				android:textSize="18sp" />
+				android:textColor="@android:color/black"
+				android:textColorHint="@color/light_gray"
+				android:textSize="14sp" />
 		</android.support.design.widget.TextInputLayout>
 
 		<Button
@@ -80,7 +83,7 @@
 			android:gravity="top"
 			android:textAllCaps="false"
 			android:text="@string/forgot_password"
-			android:textColor="@color/default_gray" />
+			android:textColor="@color/light_dark_gray" />
 
 		<Button
 			android:id="@+id/btnSignInIn"
@@ -92,7 +95,6 @@
 			android:layout_marginBottom="16dp"
 			android:gravity="center"
 			android:text="@string/SIGN_IN"
-			android:enabled="false"
 			android:textColor="@drawable/textcolor_white_state"
 			android:textSize="14sp"
 			android:background="@drawable/button_shape_white" />

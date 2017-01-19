@@ -4,6 +4,6 @@
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/regular_tabs"
+        android:background="@color/purpleNavbar"
         android:theme="@style/ToolBarStyle" />
 </merge>

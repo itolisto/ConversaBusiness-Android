@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@android:color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <include layout="@layout/actionbar_preference"/>
+
+    <LinearLayout
+        android:padding="16dp"
+        android:orientation="vertical"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/rlOnline"
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/listPreferredItemHeight">
+
+            <ImageView
+                android:visibility="gone"
+                android:id="@+id/ivOnlineCheck"
+                android:src="@drawable/ic_arrow_right"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_width="@dimen/settings_main_next_size"
+                android:layout_height="@dimen/settings_main_next_size" />
+
+            <View
+                android:id="@+id/vOnline"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@drawable/circular_status_online" />
+
+            <ee.app.conversamanager.view.RegularTextView
+                android:ellipsize="end"
+                android:text="@string/profile_status_online"
+                android:layout_marginEnd="7dp"
+                android:layout_marginRight="7dp"
+                android:layout_marginStart="7dp"
+                android:layout_marginLeft="7dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/vOnline"
+                android:layout_toRightOf="@id/vOnline"
+                android:layout_toLeftOf="@id/ivOnlineCheck"
+                android:layout_toStartOf="@id/ivOnlineCheck" />
+        </RelativeLayout>
+
+        <View
+            android:background="@drawable/divider"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/settings_divider_height"/>
+
+        <RelativeLayout
+            android:id="@+id/rlAway"
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/listPreferredItemHeight">
+
+            <ImageView
+                android:visibility="gone"
+                android:id="@+id/ivAwayCheck"
+                android:src="@drawable/ic_arrow_right"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_width="@dimen/settings_main_next_size"
+                android:layout_height="@dimen/settings_main_next_size" />
+
+            <View
+                android:id="@+id/vAway"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@drawable/circular_status_away" />
+
+            <ee.app.conversamanager.view.RegularTextView
+                android:ellipsize="end"
+                android:text="@string/profile_status_away"
+                android:layout_marginEnd="7dp"
+                android:layout_marginRight="7dp"
+                android:layout_marginStart="7dp"
+                android:layout_marginLeft="7dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/vAway"
+                android:layout_toRightOf="@id/vAway"
+                android:layout_toLeftOf="@id/ivAwayCheck"
+                android:layout_toStartOf="@id/ivAwayCheck" />
+        </RelativeLayout>
+
+        <View
+            android:background="@drawable/divider"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/settings_divider_height"/>
+
+        <RelativeLayout
+            android:id="@+id/rlOffline"
+            android:gravity="center_vertical"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/listPreferredItemHeight">
+
+            <ImageView
+                android:visibility="gone"
+                android:id="@+id/ivOfflineCheck"
+                android:src="@drawable/ic_arrow_right"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentRight="true"
+                android:layout_width="@dimen/settings_main_next_size"
+                android:layout_height="@dimen/settings_main_next_size" />
+
+            <View
+                android:id="@+id/vOffline"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:background="@drawable/circular_status_offline" />
+
+            <ee.app.conversamanager.view.RegularTextView
+                android:ellipsize="end"
+                android:text="@string/profile_status_offline"
+                android:layout_marginEnd="7dp"
+                android:layout_marginRight="7dp"
+                android:layout_marginStart="7dp"
+                android:layout_marginLeft="7dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/vOffline"
+                android:layout_toRightOf="@id/vOffline"
+                android:layout_toLeftOf="@id/ivOfflineCheck"
+                android:layout_toStartOf="@id/ivOfflineCheck" />
+        </RelativeLayout>
+
+        <View
+            android:background="@drawable/divider"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/settings_divider_height"/>
+
+        <RelativeLayout
+            android:visibility="gone"
+            android:id="@+id/rlUpdateStatus"
+            android:layout_width="match_parent"
+            android:layout_height="?android:attr/listPreferredItemHeight">
+
+            <ee.app.conversamanager.view.MediumTextView
+                android:ellipsize="end"
+                android:text="@string/sett_status_update"
+                android:textColor="@color/blue"
+                android:layout_centerInParent="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </RelativeLayout>
+
+    </LinearLayout>
+</RelativeLayout>

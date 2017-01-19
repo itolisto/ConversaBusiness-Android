@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
-    android:background="@color/default_purple" >
+    android:background="@color/purpleNavbar" >
 
     <FrameLayout
         android:id="@+id/flBack"
@@ -34,12 +34,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ee.app.conversabusiness.view.RegularTextView
+        <ee.app.conversamanager.view.RegularTextView
             android:id="@+id/rtvUrl"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:textColor="@android:color/black"
+            android:textColor="@android:color/white"
             android:textSize="15sp"
             android:ellipsize="end"
             android:singleLine="true"

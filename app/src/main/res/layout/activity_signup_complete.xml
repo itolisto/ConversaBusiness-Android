@@ -1,0 +1,111 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:fillViewport="true"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    android:focusableInTouchMode="true"
+    android:background="@android:color/white"
+    tools:context="ee.app.conversamanager.login.ActivityRegisterComplete" >
+
+    <RelativeLayout
+        android:focusableInTouchMode="true"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <ee.app.conversamanager.view.BoldTextView
+            android:id="@+id/btvTitle"
+            android:text="@string/SIGN_UP"
+            android:layout_marginTop="40dp"
+            android:textSize="18sp"
+            android:textAllCaps="true"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@android:color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_marginTop="14dp"
+            android:id="@+id/tilEmailSignUp"
+            android:layout_below="@id/btvTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="14dp" >
+
+            <EditText
+                android:id="@+id/etSignUpEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:gravity="bottom"
+                android:hint="@string/email"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:inputType="textEmailAddress"
+                android:textColor="@android:color/black"
+                android:textColorHint="@color/gray"
+                android:textSize="14sp" />
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/tilPasswordSignUp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tilEmailSignUp"
+            android:padding="14dp" >
+
+            <EditText
+                android:id="@+id/etSignUpPassword"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:gravity="bottom"
+                android:hint="@string/password"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:inputType="textPassword"
+                android:textColor="@android:color/black"
+                android:textColorHint="@color/gray"
+                android:textSize="14sp" />
+        </android.support.design.widget.TextInputLayout>
+
+        <Spinner
+            android:id="@+id/spCountry"
+            android:theme="@style/MyTheme.Gray"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_below="@id/tilPasswordSignUp"
+            android:layout_margin="14dp" />
+
+        <Button
+            android:id="@+id/btnSignUpUp"
+            android:layout_width="175dp"
+            android:layout_height="35dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="22dp"
+            android:gravity="center"
+            android:text="@string/finish"
+            android:layout_below="@id/spCountry"
+            android:layout_centerHorizontal="true"
+            android:textColor="@drawable/textcolor_white_state"
+            android:textSize="20sp"
+            android:background="@drawable/button_shape_white" />
+
+        <ee.app.conversamanager.view.LightTextView
+            android:text="@string/signup_terms_policies_warning"
+            android:layout_marginTop="40dp"
+            android:textSize="12sp"
+            android:gravity="center"
+            android:textAllCaps="true"
+            android:layout_below="@id/btnSignUpUp"
+            android:layout_centerHorizontal="true"
+            android:textColor="@color/light_gray"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+
+</ScrollView>

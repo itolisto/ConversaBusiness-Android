@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/rlCategoryLayout"
+    android:layout_width="match_parent"
+    android:layout_height="65dp"
+    android:clipToPadding="false" >
+
+    <ee.app.conversamanager.view.MediumTextView
+        android:id="@+id/tvCategoryTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="35dp"
+        android:layout_marginStart="35dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_centerVertical="true"
+        android:singleLine="true"
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:textColor="#444444"
+        android:textSize="17sp" />
+
+    <View
+        android:id="@+id/vDivider"
+        android:layout_marginLeft="35dp"
+        android:layout_marginStart="35dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/divider"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/category_item_divider_height" />
+</RelativeLayout>

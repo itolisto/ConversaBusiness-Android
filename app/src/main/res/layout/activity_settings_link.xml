@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@android:color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <include layout="@layout/actionbar_preference"/>
+
+    <LinearLayout
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp" />
+
+        <ee.app.conversamanager.view.MediumTextView
+            android:layout_marginTop="7dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sett_link_title" />
+
+        <ee.app.conversamanager.view.LightTextView
+            android:layout_marginTop="7dp"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/sett_link_description" />
+
+        <ee.app.conversamanager.view.MediumTextView
+            android:id="@+id/mtvConversaLink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:textSize="11sp"
+            android:layout_marginTop="14dp"
+            android:id="@+id/btnShareConversa"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:paddingEnd="14dp"
+            android:paddingLeft="14dp"
+            android:paddingRight="14dp"
+            android:paddingStart="14dp"
+            android:singleLine="true"
+            android:maxLines="1"
+            android:text="@string/chats_share_conversalink"
+            android:textColor="@drawable/textcolor_white_state"
+            android:background="@drawable/button_shape_white" />
+    </LinearLayout>
+</RelativeLayout>

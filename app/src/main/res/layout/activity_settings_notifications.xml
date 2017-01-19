@@ -18,13 +18,14 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <ee.app.conversabusiness.view.BoldTextView
+            <ee.app.conversamanager.view.BoldTextView
                 android:text="@string/sett_notification_push_title"
+                android:textAllCaps="true"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
             <View
-                android:background="@color/default_black"
+                android:background="@color/black"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/settings_title_divider_height" />
 
@@ -40,7 +41,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1">
 
-                    <ee.app.conversabusiness.view.RegularTextView
+                    <ee.app.conversamanager.view.RegularTextView
                         android:text="@string/sett_notification_sound_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -48,7 +49,8 @@
                         android:ellipsize="marquee"
                         android:fadingEdge="horizontal" />
 
-                    <ee.app.conversabusiness.view.LightTextView
+                    <ee.app.conversamanager.view.LightTextView
+                        android:textSize="13sp"
                         android:text="@string/sett_notification_sound_summary"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -81,7 +83,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1">
 
-                    <ee.app.conversabusiness.view.MediumTextView
+                    <ee.app.conversamanager.view.RegularTextView
                         android:text="@string/sett_notification_preview_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -89,7 +91,8 @@
                         android:ellipsize="marquee"
                         android:fadingEdge="horizontal" />
 
-                    <ee.app.conversabusiness.view.LightTextView
+                    <ee.app.conversamanager.view.LightTextView
+                        android:textSize="13sp"
                         android:text="@string/sett_notification_preview_summary"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -105,13 +108,15 @@
                     android:layout_height="match_parent" />
             </LinearLayout>
 
-            <ee.app.conversabusiness.view.BoldTextView
+            <ee.app.conversamanager.view.BoldTextView
                 android:text="@string/sett_notification_inapp_title"
+                android:textAllCaps="true"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:layout_marginTop="7dp"/>
 
             <View
-                android:background="@color/default_black"
+                android:background="@color/black"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/settings_title_divider_height" />
 
@@ -127,7 +132,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1">
 
-                    <ee.app.conversabusiness.view.RegularTextView
+                    <ee.app.conversamanager.view.RegularTextView
                         android:text="@string/sett_notification_sound_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -135,7 +140,8 @@
                         android:ellipsize="marquee"
                         android:fadingEdge="horizontal" />
 
-                    <ee.app.conversabusiness.view.LightTextView
+                    <ee.app.conversamanager.view.LightTextView
+                        android:textSize="13sp"
                         android:text="@string/sett_notification_inapp_sound_summary"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -168,7 +174,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1">
 
-                    <ee.app.conversabusiness.view.RegularTextView
+                    <ee.app.conversamanager.view.RegularTextView
                         android:text="@string/sett_notification_preview_title"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -176,7 +182,8 @@
                         android:ellipsize="marquee"
                         android:fadingEdge="horizontal" />
 
-                    <ee.app.conversabusiness.view.LightTextView
+                    <ee.app.conversamanager.view.LightTextView
+                        android:textSize="13sp"
                         android:text="@string/sett_notification_inapp_preview_summary"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

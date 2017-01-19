@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
-    tools:context=".ActivityChatWall" >
+    tools:context="ee.app.conversamanager.ActivityChatWall" >
 
     <RelativeLayout
         android:layout_marginTop="?attr/actionBarSize"
@@ -22,7 +22,7 @@
             android:layout_height="30dp"
             android:layout_marginLeft="14dp"
             android:layout_marginStart="14dp"
-            android:layout_marginBottom="7dp"
+            android:layout_marginBottom="9.5dp"
             android:background="@null"
             android:scaleType="centerInside"
             android:contentDescription="@null" />

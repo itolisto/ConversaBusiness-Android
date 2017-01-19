@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:myapp="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context=".FragmentUsersChat" >
+    tools:context="ee.app.conversamanager.FragmentUsersChat" >
     <item android:id="@+id/menu_delete"
         android:title="@string/delete_title_menu"
         android:icon="@drawable/ic_trash"

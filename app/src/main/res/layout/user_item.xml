@@ -14,14 +14,11 @@
         android:layout_marginStart="14dp"
         android:layout_marginRight="10dp"
         android:layout_marginEnd="10dp"
-        fresco:fadeDuration="300"
-        fresco:actualImageScaleType="centerCrop"
-        fresco:placeholderImage="@drawable/ic_business_default"
-        fresco:placeholderImageScaleType="centerInside"
-        fresco:failureImage="@drawable/ic_business_default"
-        fresco:failureImageScaleType="centerInside"
-        fresco:retryImage="@drawable/ic_business_default"
-        fresco:retryImageScaleType="centerInside"
+        fresco:actualImageScaleType="fitCenter"
+        fresco:placeholderImage="@drawable/ic_user_one"
+        fresco:placeholderImageScaleType="fitCenter"
+        fresco:failureImage="@drawable/ic_user_one"
+        fresco:failureImageScaleType="fitCenter"
         fresco:roundAsCircle="true" />
 
     <View
@@ -37,7 +34,7 @@
         android:layout_toRightOf="@id/sdvContactAvatar"
         android:layout_toEndOf="@id/sdvContactAvatar" />
 
-    <ee.app.conversabusiness.view.RegularTextView
+    <ee.app.conversamanager.view.RegularTextView
         android:textSize="11.5sp"
         android:id="@+id/rtvDate"
         android:text="11:45 AM"
@@ -47,11 +44,11 @@
         android:layout_alignEnd="@id/vDivider"
         android:layout_alignRight="@id/vDivider" />
 
-    <ee.app.conversabusiness.view.MediumTextView
+    <ee.app.conversamanager.view.MediumTextView
         android:id="@+id/mtvUser"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/default_black"
+        android:textColor="@color/black"
         android:maxLines="1"
         android:ellipsize="end"
         android:textSize="16sp"
@@ -75,11 +72,11 @@
         android:layout_alignEnd="@id/vDivider"
         android:layout_alignRight="@id/vDivider" />
 
-    <ee.app.conversabusiness.view.RegularTextView
+    <ee.app.conversamanager.view.RegularTextView
         android:id="@+id/rtvLastMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/default_gray"
+        android:textColor="@color/light_gray"
         android:minLines="1"
         android:maxLines="2"
         android:ellipsize="end"

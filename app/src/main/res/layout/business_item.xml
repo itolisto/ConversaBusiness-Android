@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
+    android:background="@android:color/white"
+    android:layout_width="match_parent"
+    android:layout_height="80dp"
+    android:clipToPadding="false" >
+
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/sdvBusinessImage"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="14dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginEnd="10dp"
+        fresco:fadeDuration="300"
+        fresco:actualImageScaleType="centerInside"
+        fresco:placeholderImage="@drawable/ic_business_default"
+        fresco:placeholderImageScaleType="centerInside"
+        fresco:failureImage="@drawable/ic_business_default"
+        fresco:failureImageScaleType="centerInside"
+        fresco:retryImage="@drawable/ic_business_default"
+        fresco:retryImageScaleType="centerInside"
+        fresco:roundAsCircle="true" />
+
+    <View
+        android:id="@+id/vDivider"
+        android:layout_height="1dp"
+        android:visibility="invisible"
+        android:layout_width="match_parent"
+        android:layout_centerVertical="true"
+        android:layout_toEndOf="@id/sdvBusinessImage"
+        android:layout_toRightOf="@id/sdvBusinessImage" />
+
+    <ee.app.conversamanager.view.MediumTextView
+        android:maxLines="1"
+        android:ellipsize="end"
+        android:textSize="16sp"
+        android:singleLine="true"
+        android:id="@+id/mtvDisplayName"
+        android:layout_above="@id/vDivider"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/vDivider"
+        android:layout_alignStart="@id/vDivider"
+        android:textColor="@android:color/black" />
+
+    <ee.app.conversamanager.view.LightTextView
+        android:maxLines="1"
+        android:textSize="14sp"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:id="@+id/ltvConversaId"
+        android:layout_below="@id/vDivider"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignLeft="@id/vDivider"
+        android:layout_alignStart="@id/vDivider"
+        android:textColor="@color/light_dark_gray" />
+
+    <View
+        android:layout_marginLeft="84dp"
+        android:layout_marginStart="84dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/divider"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/business_item_divider_height"/>
+</RelativeLayout>

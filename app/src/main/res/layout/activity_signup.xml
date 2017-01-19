@@ -1,0 +1,121 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:fillViewport="true"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:fitsSystemWindows="true"
+	android:focusableInTouchMode="true"
+	android:background="@android:color/white"
+	tools:context="ee.app.conversamanager.login.ActivityRegister" >
+
+	<RelativeLayout
+		android:focusableInTouchMode="true"
+		android:orientation="vertical"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content" >
+
+		<ee.app.conversamanager.view.BoldTextView
+			android:id="@+id/btvTitle"
+			android:text="@string/SIGN_UP"
+			android:layout_marginTop="40dp"
+			android:textSize="18sp"
+			android:textAllCaps="true"
+			android:layout_alignParentTop="true"
+			android:layout_centerHorizontal="true"
+			android:layout_gravity="center_horizontal"
+			android:textColor="@android:color/black"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" />
+
+		<ImageView
+			android:id="@+id/ivAvatar"
+			android:layout_width="100dp"
+			android:layout_height="100dp"
+			android:layout_marginTop="35dp"
+			android:layout_below="@id/btvTitle"
+			android:layout_centerHorizontal="true"
+			android:src="@drawable/ic_business_default" />
+
+		<ImageView
+			android:id="@+id/ivAdd"
+			android:layout_width="30dp"
+			android:layout_height="30dp"
+			android:layout_marginTop="35dp"
+			android:layout_below="@id/btvTitle"
+			android:layout_marginLeft="-35dp"
+			android:layout_marginStart="-35dp"
+			android:layout_toEndOf="@id/ivAvatar"
+			android:layout_toRightOf="@id/ivAvatar"
+			android:src="@drawable/ic_attachment" />
+
+		<android.support.design.widget.TextInputLayout
+			android:layout_marginTop="14dp"
+			android:id="@+id/tilName"
+			android:theme="@style/MyTheme.Gray"
+			android:layout_below="@id/ivAvatar"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:padding="14dp" >
+
+			<EditText
+				android:id="@+id/etName"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:background="@null"
+				android:gravity="bottom"
+				android:hint="@string/business_name"
+				android:maxLines="1"
+				android:singleLine="true"
+				android:inputType="text"
+				android:textColor="@android:color/black"
+				android:textColorHint="@color/gray"
+				android:textSize="14sp" />
+		</android.support.design.widget.TextInputLayout>
+
+		<android.support.design.widget.TextInputLayout
+			android:id="@+id/tilConversaId"
+			android:theme="@style/MyTheme.Gray"
+			android:layout_width="match_parent"
+			android:layout_height="wrap_content"
+			android:layout_below="@id/tilName"
+			android:padding="14dp" >
+
+			<EditText
+				android:id="@+id/etConversaId"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+				android:background="@null"
+				android:gravity="bottom"
+				android:hint="@string/conversa_id"
+				android:maxLines="1"
+				android:singleLine="true"
+				android:inputType="text"
+				android:textColor="@android:color/black"
+				android:textColorHint="@color/gray"
+				android:textSize="14sp" />
+		</android.support.design.widget.TextInputLayout>
+
+		<Spinner
+			android:id="@+id/spCategory"
+			android:layout_width="match_parent"
+			android:layout_height="30dp"
+			android:layout_below="@id/tilConversaId"
+			android:layout_margin="14dp" />
+
+		<Button
+			android:id="@+id/btnSignUpContinue"
+			android:layout_width="175dp"
+			android:layout_height="35dp"
+			android:layout_gravity="center"
+			android:layout_marginTop="22dp"
+			android:gravity="center"
+			android:text="@string/ccontinue"
+			android:layout_below="@id/spCategory"
+			android:layout_centerHorizontal="true"
+			android:textColor="@drawable/textcolor_white_state"
+			android:textSize="20sp"
+			android:background="@drawable/button_shape_white" />
+
+	</RelativeLayout>
+
+</ScrollView>

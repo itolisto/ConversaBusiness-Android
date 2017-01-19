@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scrollView1"
+    android:fitsSystemWindows="true"
+    android:fillViewport="true"
+    android:isScrollContainer="false"
+    android:background="@android:color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:focusableInTouchMode="true"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <android.support.design.widget.TextInputLayout
+            android:layout_marginTop="28dp"
+            android:id="@+id/tilName"
+            android:theme="@style/MyTheme.Gray"
+            android:layout_centerVertical="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="14dp" >
+
+            <EditText
+                android:id="@+id/etName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:gravity="bottom"
+                android:hint="@string/business_name"
+                android:inputType="text"
+                android:maxLines="1"
+                android:singleLine="true"
+                android:textColor="@android:color/black"
+                android:textColorHint="@color/gray"
+                android:textSize="14sp" />
+        </android.support.design.widget.TextInputLayout>
+
+        <ee.app.conversamanager.view.RegularTextView
+            android:id="@+id/tvMessage"
+            android:layout_above="@id/tilName"
+            android:text="@string/check_message_title"
+            android:gravity="center"
+            android:textSize="17sp"
+            android:textColor="@color/light_gray"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"/>
+
+        <Button
+            android:id="@+id/btnCheck"
+            android:layout_width="175dp"
+            android:layout_height="35dp"
+            android:layout_below="@id/tilName"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="42dp"
+            android:gravity="center"
+            android:text="@string/check"
+            android:textColor="@drawable/textcolor_white_state"
+            android:textSize="14sp"
+            android:background="@drawable/button_shape_white" />
+
+        <Button
+            android:id="@+id/btnSkip"
+            android:layout_width="80dp"
+            android:layout_height="25dp"
+            android:layout_marginTop="14dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:gravity="center"
+            android:text="@string/skip"
+            android:textColor="@drawable/textcolor_purple_state"
+            android:textSize="14sp"
+            android:textAllCaps="false"
+            android:background="@drawable/button_shape_purple_border" />
+
+    </RelativeLayout>
+</ScrollView>

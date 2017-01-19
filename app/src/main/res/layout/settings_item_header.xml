@@ -1,27 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:fresco="http://schemas.android.com/apk/res-auto"
     android:gravity="center"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/setting_main_header" >
 
-    <ImageView
-        android:id="@+id/ivProfile"
-        android:layout_marginTop="21dp"
-        android:layout_gravity="center"
+    <com.facebook.drawee.view.SimpleDraweeView
+        android:id="@+id/sdvProfile"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:src="@drawable/ic_person_female"/>
+        android:layout_gravity="center"
+        android:layout_marginTop="21dp"
+        fresco:actualImageScaleType="centerInside"
+        fresco:placeholderImage="@drawable/ic_business_default"
+        fresco:placeholderImageScaleType="centerInside"
+        fresco:roundAsCircle="true" />
 
-    <ee.app.conversabusiness.view.LightTextView
+    <ee.app.conversamanager.view.LightTextView
         android:maxLines="1"
         android:textSize="13sp"
         android:ellipsize="end"
+        android:singleLine="true"
         android:layout_marginTop="14dp"
-        android:layout_marginBottom="21dp"
         android:id="@+id/ltvWelcomeMessage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/btnViewProfile"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginBottom="21dp"
+        android:paddingStart="14dp"
+        android:paddingLeft="14dp"
+        android:paddingEnd="14dp"
+        android:paddingRight="14dp"
+        android:paddingTop="7dp"
+        android:paddingBottom="7dp"
+        android:text="@string/preferences__header_view"
+        android:textAllCaps="false"
+        android:textColor="@drawable/textcolor_white_state"
+        android:textSize="14sp"
+        android:background="@drawable/button_shape_white" />
 
 </LinearLayout>

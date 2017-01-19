@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:background="@android:color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <include layout="@layout/actionbar_preference"/>
+
+    <RelativeLayout
+        android:id="@+id/rlView"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ee.app.conversamanager.view.RegularTextView
+            android:maxLines="2"
+            android:id="@+id/rtvDetail"
+            android:layout_margin="16dp"
+            android:textColor="@color/light_gray"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/sett_category_detail_title"/>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rvCategories"
+            android:layout_below="@id/rtvDetail"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:cacheColorHint="@android:color/transparent"
+            android:divider="@null"
+            android:clipToPadding="true"
+            android:listSelector="@android:color/transparent"
+            android:overScrollMode="ifContentScrolls" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rlInfo"
+        android:background="@android:color/white"
+        android:layout_marginTop="?attr/actionBarSize"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ee.app.conversamanager.view.RegularTextView
+            android:maxLines="2"
+            android:gravity="center"
+            android:layout_margin="16dp"
+            android:textColor="@color/light_gray"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/sett_category_info_error" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

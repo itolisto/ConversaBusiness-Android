@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/default_white"
-    tools:context="ee.app.conversabusiness.ActivitySplashScreen" >
+    android:background="@android:color/white"
+    tools:context="ee.app.conversamanager.ActivitySplashScreen" >
 
     <ImageView
         android:id="@+id/ivSplashScreen"
