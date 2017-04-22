@@ -84,7 +84,7 @@ public class ActivityContact extends BaseActivity implements View.OnClickListene
             case R.id.btnReclaim: {
                 if (validateForm()) {
                     HashMap<String, Object> params = new HashMap<>(1);
-                    params.put("objectId", mBusiness.getBusinessId());
+                    params.put("businessId", mBusiness.getBusinessId());
                     params.put("name", mEtName.getText().toString());
                     params.put("email", mEtEmail.getText().toString());
                     params.put("position", mEtJob.getText().toString());

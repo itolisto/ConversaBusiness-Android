@@ -16,10 +16,11 @@
         android:layout_marginRight="7dp"
         android:layout_marginEnd="7dp"
         android:layout_centerVertical="true"
-        fresco:fadeDuration="300"
         fresco:actualImageScaleType="fitCenter"
-        fresco:placeholderImage="@drawable/ic_user_one"
+        fresco:placeholderImage="@drawable/ic_business_default"
         fresco:placeholderImageScaleType="fitCenter"
+        fresco:failureImage="@drawable/ic_business_default"
+        fresco:failureImageScaleType="fitCenter"
         fresco:roundAsCircle="true" />
 
     <FrameLayout
@@ -57,20 +58,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:textColor="@android:color/black"
-            android:textSize="15sp"
+            android:textColor="@color/black"
+            android:textSize="13sp"
             android:ellipsize="end"
+            android:singleLine="true"
             android:maxLines="1" />
 
-        <ee.app.conversamanager.view.LightTextView
+        <ee.app.conversamanager.view.RegularTextView
             android:layout_below="@id/tvChatName"
             android:id="@+id/tvChatStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:textColor="@color/light_gray"
-            android:textSize="12sp"
+            android:textColor="@color/dark_gray"
+            android:textSize="11sp"
             android:visibility="gone"
+            android:singleLine="true"
             android:maxLines="1" />
     </RelativeLayout>
 

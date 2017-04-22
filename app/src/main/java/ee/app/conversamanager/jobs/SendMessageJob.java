@@ -49,8 +49,8 @@ public class SendMessageJob extends Job {
                 .getMessageById(id);
 
         final HashMap<String, Object> params = new HashMap<>(9);
-        params.put("user", message.getToUserId());
-        params.put("business", message.getFromUserId());
+        params.put("customerId", message.getToUserId());
+        params.put("businessId", message.getFromUserId());
         params.put("messageType", Integer.valueOf(message.getMessageType()));
 
         if (AblyConnection.getInstance() != null && AblyConnection.getInstance()

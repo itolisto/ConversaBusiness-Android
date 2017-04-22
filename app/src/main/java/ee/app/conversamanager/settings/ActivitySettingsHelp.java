@@ -1,8 +1,13 @@
 package ee.app.conversamanager.settings;
 
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.customtabs.CustomTabsIntent;
 import android.support.v4.content.ContextCompat;
@@ -10,16 +15,30 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
+import com.parse.ParseCloud;
+import com.parse.ParseException;
+
+import org.json.JSONObject;
+
+import java.util.HashMap;
+
 import de.psdev.licensesdialog.LicensesDialog;
 import de.psdev.licensesdialog.licenses.ApacheSoftwareLicense20;
 import de.psdev.licensesdialog.licenses.BSD3ClauseLicense;
 import de.psdev.licensesdialog.licenses.MITLicense;
 import de.psdev.licensesdialog.model.Notice;
 import de.psdev.licensesdialog.model.Notices;
+import ee.app.conversamanager.ActivityChatWall;
+import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.R;
 import ee.app.conversamanager.browser.CustomTabActivityHelper;
 import ee.app.conversamanager.browser.WebviewFallback;
 import ee.app.conversamanager.extendables.ConversaActivity;
+import ee.app.conversamanager.model.database.dbCustomer;
+import ee.app.conversamanager.utils.AppActions;
+import ee.app.conversamanager.utils.Const;
 
 /**
  * Created by edgargomez on 10/10/16.
@@ -47,12 +66,11 @@ public class ActivitySettingsHelp extends ConversaActivity implements View.OnCli
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         findViewById(R.id.btnLicences).setOnClickListener(this);
-        findViewById(R.id.btnSupport).setOnClickListener(this);
-        findViewById(R.id.btnTerms).setOnClickListener(this);
-        findViewById(R.id.btnFeedback).setOnClickListener(this);
+        findViewById(R.id.rlSupport).setOnClickListener(this);
+        findViewById(R.id.rlTerms).setOnClickListener(this);
         mCustomTabActivityHelper = new CustomTabActivityHelper();
         mCustomTabActivityHelper.setConnectionCallback(mConnectionCallback);
-        mCustomTabActivityHelper.mayLaunchUrl(Uri.parse("http://conversachat.com"), null, null);
+        mCustomTabActivityHelper.mayLaunchUrl(Uri.parse("http://manager.conversachat.com"), null, null);
     }
 
     @Override
@@ -74,60 +92,23 @@ public class ActivitySettingsHelp extends ConversaActivity implements View.OnCli
                 onLicencesClick();
                 break;
             }
-            case R.id.btnSupport: {
-//                dbBusiness dbBusiness = ConversaApp.getInstance(this).getDB().isContact("E5ZE2sr0tx");
-//                final Intent intent = new Intent(this, ActivitySettingsProfile.class);
-//
-//                if (dbBusiness == null) {
-//                    new MaterialDialog.Builder(this)
-//                            .title(R.string.sett_help_dialog_title)
-//                            .content(R.string.sett_help_dialog_message)
-//                            .progress(true, 0)
-//                            .progressIndeterminateStyle(true)
-//                            .showListener(new DialogInterface.OnShowListener() {
-//                                @Override
-//                                public void onShow(final DialogInterface dialogInterface) {
-//                                    ParseQuery<Business> query = ParseQuery.getQuery(Business.class);
-//                                    query.whereEqualTo(Const.kBusinessActiveKey, true);
-//                                    query.whereEqualTo(Const.kBusinessCountryKey, ParseObject.createWithoutData("Country", "QZ31UNerIj"));
-//                                    query.whereDoesNotExist(Const.kBusinessBusinessKey);
-//
-//                                    query.getInBackground("E5ZE2sr0tx", new GetCallback<Business>() {
-//                                        @Override
-//                                        public void done(Business object, ParseException e) {
-//                                            dialogInterface.dismiss();
-//
-//                                            if (e == null) {
-//                                                if (isFragmentActive()) {
-//                                                    dbBusiness dbBusiness = new dbBusiness();
-//                                                    dbBusiness.setAccountBusinessId("E5ZE2sr0tx");
-//                                                    dbBusiness.setDisplayName(object.getDisplayName());
-//                                                    dbBusiness.setConversaId(object.getConversaID());
-//                                                    dbBusiness.setAbout(object.getAbout());
-//
-//                                                    if (object.getAvatar() != null)
-//                                                        dbBusiness.setAvatarThumbFileId(object.getAvatar().getUrl());
-//
-//                                                    intent.putExtra(Const.iExtraAddBusiness, true);
-//                                                    intent.putExtra(Const.iExtraBusiness, dbBusiness);
-//                                                    startActivity(intent);
-//                                                }
-//                                            } else {
-//                                                AppActions.validateParseException(getApplicationContext(), e);
-//                                            }
-//                                        }
-//                                    });
-//                                }
-//                            })
-//                            .show();
-//                } else {
-//                    intent.putExtra(Const.iExtraAddBusiness, false);
-//                    intent.putExtra(Const.iExtraBusiness, dbBusiness);
-//                    startActivity(intent);
-//                }
+            case R.id.rlSupport: {
+                final Context context = this;
+                new MaterialDialog.Builder(this)
+                        .title(R.string.sett_help_dialog_title)
+                        .content(R.string.sett_help_dialog_message)
+                        .progress(true, 0)
+                        .progressIndeterminateStyle(true)
+                        .showListener(new DialogInterface.OnShowListener() {
+                            @Override
+                            public void onShow(final DialogInterface dialogInterface) {
+                                new SupportInfoTask(context, dialogInterface).execute("1");
+                            }
+                        })
+                        .show();
                 break;
             }
-            case R.id.btnTerms: {
+            case R.id.rlTerms: {
                 // create an intent builder
                 CustomTabsIntent.Builder intentBuilder = new CustomTabsIntent.Builder();
                 // Begin customizing
@@ -142,26 +123,7 @@ public class ActivitySettingsHelp extends ConversaActivity implements View.OnCli
                 CustomTabActivityHelper.openCustomTab(
                         this,
                         intentBuilder.build(),
-                        Uri.parse("http://conversachat.com/terms"),
-                        new WebviewFallback());
-                break;
-            }
-            case R.id.btnFeedback: {
-                // create an intent builder
-                CustomTabsIntent.Builder intentBuilder = new CustomTabsIntent.Builder();
-                // Begin customizing
-                intentBuilder.setToolbarColor(ContextCompat.getColor(this, R.color.colorPrimary));
-                intentBuilder.setSecondaryToolbarColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
-                intentBuilder.setShowTitle(true);
-                intentBuilder.setCloseButtonIcon(BitmapFactory.decodeResource(getResources(), R.drawable.ic_arrow_back));
-                intentBuilder.setStartAnimations(this, R.anim.slide_in_right, R.anim.slide_out_left);
-                intentBuilder.setExitAnimations(this, android.R.anim.slide_in_left,
-                        android.R.anim.slide_out_right);
-
-                CustomTabActivityHelper.openCustomTab(
-                        this,
-                        intentBuilder.build(),
-                        Uri.parse("http://conversachat.com/feedback"),
+                        Uri.parse("http://manager.conversachat.com/terms"),
                         new WebviewFallback());
                 break;
             }
@@ -248,8 +210,85 @@ public class ActivitySettingsHelp extends ConversaActivity implements View.OnCli
         }
     };
 
-    public boolean isFragmentActive() {
-        return !isFinishing();
+    private class SupportInfoTask extends AsyncTask<String, Void, dbCustomer> {
+
+        private boolean add;
+        private Context context;
+        private DialogInterface dialogInterface;
+
+        public SupportInfoTask (Context context, DialogInterface dialogInterface) {
+            this.dialogInterface = dialogInterface;
+            this.context = context;
+        }
+
+        @Override
+        protected dbCustomer doInBackground(String... params) {
+            try {
+                HashMap<String, Object> pparams = new HashMap<>(1);
+                pparams.put("purpose", Integer.parseInt(params[0]));
+                final String supportId = ParseCloud.callFunction("getConversaAccountId", pparams);
+
+                add = false;
+
+                dbCustomer dbBusiness = ConversaApp
+                        .getInstance(getApplicationContext())
+                        .getDB()
+                        .isContact(supportId);
+
+                if (dbBusiness == null) {
+                    add = true;
+
+                    HashMap<String, Object> sparams = new HashMap<>(1);
+                    sparams.put("accountId", supportId);
+
+                    final String json = ParseCloud.callFunction("getConversaAccount", sparams);
+
+                    JSONObject businessReg = new JSONObject(json);
+                    dbCustomer business = new dbCustomer();
+                    business.setDisplayName(businessReg.getString("dn"));
+                    business.setAvatarThumbFileId(businessReg.getString("av"));
+                }
+
+                return dbBusiness;
+            } catch (Exception e) {
+                if (e instanceof ParseException) {
+                    if (AppActions.validateParseException((ParseException)e)) {
+                        AppActions.appLogout(getApplicationContext(), true);
+                    }
+                }
+
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(dbCustomer result) {
+            dialogInterface.dismiss();
+
+            if (isCancelled() || isDestroyed() || isFinishing())
+                return;
+
+            if (result == null) {
+                new MaterialDialog.Builder(context)
+                        .title(R.string.sett_help_dialog_title)
+                        .content(R.string.sett_help_dialog_message_error)
+                        .positiveText(android.R.string.ok)
+                        .positiveColorRes(R.color.black)
+                        .onPositive(new MaterialDialog.SingleButtonCallback() {
+                            @Override
+                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                                dialog.dismiss();
+                            }
+                        })
+                        .show();
+            } else {
+                Intent intent = new Intent(context, ActivityChatWall.class);
+                intent.putExtra(Const.iExtraAddBusiness, add);
+                intent.putExtra(Const.iExtraCustomer, result);
+                startActivity(intent);
+            }
+        }
+
     }
 
 }

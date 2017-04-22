@@ -19,14 +19,20 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
+import com.parse.ParseFile;
 import com.parse.SaveCallback;
+import com.sandrios.sandriosCamera.internal.configuration.CameraConfiguration;
 
+import java.io.File;
 import java.util.HashMap;
 
 import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.R;
 import ee.app.conversamanager.extendables.ConversaActivity;
 import ee.app.conversamanager.model.parse.Account;
+import ee.app.conversamanager.utils.Const;
+import ee.app.conversamanager.utils.ImageFilePath;
+import ee.app.conversamanager.utils.Logger;
 import ee.app.conversamanager.utils.Utils;
 import ee.app.conversamanager.view.AvatarSheetDialog;
 import ee.app.conversamanager.view.LightTextView;
@@ -192,14 +198,77 @@ public class ActivitySettingsDetailAccount extends ConversaActivity implements V
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
+        if (resultCode == RESULT_OK && data != null) {
+            switch (requestCode) {
+                case Const.CAPTURE_MEDIA: {
+                    final String path = ImageFilePath.getPath(this, Uri.parse(data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH)));
+                    final ParseFile file = new ParseFile(new File(path));
+                    file.saveInBackground(new SaveCallback() {
+                        @Override
+                        public void done(ParseException e) {
+                            if (e == null) {
+                                saveAvatar(file, path);
+                            } else {
+                                showErrorMessage(getString(R.string.settings_avatar_error));
+                            }
+                        }
+                    });
+                    break;
+                }
+            }
+        } else {
+            Logger.error("onActivityResult", "Error");
+        }
+    }
+
+    private void saveAvatar(ParseFile file, final String path) {
+        final HashMap<String, Object> params = new HashMap<>(9);
+        params.put("avatar", file);
+        params.put("businessId", ConversaApp.getInstance(this).getPreferences().getAccountBusinessId());
+        ParseCloud.callFunctionInBackground("updateBusinessAvatar", params, new FunctionCallback<Object>() {
+            @Override
+            public void done(Object object, ParseException e) {
+                if (e == null) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                new File(ConversaApp.getInstance(getApplicationContext())
+                                        .getPreferences()
+                                        .getAccountAvatar()
+                                ).delete();
+
+                                ConversaApp.getInstance(getApplicationContext())
+                                        .getPreferences()
+                                        .setAccountAvatar(path);
+                            } catch (Exception ignored) {
+                                ConversaApp.getInstance(getApplicationContext())
+                                        .getPreferences()
+                                        .setAccountAvatar(path);
+                            }
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    showSuccessMessage(getString(R.string.settings_avatar_succesful));
+                                }
+                            });
+                        }
+                    }).start();
+                } else {
+                    showErrorMessage(getString(R.string.settings_avatar_error));
+                }
+            }
+        });
     }
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
         if (key.equals(PreferencesKeys.ACCOUNT_CONVERSA_ID_KEY)) {
             ((LightTextView)findViewById(R.id.ltvConversaId)).setText(
-                    ConversaApp.getInstance(this).getPreferences().getAccountDisplayName()
+                    ConversaApp.getInstance(this).getPreferences().getAccountConversaId()
             );
         } else if (key.equals(PreferencesKeys.ACCOUNT_DISPLAY_NAME_KEY)) {
             ((LightTextView)findViewById(R.id.ltvDisplayName)).setText(
@@ -218,7 +287,7 @@ public class ActivitySettingsDetailAccount extends ConversaActivity implements V
         }
     }
 
-    public void onPreferenceChange(String key, String newValue) {
+    public void onPreferenceChange(String key, final String newValue) {
         if (TextUtils.isEmpty(newValue)) {
             showErrorMessage(getString(R.string.common_field_required));
         }
@@ -235,7 +304,7 @@ public class ActivitySettingsDetailAccount extends ConversaActivity implements V
 
                 HashMap<String, String> params = new HashMap<>(2);
                 params.put("displayName", newName);
-                params.put("objectId", ConversaApp.getInstance(this).getPreferences().getAccountBusinessId());
+                params.put("businessId", ConversaApp.getInstance(this).getPreferences().getAccountBusinessId());
                 ParseCloud.callFunctionInBackground("updateBusinessName", params, new FunctionCallback<Integer>() {
                     @Override
                     public void done(Integer object, ParseException e) {
@@ -280,15 +349,15 @@ public class ActivitySettingsDetailAccount extends ConversaActivity implements V
                     break;
 
                 HashMap<String, String> params = new HashMap<>(2);
-                params.put("conversaID", newName);
-                params.put("objectId", ConversaApp.getInstance(this).getPreferences().getAccountBusinessId());
+                params.put("conversaId", newName);
+                params.put("businessId", ConversaApp.getInstance(this).getPreferences().getAccountBusinessId());
                 ParseCloud.callFunctionInBackground("updateBusinessId", params, new FunctionCallback<Integer>() {
                     @Override
                     public void done(Integer object, ParseException e) {
                         if (e == null) {
                             ConversaApp.getInstance(getApplicationContext())
                                     .getPreferences()
-                                    .setAccountDisplayName(newName, true);
+                                    .setAccountConversaId(newName);
                             showSuccessMessage(getString(R.string.settings_conversa_id_succesful));
                         } else {
                             showErrorMessage(getString(R.string.settings_conversa_id_error));

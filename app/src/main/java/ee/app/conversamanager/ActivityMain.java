@@ -188,14 +188,6 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
         return true;
     }
 
-    public void selectViewPagerTab(int tab) {
-        if (tab > 2 || tab < 0) {
-            return;
-        }
-
-        mViewPager.setCurrentItem(tab);
-    }
-
     public void startTimer() {
         if (timer != null) {
             return;
@@ -211,23 +203,22 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
                         .getAccountBusinessId();
 
                 if (!id.isEmpty()) {
-                    Logger.error("ActivityMain", "Status update begin");
-                    HashMap<String, Object> params = new HashMap<>(2);
-                    params.put("bId", id);
-                    params.put("status", (Foreground.get().isBackground())
-                            ? Integer.valueOf(1) : Integer.valueOf(0));
+                    HashMap<String, String> params = new HashMap<>(1);
+                    params.put("businessId", id);
 
                     try {
                         ParseCloud.callFunction("updateBusinessLastConnection", params);
                     } catch (ParseException e) {
-                        Logger.error("ActivityMain", "Status update error: " + e.getMessage());
                         if (AppActions.validateParseException(e)) {
                             AppActions.appLogout(getApplicationContext(), true);
+                        } else {
+                            Logger.error("ActivityMain", "Status update error: " + e.getMessage());
                         }
                     }
                 }
             }
-        }, 0, 60000);
+        }, 0, 210000);
+        // 210,000 = milliseconds passed in 3.5 minutes
     }
 
     public void stoptimertask() {

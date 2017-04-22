@@ -1,6 +1,7 @@
 package ee.app.conversamanager.view;
 
 import android.annotation.SuppressLint;
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,9 +11,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.lang.ref.WeakReference;
+import com.sandrios.sandriosCamera.internal.SandriosCamera;
+import com.sandrios.sandriosCamera.internal.configuration.CameraConfiguration;
+import com.sandrios.sandriosCamera.internal.ui.model.QualityOptions;
 
-import ee.app.conversamanager.ActivityCameraCrop;
+import ee.app.conversamanager.ActivityImageDetail;
+import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.R;
 import ee.app.conversamanager.utils.Const;
 
@@ -23,7 +27,7 @@ import ee.app.conversamanager.utils.Const;
 public class AvatarSheetDialog extends BottomSheetDialogFragment implements View.OnClickListener {
 
     boolean hideView;
-    final WeakReference<AppCompatActivity>mActivity;
+    final AppCompatActivity mActivity;
 
     public static AvatarSheetDialog newInstance(AppCompatActivity mActivity, boolean hideView) {
         AvatarSheetDialog f = new AvatarSheetDialog(mActivity);
@@ -34,7 +38,7 @@ public class AvatarSheetDialog extends BottomSheetDialogFragment implements View
     }
 
     public AvatarSheetDialog(AppCompatActivity mActivity) {
-        this.mActivity = new WeakReference<>(mActivity);
+        this.mActivity = mActivity;
     }
 
     @Override
@@ -47,37 +51,35 @@ public class AvatarSheetDialog extends BottomSheetDialogFragment implements View
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.bottomsheet_avatar, container, false);
+
         if (hideView) {
             v.findViewById(R.id.btnView).setVisibility(View.GONE);
         } else {
             v.findViewById(R.id.btnView).setOnClickListener(this);
         }
-        v.findViewById(R.id.btnGallery).setOnClickListener(this);
+
         v.findViewById(R.id.btnCamera).setOnClickListener(this);
         return v;
     }
 
     @Override
     public void onClick(View view) {
-        if (mActivity.get() == null) {
-            return;
-        }
-
         switch (view.getId()) {
             case R.id.btnCamera: {
-                Intent intent = new Intent(mActivity.get(), ActivityCameraCrop.class);
-                intent.putExtra("type", "camera");
-                mActivity.get().startActivityForResult(intent, ActivityCameraCrop.PICK_CAMERA_REQUEST);
-                break;
-            }
-            case R.id.btnGallery: {
-                Intent intent = new Intent(mActivity.get(), ActivityCameraCrop.class);
-                intent.putExtra("type", "gallery");
-                mActivity.get().startActivityForResult(intent, ActivityCameraCrop.PICK_GALLERY_REQUEST);
+                new SandriosCamera(mActivity, Const.CAPTURE_MEDIA)
+                        .setShowPicker(true)
+                        .setMediaAction(CameraConfiguration.MEDIA_ACTION_PHOTO)
+                        .enableImageCropping(false)
+                        .setDefaultMediaQuality(QualityOptions.QUALITY_MID)
+                        .launchCamera();
                 break;
             }
             case R.id.btnView: {
-                // View
+                Intent i = new Intent(mActivity, ActivityImageDetail.class);
+                i.putExtra(ActivityImageDetail.EXTRA_IMAGE, ConversaApp.getInstance(mActivity).getPreferences().getAccountAvatar());
+                ActivityOptions options = ActivityOptions.makeScaleUpAnimation(
+                        view, 0, 0, view.getWidth(), view.getHeight());
+                startActivity(i, options.toBundle());
                 break;
             }
         }

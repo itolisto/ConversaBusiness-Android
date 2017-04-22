@@ -54,18 +54,31 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-            <intent-filter>
-                <data android:scheme="conversapp" android:host="user" />
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-            </intent-filter>
         </activity-alias>
 
         <activity
             android:name="ee.app.conversamanager.ActivityMain"
             android:screenOrientation="portrait"
-            android:launchMode="singleTask" />
+            android:launchMode="singleTask" >
+            <intent-filter>
+                <data android:scheme="managerapp" android:host="open" />
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+            </intent-filter>
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="conversa.link" android:pathPrefix="/IT8k" />
+            </intent-filter>
+        </activity>
+
+        <activity android:name="ee.app.conversamanager.ActivityTutorial"
+            android:noHistory="true"
+            android:theme="@style/TutorialTheme"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTop" />
 
         <activity
             android:name="ee.app.conversamanager.ActivitySignIn"
@@ -143,11 +156,6 @@
             android:name="ee.app.conversamanager.ActivityLocation"
             android:screenOrientation="portrait"
             android:launchMode="singleTop" />
-            
-        <activity
-            android:name="ee.app.conversamanager.ActivityCameraCrop"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop" />
 
         <activity
             android:name="ee.app.conversamanager.settings.ActivitySettingsProfile"
@@ -214,12 +222,6 @@
             android:screenOrientation="portrait"
             android:launchMode="singleTop" />
 
-    	<activity
-		    android:name="com.afollestad.materialcamera.CaptureActivity"
-		    android:theme="@style/MaterialCamera.CaptureActivity" />
-		<activity
-		    android:name="com.afollestad.materialcamera.CaptureActivity2"
-		    android:theme="@style/MaterialCamera.CaptureActivity" />
         <!-- **************************************************************************************** -->
         <receiver android:name="ee.app.conversamanager.management.ConnectionChangeReceiver" >
             <intent-filter>
@@ -238,16 +240,6 @@
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="617c5ff8d2055123134c25a4b496d078123ef1da" />
-
-        <meta-data
-            android:name="io.branch.sdk.BranchKey"
-            android:value="key_test_ndl297oYX8yqRLgyhnRoLpidDuc2i3tr" />
-
-        <receiver android:name="io.branch.referral.InstallListener" android:exported="true">
-            <intent-filter>
-                <action android:name="com.android.vending.INSTALL_REFERRER" />
-            </intent-filter>
-        </receiver>
 
         <!-- Receive data in the background with or without displaying a notification. -->
         <service

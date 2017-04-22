@@ -24,7 +24,6 @@ import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -147,12 +146,12 @@ public class ActivitySettingsProfile extends ConversaActivity implements View.On
         mCvContainer = (CardView) findViewById(R.id.cvContainer);
         mVwStatus = findViewById(R.id.vStatus);
 
-        //mCvContainer.setClipToOutline(true);
-
         mBackground = new ColorDrawable(ResourcesCompat.getColor(getResources(),
                 R.color.profile_light_background, null));
+
         findViewById(R.id.topLevelLayout).setBackground(mBackground);
         findViewById(R.id.topLevelLayout).setOnClickListener(this);
+        mCvContainer.setOnClickListener(this);
 
         // Profile views
         mSdvBusinessHeader = (SimpleDraweeView) findViewById(R.id.sdvProfileHeader);
@@ -166,7 +165,7 @@ public class ActivitySettingsProfile extends ConversaActivity implements View.On
         mMtvBusinessName.setText(ConversaApp.getInstance(this).getPreferences().getAccountDisplayName());
         mBtvConversaId.setText("@".concat(ConversaApp.getInstance(this).getPreferences().getAccountConversaId()));
 
-        Uri uri = Utils.getUriFromString(""); //Load from internal memory
+        Uri uri = Utils.getUriFromString(ConversaApp.getInstance(this).getPreferences().getAccountAvatar());
 
         if (uri == null) {
             uri = Utils.getDefaultImage(this, R.drawable.ic_business_default);
@@ -182,15 +181,15 @@ public class ActivitySettingsProfile extends ConversaActivity implements View.On
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mBtnFavorite.setBackground
-                    (getResources().getDrawable(R.drawable.ic_fav_not, null));
+                    (getResources().getDrawable(R.drawable.ic_fav, null));
         } else {
             mBtnFavorite.setBackground
-                    (getResources().getDrawable(R.drawable.ic_fav_not));
+                    (getResources().getDrawable(R.drawable.ic_fav));
         }
 
         // Call Parse for registry
-        HashMap<String, Object> params = new HashMap<>(1);
-        params.put("business", ConversaApp.getInstance(this).getPreferences().getAccountBusinessId());
+        HashMap<String, Object> params = new HashMap<>(2);
+        params.put("businessId", ConversaApp.getInstance(this).getPreferences().getAccountBusinessId());
         params.put("count", false);
         ParseCloud.callFunctionInBackground("getBusinessProfile", params, new FunctionCallback<String>() {
             @Override
@@ -285,19 +284,6 @@ public class ActivitySettingsProfile extends ConversaActivity implements View.On
 
                 followers = jsonRootObject.optInt("followers", 0);
                 String headerUrl = jsonRootObject.optString("header", null);
-                String daySpecial = jsonRootObject.optString("daySpecial", null);
-                String website = jsonRootObject.optString("website", null);
-                boolean delivery = jsonRootObject.optBoolean("delivery", false);
-                JSONArray openOn = jsonRootObject.optJSONArray("openOn");
-                String number = jsonRootObject.optString("number", null);
-                boolean multiple = jsonRootObject.optBoolean("multiple", false);
-                boolean online = jsonRootObject.optBoolean("online", false);
-                String promo = jsonRootObject.optString("promo", null);
-                String promoTextColor = jsonRootObject.optString("promoColor", null);
-                String promoBackground = jsonRootObject.optString("promoBack", null);
-                JSONArray tags = jsonRootObject.optJSONArray("tags");
-                boolean verified = jsonRootObject.optBoolean("verified", false);
-                long since = jsonRootObject.optLong("since", 0L);
                 boolean favorite = jsonRootObject.optBoolean("favorite", false);
                 int status = jsonRootObject.optInt("status", 0);
 

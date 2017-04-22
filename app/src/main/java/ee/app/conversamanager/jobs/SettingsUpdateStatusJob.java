@@ -41,7 +41,7 @@ public class SettingsUpdateStatusJob extends Job {
     @Override
     public void onRun() throws Throwable {
         HashMap<String, Object> params = new HashMap<>(2);
-        params.put("objectId", ConversaApp.getInstance(getApplicationContext())
+        params.put("businessId", ConversaApp.getInstance(getApplicationContext())
                 .getPreferences().getAccountBusinessId());
         params.put("status", nnew);
 

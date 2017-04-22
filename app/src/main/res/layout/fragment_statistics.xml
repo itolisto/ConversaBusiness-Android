@@ -1,198 +1,386 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
-    android:focusableInTouchMode="true"
-    android:orientation="vertical"
-    tools:context="ee.app.conversamanager.FragmentStatistics">
+    tools:context="ee.app.conversamanager.FragmentStatistics" >
 
-    <LinearLayout
+    <android.support.v4.widget.SwipeRefreshLayout
+        android:id="@+id/srlStats"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:showDividers="middle">
+        android:layout_height="match_parent">
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@android:color/white">
 
-        <ee.app.conversamanager.view.RegularTextView
-            android:layout_marginTop="7dp"
-            android:text="@string/stats_chart_title"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:showDividers="middle">
+
+                <ee.app.conversamanager.view.MediumTextView
+                    android:textSize="15sp"
+                    android:layout_marginTop="7dp"
+                    android:text="@string/stats_chart_title"
+                    android:gravity="center"
+                    android:textColor="@android:color/black"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <com.github.mikephil.charting.charts.PieChart
+                    android:layout_marginTop="7dp"
+                    android:id="@+id/pcMessageChart"
+                    android:layout_width="match_parent"
+                    android:layout_height="220dp" />
+
+                <LinearLayout
+                    android:padding="16dp"
+                    android:weightSum="2"
+                    android:layout_marginTop="7dp"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <RelativeLayout
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:orientation="vertical"
+                        android:layout_height="match_parent">
+
+                        <ee.app.conversamanager.view.LightTextView
+                            android:textSize="15sp"
+                            android:id="@+id/ltvSent"
+                            android:text="@string/stats_sent_title"
+                            android:maxLines="1"
+                            android:ellipsize="end"
+                            android:singleLine="true"
+                            android:textColor="@color/light_gray"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <ee.app.conversamanager.view.BoldTextView
+                            android:text="0"
+                            android:id="@+id/btvSent"
+                            android:textSize="24sp"
+                            android:maxWidth="130dp"
+                            android:maxLines="1"
+                            android:ellipsize="end"
+                            android:singleLine="true"
+                            android:textColor="@android:color/black"
+                            android:layout_below="@id/ltvSent"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <ImageView
+                            android:src="@drawable/ic_outgoing"
+                            android:layout_marginLeft="3dp"
+                            android:layout_marginStart="3dp"
+                            android:layout_marginBottom="4dp"
+                            android:layout_toEndOf="@id/btvSent"
+                            android:layout_toRightOf="@id/btvSent"
+                            android:layout_alignBottom="@id/btvSent"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:orientation="vertical"
+                        android:layout_height="match_parent">
+
+                        <ee.app.conversamanager.view.LightTextView
+                            android:textSize="15sp"
+                            android:id="@+id/ltvReceived"
+                            android:text="@string/stats_received_title"
+                            android:maxLines="1"
+                            android:ellipsize="end"
+                            android:singleLine="true"
+                            android:textColor="@color/light_gray"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <ee.app.conversamanager.view.BoldTextView
+                            android:text="0"
+                            android:id="@+id/btvReceived"
+                            android:textSize="24sp"
+                            android:maxWidth="130dp"
+                            android:maxLines="1"
+                            android:ellipsize="end"
+                            android:singleLine="true"
+                            android:textColor="@android:color/black"
+                            android:layout_below="@id/ltvReceived"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <ImageView
+                            android:src="@drawable/ic_incoming"
+                            android:layout_marginLeft="3dp"
+                            android:layout_marginStart="3dp"
+                            android:layout_marginBottom="4dp"
+                            android:layout_toEndOf="@id/btvReceived"
+                            android:layout_toRightOf="@id/btvReceived"
+                            android:layout_alignBottom="@id/btvReceived"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp" />
+                    </RelativeLayout>
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:padding="16dp"
+                    android:weightSum="2"
+                    android:layout_marginTop="7dp"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" >
+
+                    <RelativeLayout
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:orientation="vertical"
+                        android:layout_height="match_parent">
+
+                        <ee.app.conversamanager.view.LightTextView
+                            android:textSize="15sp"
+                            android:id="@+id/ltvFavs"
+                            android:text="@string/stats_favs_title"
+                            android:maxLines="1"
+                            android:ellipsize="end"
+                            android:singleLine="true"
+                            android:textColor="@color/light_gray"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <ee.app.conversamanager.view.BoldTextView
+                            android:text="0"
+                            android:id="@+id/btvFavs"
+                            android:textSize="24sp"
+                            android:maxWidth="130dp"
+                            android:maxLines="1"
+                            android:ellipsize="end"
+                            android:singleLine="true"
+                            android:textColor="@android:color/black"
+                            android:layout_below="@id/ltvFavs"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <ImageView
+                            android:src="@drawable/ic_heart"
+                            android:layout_marginLeft="3dp"
+                            android:layout_marginStart="3dp"
+                            android:layout_marginBottom="4dp"
+                            android:layout_toEndOf="@id/btvFavs"
+                            android:layout_toRightOf="@id/btvFavs"
+                            android:layout_alignBottom="@id/btvFavs"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp" />
+                    </RelativeLayout>
+
+                    <RelativeLayout
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:orientation="vertical"
+                        android:layout_height="match_parent">
+
+                        <ee.app.conversamanager.view.LightTextView
+                            android:textSize="15sp"
+                            android:id="@+id/ltvViews"
+                            android:text="@string/stats_views_title"
+                            android:maxLines="1"
+                            android:ellipsize="end"
+                            android:singleLine="true"
+                            android:textColor="@color/light_gray"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <ee.app.conversamanager.view.BoldTextView
+                            android:text="0"
+                            android:id="@+id/btvViews"
+                            android:textSize="24sp"
+                            android:maxWidth="130dp"
+                            android:maxLines="1"
+                            android:ellipsize="end"
+                            android:singleLine="true"
+                            android:textColor="@android:color/black"
+                            android:layout_below="@id/ltvViews"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <ImageView
+                            android:src="@drawable/ic_views"
+                            android:layout_marginLeft="3dp"
+                            android:layout_marginStart="3dp"
+                            android:layout_marginBottom="4dp"
+                            android:layout_toEndOf="@id/btvViews"
+                            android:layout_toRightOf="@id/btvViews"
+                            android:layout_alignBottom="@id/btvViews"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp" />
+                    </RelativeLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:padding="16dp"
+                    android:weightSum="2"
+                    android:layout_marginTop="7dp"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" >
+
+                    <RelativeLayout
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:orientation="vertical"
+                        android:layout_height="match_parent">
+
+                        <ee.app.conversamanager.view.LightTextView
+                            android:textSize="15sp"
+                            android:id="@+id/ltvConversations"
+                            android:text="@string/stats_conversations_title"
+                            android:maxLines="1"
+                            android:ellipsize="end"
+                            android:singleLine="true"
+                            android:textColor="@color/light_gray"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <ee.app.conversamanager.view.BoldTextView
+                            android:text="0"
+                            android:id="@+id/btvConversations"
+                            android:textSize="24sp"
+                            android:maxWidth="130dp"
+                            android:maxLines="1"
+                            android:ellipsize="end"
+                            android:singleLine="true"
+                            android:textColor="@android:color/black"
+                            android:layout_below="@id/ltvConversations"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <ImageView
+                            android:src="@drawable/ic_conversation"
+                            android:layout_marginLeft="3dp"
+                            android:layout_marginStart="3dp"
+                            android:layout_marginBottom="4dp"
+                            android:layout_toEndOf="@id/btvConversations"
+                            android:layout_toRightOf="@id/btvConversations"
+                            android:layout_alignBottom="@id/btvConversations"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp" />
+                    </RelativeLayout>
+                    <RelativeLayout
+                        android:layout_weight="1"
+                        android:layout_width="0dp"
+                        android:orientation="vertical"
+                        android:layout_height="match_parent">
+
+                        <ee.app.conversamanager.view.LightTextView
+                            android:textSize="15sp"
+                            android:id="@+id/ltvLinks"
+                            android:text="@string/stats_links_title"
+                            android:maxLines="1"
+                            android:ellipsize="end"
+                            android:singleLine="true"
+                            android:textColor="@color/light_gray"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <ee.app.conversamanager.view.BoldTextView
+                            android:text="0"
+                            android:id="@+id/btvLinks"
+                            android:textSize="24sp"
+                            android:maxWidth="130dp"
+                            android:maxLines="1"
+                            android:ellipsize="end"
+                            android:singleLine="true"
+                            android:textColor="@android:color/black"
+                            android:layout_below="@id/ltvLinks"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <ImageView
+                            android:src="@drawable/ic_link"
+                            android:layout_marginLeft="3dp"
+                            android:layout_marginStart="3dp"
+                            android:layout_marginBottom="4dp"
+                            android:layout_toEndOf="@id/btvLinks"
+                            android:layout_toRightOf="@id/btvLinks"
+                            android:layout_alignBottom="@id/btvLinks"
+                            android:layout_width="20dp"
+                            android:layout_height="20dp" />
+                    </RelativeLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+    <RelativeLayout
+        android:id="@+id/rlInfo"
+        android:visibility="gone"
+        android:background="@android:color/white"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <RelativeLayout
+            android:id="@+id/rlRetry"
             android:gravity="center"
+            android:visibility="gone"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="match_parent">
+            <ee.app.conversamanager.view.MediumTextView
+                android:id="@+id/tvNoMessages"
+                android:text="@string/no_messages"
+                android:textColor="#AAAAAA"
+                android:layout_centerHorizontal="true"
+                android:textSize="22sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
-        <com.github.mikephil.charting.charts.PieChart
-            android:layout_marginTop="7dp"
-            android:id="@+id/pcMessageChart"
-            android:layout_width="match_parent"
-            android:layout_height="220dp" />
+            <ImageView
+                android:id="@+id/tvNoUsers"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:src="@drawable/ic_no_chats"
+                android:layout_marginBottom="7dp"
+                android:layout_centerHorizontal="true"
+                android:layout_above="@id/tvNoMessages"
+                android:scaleType="fitCenter" />
 
-        <LinearLayout
-            android:padding="16dp"
-            android:weightSum="2"
-            android:layout_marginTop="7dp"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            <Button
+                android:textSize="12sp"
+                android:layout_marginTop="14dp"
+                android:id="@+id/btnRetry"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:paddingEnd="12dp"
+                android:paddingLeft="12dp"
+                android:paddingRight="12dp"
+                android:paddingStart="12dp"
+                android:paddingTop="7dp"
+                android:paddingBottom="7dp"
+                android:singleLine="true"
+                android:maxLines="1"
+                android:textAllCaps="false"
+                android:text="@string/no_internet_connection_retry"
+                android:layout_centerHorizontal="true"
+                android:layout_below="@id/tvNoMessages"
+                android:textColor="@drawable/textcolor_purple_state"
+                android:background="@drawable/button_shape_purple_border" />
+        </RelativeLayout>
 
-            <RelativeLayout
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:orientation="vertical"
-                android:layout_height="match_parent">
+        <com.wang.avi.AVLoadingIndicatorView
+            android:id="@+id/pbLoadingStats"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_centerInParent="true"
+            android:visibility="gone"
+            style="@style/AVLoadingIndicatorView"
+            app:indicatorName="BallPulseIndicator"
+            app:indicatorColor="@color/no_connection_background" />
+    </RelativeLayout>
 
-                <ee.app.conversamanager.view.RegularTextView
-                    android:textSize="14sp"
-                    android:id="@+id/rtvSent"
-                    android:text="@string/stats_sent_title"
-                    android:textColor="@color/light_gray"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <ee.app.conversamanager.view.BoldTextView
-                    android:text="0"
-                    android:id="@+id/mtvSent"
-                    android:maxLines="1"
-                    android:textSize="20sp"
-                    android:maxWidth="130dp"
-                    android:singleLine="true"
-                    android:layout_below="@id/rtvSent"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <ImageView
-                    android:src="@drawable/ic_outgoing"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginStart="3dp"
-                    android:layout_marginBottom="4dp"
-                    android:layout_toEndOf="@id/mtvSent"
-                    android:layout_toRightOf="@id/mtvSent"
-                    android:layout_alignBottom="@id/mtvSent"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:orientation="vertical"
-                android:layout_height="match_parent">
-
-                <ee.app.conversamanager.view.RegularTextView
-                    android:textSize="14sp"
-                    android:id="@+id/rtvReceived"
-                    android:text="@string/stats_received_title"
-                    android:textColor="@color/light_gray"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <ee.app.conversamanager.view.BoldTextView
-                    android:text="0"
-                    android:id="@+id/mtvReceived"
-                    android:maxLines="1"
-                    android:textSize="20sp"
-                    android:maxWidth="130dp"
-                    android:singleLine="true"
-                    android:layout_below="@id/rtvReceived"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <ImageView
-                    android:src="@drawable/ic_incoming"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginStart="3dp"
-                    android:layout_marginBottom="4dp"
-                    android:layout_toEndOf="@id/mtvReceived"
-                    android:layout_toRightOf="@id/mtvReceived"
-                    android:layout_alignBottom="@id/mtvReceived"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp" />
-            </RelativeLayout>
-        </LinearLayout>
-
-
-        <LinearLayout
-            android:padding="16dp"
-            android:weightSum="2"
-            android:layout_marginTop="18dp"
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" >
-
-            <RelativeLayout
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:orientation="vertical"
-                android:layout_height="match_parent">
-
-                <ee.app.conversamanager.view.RegularTextView
-                    android:textSize="14sp"
-                    android:id="@+id/rtvFavs"
-                    android:text="@string/stats_favs_title"
-                    android:textColor="@color/light_gray"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <ee.app.conversamanager.view.BoldTextView
-                    android:text="0"
-                    android:id="@+id/mtvFavs"
-                    android:maxLines="1"
-                    android:textSize="20sp"
-                    android:maxWidth="130dp"
-                    android:singleLine="true"
-                    android:layout_below="@id/rtvFavs"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <ImageView
-                    android:src="@drawable/ic_heart"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginStart="3dp"
-                    android:layout_marginBottom="4dp"
-                    android:layout_toEndOf="@id/mtvFavs"
-                    android:layout_toRightOf="@id/mtvFavs"
-                    android:layout_alignBottom="@id/mtvFavs"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp" />
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:orientation="vertical"
-                android:layout_height="match_parent">
-
-                <ee.app.conversamanager.view.RegularTextView
-                    android:textSize="14sp"
-                    android:id="@+id/rtvViews"
-                    android:text="@string/stats_views_title"
-                    android:textColor="@color/light_gray"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <ee.app.conversamanager.view.BoldTextView
-                    android:text="0"
-                    android:id="@+id/mtvViews"
-                    android:maxLines="1"
-                    android:textSize="20sp"
-                    android:maxWidth="130dp"
-                    android:singleLine="true"
-                    android:layout_below="@id/rtvViews"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" />
-
-                <ImageView
-                    android:src="@drawable/ic_views"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginStart="3dp"
-                    android:layout_marginBottom="4dp"
-                    android:layout_toEndOf="@id/mtvViews"
-                    android:layout_toRightOf="@id/mtvViews"
-                    android:layout_alignBottom="@id/mtvViews"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp" />
-            </RelativeLayout>
-        </LinearLayout>
-    </LinearLayout>
-</ScrollView>
+</RelativeLayout>

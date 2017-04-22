@@ -75,7 +75,6 @@ public class ReceiveMessageJob extends Job {
             query.whereEqualTo(Const.kCustomerActiveKey, true);
 
             Collection<String> collection = new ArrayList<>();
-            collection.add(Const.kCustomerNameKey);
             collection.add(Const.kCustomerDisplayNameKey);
             query.selectKeys(collection);
 

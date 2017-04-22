@@ -50,7 +50,7 @@
     <string name="no_messages">No Messages</string>
     <string name="no_messages_description_one">When you have messages\nyou\'ll see them here</string>
     <string name="no_user_registered">No user registered with this email or password</string>
-    <string name="number_of_followers">Followers</string>
+    <string name="number_of_followers" translatable="false">Favs</string>
     <string name="open_on_title">Open</string>
     <string name="picture">Image</string>
     <string name="preferences__account">My Account</string>
@@ -79,7 +79,7 @@
     <string name="string_signin_sign_up_business_two">BUSINESS? CLICK HERE</string>
     <string name="string_signin_sign_up_business_one">LOOKING TO SIGN UP YOUR</string>
     <string name="string_signin_are_you_new">ARE YOU NEW HERE?</string>
-    <string name="string_signin_already_have_an_account">ALREADY HAVE AN ACCOUNT?</string>
+    <string name="string_signin_already_have_an_account">ALREADY HAVE AN ACCOUNT</string>
     <string name="chats_share_conversalink">Share my ConversaLink</string>
     <string name="special_promo_title">Special promo</string>
     <string name="signup_password_regex_error">Password should contain at least one letter, one digit and a special character</string>
@@ -93,19 +93,23 @@
     <string name="sett_help_feedback_title">Feedback</string>
     <string name="sett_help_support_title">Technical Support</string>
     <string name="sett_help_terms_privacy_title">Terms &amp; Privacy</string>
+    <string name="sett_help_support_message">Issues with the app or something isn\'t running smoothly, chat with tech support</string>
     <string name="sett_notification_sound_title">Sound</string>
-    <string name="sett_notification_sound_summary">Play when receiving a push notification</string>
+    <string name="sett_notification_sound_summary">Play when receiving a notification</string>
     <string name="sett_notification_push_title">Push notifications</string>
     <string name="sett_notification_preview_title">Preview</string>
-    <string name="sett_notification_preview_summary">Show push notification</string>
+    <string name="sett_notification_preview_summary">Show notification</string>
     <string name="sett_notification_inapp_title">In-App notifications</string>
     <string name="sett_notification_inapp_sound_summary">Play when receiving a message</string>
-    <string name="sett_notification_inapp_preview_summary">Show in-app notification</string>
+    <string name="sett_notification_inapp_preview_summary">Show notification</string>
     <string name="sett_chat_quality_title">Upload quality</string>
     <string name="sett_chat_quality_default_entry">High</string>
     <string name="sett_chat_message_title">Messages</string>
+    <string name="sett_chat_sound_title">Sound</string>
     <string name="sett_chat_message_sent_sound">Sound when sending</string>
     <string name="sett_chat_message_received_sound">Sound when receiving</string>
+    <string name="sett_chat_message_sound_message">Play sound inside chat</string>
+    <string name="sett_chat_message_quality">Sending images with higher quality uses more data</string>
     <string name="sett_account_privacy_title">Privacy</string>
     <string name="sett_account_password_title">Password</string>
     <string name="sett_account_logout_title">Log Out</string>
@@ -180,6 +184,7 @@
     <string name="sett_help_policies">Privacy policies</string>
     <string name="sett_help_dialog_title">Support</string>
     <string name="sett_help_dialog_message">Retrieving support information</string>
+    <string name="sett_help_dialog_message_error">Couldn\'t find support informartion, please try again later</string>
     <string name="sett_account_info_title">Information</string>
     <string name="sett_account_name_title">Name</string>
     <string name="sett_account_name_alert_title">Change name</string>
@@ -192,6 +197,8 @@
     <string name="settings_password_error">We\'re sorry, password couldn\'t be changed. Please try again later</string>
     <string name="settings_conversa_id_succesful">Conversa ID changed</string>
     <string name="settings_conversa_id_error">We\'re sorry, Conversa ID couldn\'t be changed because is already taken</string>
+    <string name="settings_avatar_succesful">Avatar changed</string>
+    <string name="settings_avatar_error">We\'re sorry, avatar couldn\'t be changed. Please try again later</string>
     <string name="s0">Devices allowed</string>
     <string name="s1">Category</string>
     <string name="s2">Contacts</string>
@@ -210,7 +217,8 @@
     <string name="signin_title_message">LET YOUR CUSTOMERS TALK\nTO YOU IN A SIMPLER WAY</string>
     <string name="common_field_required">Required field</string>
     <string name="common_field_invalid">Invalid field</string>
-    <string name="skip">skip</string>
+    <string name="common_field_invalid_email">Invalid field, check email</string>
+    <string name="skip">Skip</string>
     <string name="check">search</string>
     <string name="register_now">register now</string>
     <string name="ccontinue">continue</string>
@@ -239,6 +247,8 @@
     <string name="stats_received_title">Messages Received</string>
     <string name="stats_favs_title">Favs</string>
     <string name="stats_views_title">Profile Views</string>
+    <string name="stats_conversations_title">Conversations</string>
+    <string name="stats_links_title">Clicks on my Link</string>
     <string name="notification_stack_text">You have %1$d new messages from %2$s</string>
     <string name="sett_account_edit_title">Edit profile</string>
     <string name="sett_account_status_title">Status</string>
@@ -252,26 +262,46 @@
     <string name="sett_account_redirect_content">All your incoming messages will be redirect to Conversa to handle your communication. Are you sure you want to enable this feature?</string>
     <string name="sett_account_redirect_enable_fail">We couldn\'t enable redirection. Please try again later or contact Conversa Support for more information</string>
     <string name="sett_account_redirect_disable_fail">We couldn\'t disable redirection. Please try again later or contact Conversa Support for more information</string>
-    <string name="sett_status_update">Update</string>
+    <string name="sett_status_update">Update status</string>
     <string name="sett_link_title">What is it?</string>
     <string name="sett_link_description">ConversaLink is a special \nlink with which anyone \ncan start a chat with you \nwhen they click on it.  \n\nWorks from every place</string>
     <string name="sett_account_detail_basic_title">Basic information</string>
     <string name="sett_account_detail_private_title">Private information</string>
     <string name="sett_account_detail_general_title">General information</string>
+    <string name="sett_account_detail_conversaid_warning">We strongly recommend to update your Conversa ID only when is required as every link share with your old Conversa ID will become useless. Be careful</string>
     <string name="sett_account_detail_category_message">This are the categories your business will be related to</string>
-    <string name="sett_account_detail_display_name_subtitle">My Name</string>
-    <string name="sett_account_detail_conversa_id_subtitle">My Conversa ID</string>
+    <string name="sett_account_detail_display_name_subtitle">Business Name</string>
+    <string name="sett_account_detail_conversa_id_subtitle">My ID</string>
     <string name="sett_account_detail_email_subtitle">Email</string>
     <string name="sett_account_detail_password_subtitle">Password</string>
     <string name="sett_account_detail_category_subtitle">Categories</string>
     <string name="sett_account_detail_edit_action">Change avatar</string>
+    <string name="sett_category_selected_title">Selected</string>
+    <string name="sett_category_available_title">Categories</string>
+    <string name="sett_category_limit_warning">Limit reached</string>
     <string name="sett_category_detail_title">You can select up to %1$d categories</string>
     <string name="sett_category_info_error">We couldn\'t find the required information</string>
     <string name="conversa_id_already_taken">Conversa ID is already taken, try with another</string>
     <string name="sign_up_checking_conversa_id">Verifying information&#8230;</string>
     <string name="sign_up_register_categories_error">Unable to find categories, go back and try again</string>
     <string name="sign_up_register_countries_error">Unable to find countries, go back and try again</string>
+    <string name="sign_up_error">We couldn\'t process the request in this moment, try again later</string>
     <string name="stats_chart_sent_title">Sent</string>
     <string name="stats_chart_received_title">Received</string>
     <string name="stats_chart_title">Total Messages</string>
+    <string name="contacts_options_delete">Delete conversation</string>
+    <string name="contacts_options_select">Select</string>
+    <string name="contacts_options_clear">Clear conversation</string>
+    <string name="contacts_item_conversation_empty">Start chatting</string>
+    <string name="tutorial_skip">Start Now</string>
+    <string name="tutorial_message_five">Connect with your audience anywhere, anytime</string>
+    <string name="tutorial_message_four">Growth your business through chat</string>
+    <string name="tutorial_message_one">With Conversa reaching your audience is more easy than ever</string>
+    <string name="tutorial_message_three">Create your ID, get your conversa.link and share them everywhere</string>
+    <string name="tutorial_message_two">Let your customers chat with you without any hassle</string>
+    <string name="tutorial_title_five">Exceptional customer service</string>
+    <string name="tutorial_title_four">Boost your reach</string>
+    <string name="tutorial_title_one">Welcome to Manager</string>
+    <string name="tutorial_title_three">Be social</string>
+    <string name="tutorial_title_two">Instant messaging</string>
 </resources>

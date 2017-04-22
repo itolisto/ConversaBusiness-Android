@@ -51,13 +51,11 @@ import ee.app.conversamanager.events.MyEventBusIndex;
 import ee.app.conversamanager.management.AblyConnection;
 import ee.app.conversamanager.model.parse.Account;
 import ee.app.conversamanager.model.parse.Customer;
-import ee.app.conversamanager.model.parse.bCategory;
 import ee.app.conversamanager.notifications.onesignal.CustomNotificationOpenedHandler;
 import ee.app.conversamanager.notifications.onesignal.CustomNotificationReceivedHandler;
 import ee.app.conversamanager.settings.Preferences;
 import ee.app.conversamanager.utils.Const;
 import ee.app.conversamanager.utils.Foreground;
-import io.branch.referral.Branch;
 import io.fabric.sdk.android.Fabric;
 
 /**
@@ -97,7 +95,6 @@ public class ConversaApp extends MultiDexApplication {
 		AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
 		initializeFabric();
-		initializeBranch();
 		initializeOneSignal();
 		initializeParse();
 		initializeDeveloperBuild();
@@ -108,12 +105,7 @@ public class ConversaApp extends MultiDexApplication {
 	}
 
 	private void initializeFabric() {
-		Fabric.with(this, new Crashlytics());
-		Fabric.with(this, new Answers());
-	}
-
-	private void initializeBranch() {
-		Branch.getAutoInstance(this);
+		Fabric.with(this, new Crashlytics(), new Answers());
 	}
 
 	private void initializeOneSignal() {
@@ -140,20 +132,19 @@ public class ConversaApp extends MultiDexApplication {
 	private void initializeParse() {
 		// Register subclassing for using as Parse objects
 		ParseObject.registerSubclass(Account.class);
-		ParseObject.registerSubclass(bCategory.class);
 		ParseObject.registerSubclass(Customer.class);
 
 		// Initialize Parse.
-		Parse.initialize(this, "39H1RFC1jalMV3cv8pmDGPRh93Bga1mB4dyxbLwl", "YC3vORNGt6I4f8yEsO6TyGF97XbmitofOrrS5PCC");
-
-//		You need to enable the local datastore inside your initialization command, not before like it used to be.
-//		Parse.initialize(new Parse.Configuration.Builder(this)
-//			.applicationId("yourappid")
-//			.clientKey("yourclientkey")
-//			.server("serverurl")
-//			.enableLocalDataStore()
-//			.build()
-//		);
+		Parse.initialize(new Parse.Configuration.Builder(this)
+				.applicationId("szLKzjFz66asK9SngeFKnTyN2V596EGNuMTC7YyF4tkFudvY72")
+				.clientKey("CMTFwQPd2wJFXfEQztpapGHFjP5nLZdtZr7gsHKxuFhA9waMgw1")
+				.server("http://ec2-52-71-125-28.compute-1.amazonaws.com:1337/parse/")
+				// Localhost
+//				.applicationId("b15c83")
+//				.clientKey(null)
+//				.server("http://10.0.3.2:1337/parse/") // The trailing slash is important.
+				.build()
+		);
 	}
 
 	private void initializeDeveloperBuild() {

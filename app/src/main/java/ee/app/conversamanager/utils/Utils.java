@@ -182,6 +182,22 @@ public class Utils {
 		}
 	}
 
+	public static boolean deleteFile(File file) {
+		boolean deletedAll = true;
+		if (file != null) {
+			if (file.isDirectory()) {
+				String[] children = file.list();
+				for (int i = 0; i < children.length; i++) {
+					deletedAll = deleteFile(new File(file, children[i])) && deletedAll;
+				}
+			} else {
+				deletedAll = file.delete();
+			}
+		}
+
+		return deletedAll;
+	}
+
 	public static File getMediaDirectory(Context context, String folder) throws Exception {
 		ContextWrapper cw = new ContextWrapper(context);
 		// path to /data/data/yourapp/app_data/imageDir
@@ -220,10 +236,18 @@ public class Utils {
 			return "";
 		}
 
-		String path = "";
-
 		try {
-			path = Utils.getResourceName(Utils.getMediaDirectory(context, "avatars"));
+			File directory = Utils.getMediaDirectory(context, "avatars");
+			// Clear current avatar if any
+			if (directory.isDirectory()) {
+				String[] children = directory.list();
+				for (int i = 0; i < children.length; i++) {
+					new File(directory, children[i]).delete();
+				}
+			}
+			// Save new one
+			String path = Utils.getResourceName(directory);
+
 			// Create imageDir
 			File mypath = new File(path);
 
@@ -231,11 +255,12 @@ public class Utils {
 			// Use the compress method on the BitMap object to write image to the OutputStream
 			bitmap.compress(Bitmap.CompressFormat.JPEG, 85, fos);
 			fos.close();
+
+			return  path;
 		} catch (Exception e) {
 			Logger.error("saveAvatarToInternalStorage", e.getMessage());
+			return null;
 		}
-
-		return path;
 	}
 
 	@WorkerThread

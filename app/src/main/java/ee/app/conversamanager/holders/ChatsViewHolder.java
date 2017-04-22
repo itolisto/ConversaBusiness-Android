@@ -127,7 +127,7 @@ public class ChatsViewHolder extends BaseHolder {
 
         this.ivUserImage.setImageURI(uri);
 
-        updateLastMessage(user);
+        updateLastMessage(user.getCustomerId());
 
         if (mSelectedPositions.get(position, false)) {
             this.itemView.setActivated(true);
@@ -148,13 +148,14 @@ public class ChatsViewHolder extends BaseHolder {
         this.ivUnread.setVisibility(View.GONE);
     }
 
-    public void updateLastMessage(dbCustomer user) {
+    public void updateLastMessage(String customerId) {
         nChatItem info = ConversaApp.getInstance(activity).getDB()
-                .getLastMessageAndUnredCount(user.getCustomerId());
+                .getLastMessageAndUnredCount(customerId);
         dbMessage lastMessage = info.getMessage();
 
-        if(lastMessage == null) {
-            this.tvLastMessage.setText("");
+        if (lastMessage == null) {
+            this.tvLastMessage.setText(activity
+                    .getString(R.string.contacts_item_conversation_empty));
             this.tvDate.setVisibility(View.GONE);
         } else {
             this.tvDate.setVisibility(View.VISIBLE);
@@ -202,30 +203,31 @@ public class ChatsViewHolder extends BaseHolder {
     }
 
     private String setDate(AppCompatActivity activity, long timeOfCreation) {
-        long now = System.currentTimeMillis();
-
         // Compute start of the day for the timestamp
         Calendar cal = Calendar.getInstance(Locale.getDefault());
-        cal.setTimeInMillis(now);
+        cal.setTimeInMillis(System.currentTimeMillis());
         cal.set(Calendar.HOUR_OF_DAY, 0);
         cal.set(Calendar.MINUTE, 0);
         cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
+        cal.set(Calendar.MILLISECOND, 1);
+
+        long now = cal.getTimeInMillis();
 
         if (timeOfCreation > now) {
-            return Utils.getDate(activity, timeOfCreation, true);
+            return Utils.getTimeOrDay(activity, timeOfCreation, false);
         } else {
             long diff = now - timeOfCreation;
             long diffd = diff / (1000 * 60 * 60 * 24);
+            long diffw = diff / (1000 * 60 * 60 * 24 * 7);
 
             if (diffd > 7) {
-                return Utils.getDate(activity, timeOfCreation, true);
-            } else if (diffd > 1 && diffd <= 7){
+                return Utils.getDate(activity, timeOfCreation, (diffw > 52));
+            } else if (diffd >= 1 && diffd <= 7) {
                 return Utils.getTimeOrDay(activity, timeOfCreation, true);
-            } else if (diffd > 0 && diffd <= 1) {
+            } else if (diffd == 0) {
                 return activity.getString(R.string.chat_day_yesterday);
             } else {
-                return Utils.getTimeOrDay(activity, timeOfCreation, false);
+                return Utils.getDate(activity, timeOfCreation, true);
             }
         }
     }

@@ -25,6 +25,7 @@ import ee.app.conversamanager.model.database.dbMessage;
 import ee.app.conversamanager.model.nChatItem;
 import ee.app.conversamanager.utils.Const;
 import ee.app.conversamanager.utils.Logger;
+import ee.app.conversamanager.utils.Utils;
 
 public class MySQLiteHelper {
 
@@ -76,12 +77,12 @@ public class MySQLiteHelper {
             + "\"" + sMessageCreatedAt + "\" INTEGER NOT NULL, "
             + "\"" + sMessageViewAt + "\" INTEGER NOT NULL DEFAULT 0, "
             + "\"" + sMessageReadAt + "\" INTEGER NOT NULL DEFAULT 0, "
-            + "\"" + sMessageMessageId + "\" CHAR(14),"
-            + "\"" + sMessageWidth + "\" INTEGER DEFAULT 0,"
-            + "\"" + sMessageHeight + "\" INTEGER DEFAULT 0,"
-            + "\"" + sMessageDuration + "\" INTEGER DEFAULT 0,"
+            + "\"" + sMessageMessageId + "\" CHAR(20), "
+            + "\"" + sMessageWidth + "\" INTEGER DEFAULT 0, "
+            + "\"" + sMessageHeight + "\" INTEGER DEFAULT 0, "
+            + "\"" + sMessageDuration + "\" INTEGER DEFAULT 0, "
             + "\"" + sMessageBytes + "\" INTEGER DEFAULT 0, "
-            + "\"" + sMessageProgress + "\" INTEGER DEFAULT 0 );";
+            + "\"" + sMessageProgress + "\" INTEGER DEFAULT 0);";
 
     private static final String tmIndex1 = "CREATE INDEX M_search on "  + TABLE_MESSAGES + "(" + sMessageFromUserId + ", " + sMessageToUserId + "); ";
     private static final String tmIndex2 = "CREATE UNIQUE INDEX IF NOT EXISTS C_messageId on "  + TABLE_MESSAGES + "(" + sMessageMessageId + ");";
@@ -94,6 +95,7 @@ public class MySQLiteHelper {
     private static final String sBusinessBlocked = "blocked";
     private static final String sBusinessMuted = "muted";
     private static final String sBusinessCreatedAt = "created_at";
+    private static final String sBusinessAvatarFile = "avatar_file_url";
 
     private static final String TABLE_CONTACTS_CREATE = "CREATE TABLE IF NOT EXISTS "
             + TABLE_CV_CONTACTS + "("
@@ -104,30 +106,10 @@ public class MySQLiteHelper {
             + "\"" + sBusinessComposingMessage + "\" VARCHAR(255), "
             + "\"" + sBusinessBlocked + "\" CHAR(1) NOT NULL DEFAULT 'N', "
             + "\"" + sBusinessMuted + "\" CHAR(1) NOT NULL DEFAULT 'N', "
-            + "\"" + sBusinessCreatedAt + "\" INTEGER NOT NULL );";
+            + "\"" + sBusinessCreatedAt + "\" INTEGER NOT NULL, "
+            + "\"" + sBusinessAvatarFile + "\" VARCHAR(355) ); ";
 
     private static final String tcIndex1 = "CREATE UNIQUE INDEX IF NOT EXISTS C_customerId on "  + TABLE_CV_CONTACTS + "(" + sBusinessCustomerId + ");";
-
-//    private static final String TABLE_STATISTICS_CREATE = "CREATE TABLE "
-//            + TABLE_STATISTICS + "("
-//            + "\"_id\" INTEGER PRIMARY KEY, "
-//            + "\"conversa_id\" VARCHAR(255) NOT NULL, "
-//            + "\"messages_sent_by_push_id\" INTEGER NOT NULL, "
-//            + "\"messages_sent_by_business\" INTEGER NOT NULL, "
-//            + "\"messages_receive_by_push_id\" INTEGER NOT NULL, "
-//            + "\"messages_receive_by_business\" INTEGER NOT NULL, "
-//            + "\"max_devices\" INTEGER NOT NULL, "
-//            + "\"category_title\" VARCHAR(30) NOT NULL, "
-//            + "\"category_avatar\" VARCHAR(30) NOT NULL, "
-//            + "\"number_of_contacts\" INTEGER NOT NULL, "
-//            + "\"number_of_favs\" INTEGER NOT NULL, "
-//            + "\"number_of_block_contacts\" INTEGER NOT NULL, "
-//            + "\"number_of_keywords_set\" INTEGER NOT NULL, "
-//            + "\"number_of_first_replies\" INTEGER NOT NULL, "
-//            + "\"number_of_locations\" INTEGER NOT NULL, "
-//            + "\"remaining_diffusion_messages\" INTEGER NOT NULL, "
-//            + "\"subscription_finish\" INTEGER NOT NULL,"
-//            + "\"lastget\" INTEGER NOT NULL ); ";
 
     // NOTIFICATIONS
     private static final String sNotificationAndroidId = "android_id";
@@ -177,7 +159,7 @@ public class MySQLiteHelper {
     }
 
     public boolean deleteDatabase() {
-        deleteDataAssociatedWithUser(null, 0, true);
+        deleteAllData();
         return context.deleteDatabase(DATABASE_NAME1);
     }
 
@@ -197,6 +179,7 @@ public class MySQLiteHelper {
         contact.put(sBusinessBlocked, "N");
         contact.put(sBusinessMuted, "N");
         contact.put(sBusinessCreatedAt, user.getCreated());
+        contact.put(sBusinessAvatarFile, user.getAvatarThumbFileId());
 
         long result = openDatabase().insert(TABLE_CV_CONTACTS, null, contact);
 
@@ -225,39 +208,57 @@ public class MySQLiteHelper {
     }
 
     @WorkerThread
-    public void deleteDataAssociatedWithUser(String ids, int total, boolean allUsers) {
-        String query;
+    private void deleteAllData() {
+        // TODO: if any new folders are added they should be included here
+        try {
+            File path1 = Utils.getMediaDirectory(context, "images");
+            File path2 = Utils.getMediaDirectory(context, "avatars");
 
-        if (allUsers) {
-            query = "SELECT " + sBusinessCustomerId + " FROM "
-                    + TABLE_CV_CONTACTS;
-        } else {
-            query = "SELECT " + sBusinessCustomerId + " FROM "
-                    + TABLE_CV_CONTACTS + " WHERE " + COLUMN_ID + " IN (" + ids + ")";
+            if (path1.exists()) {
+                String[] fileNames = path1.list();
+                for (String fileName : fileNames) {
+                    if (!fileName.equals("lib")) {
+                        Utils.deleteFile(new File(path1, fileName));
+                    }
+                }
+            }
+
+            if (path2.exists()) {
+                String[] fileNames = path2.list();
+                for (String fileName : fileNames) {
+                    if (!fileName.equals("lib")) {
+                        Utils.deleteFile(new File(path2, fileName));
+                    }
+                }
+            }
+
+            File file = new File(ConversaApp.getInstance(context).getPreferences().getAccountAvatar());
+            file.delete();
+        } catch (Exception e) {
+            Logger.error("deleteAllData", e.getMessage());
         }
+    }
+
+    @WorkerThread
+    public void deleteAllDataAssociatedWithUser(String ids, int total) {
+        String query = "SELECT " + sBusinessCustomerId + " FROM "
+                + TABLE_CV_CONTACTS + " WHERE " + COLUMN_ID + " IN (" + ids + ")";
 
         Cursor cursor = openDatabase().rawQuery(query, new String[]{});
         cursor.moveToFirst();
 
-        List<String> business;
-
-        if (allUsers) {
-            business = new ArrayList<>(cursor.getCount());
-        } else {
-            business = new ArrayList<>(total);
-        }
+        List<String> business = new ArrayList<>(total);
 
         while (!cursor.isAfterLast()) {
-            business.add(cursor.getString(1));
+            business.add(cursor.getString(0));
             cursor.moveToNext();
         }
 
         cursor.close();
-        int i = 0;
 
         // 15 is the min string. It happens when only one user is deleted
         StringBuilder objectIds = new StringBuilder(15);
-        for (i = 0; i < business.size(); i++) {
+        for (int i = 0; i < business.size(); i++) {
             objectIds.append("\'");
             objectIds.append(business.get(i));
             objectIds.append("\'");
@@ -266,16 +267,20 @@ public class MySQLiteHelper {
             }
         }
 
-        // Delete data associated with messages
-        query = "SELECT " + sMessageLocalUrl + " FROM " + TABLE_MESSAGES + " WHERE " +
+        deleteAllDataAssociatedToMessagesWithUser(objectIds.toString());
+    }
+
+    @WorkerThread
+    public void deleteAllDataAssociatedToMessagesWithUser(String objectIds) {
+        String query = "SELECT " + sMessageLocalUrl + " FROM " + TABLE_MESSAGES + " WHERE " +
                 sMessageType + " NOT IN (\'" + Const.kMessageTypeLocation + "\',\'" +
                 Const.kMessageTypeText + "\')" + " AND (" + sMessageFromUserId + " IN (" +
                 objectIds + ")" + " OR " + sMessageToUserId + " IN (" + objectIds + ")" + ")";
 
-        cursor = openDatabase().rawQuery(query, new String[]{});
+        Cursor cursor = openDatabase().rawQuery(query, new String[]{});
         cursor.moveToFirst();
 
-        for (i = 0; i < cursor.getCount(); i++) {
+        for (int i = 0; i < cursor.getCount(); i++) {
             if (cursor.getString(0) != null) {
                 File file = new File(cursor.getString(0));
                 try {
@@ -287,22 +292,13 @@ public class MySQLiteHelper {
         }
 
         cursor.close();
-
-        if (allUsers) {
-            File file = new File(ConversaApp.getInstance(context).getPreferences().getAccountAvatar());
-            try {
-                file.delete();
-            } catch (Exception e) {
-                Logger.error("deleteDataAssociated", e.getMessage());
-            }
-        }
     }
 
     @WorkerThread
     public void deleteContactsById(List<String> customer) {
         String args = TextUtils.join(",", customer);
         // Delete avatars/images/videos/audios associated with contact list
-        deleteDataAssociatedWithUser(args, customer.size(), false);
+        deleteAllDataAssociatedWithUser(args, customer.size());
         openDatabase().execSQL(String.format("DELETE FROM " + TABLE_CV_CONTACTS
                 + " WHERE " + COLUMN_ID + " IN (%s);", args));
     }
@@ -329,10 +325,8 @@ public class MySQLiteHelper {
         contact.setDisplayName(cursor.getString(2));
         contact.setRecent(cursor.getLong(3));
         contact.setComposingMessage(cursor.getString(4));
-        boolean b = cursor.getString(5).contentEquals("Y");
-        contact.setBlocked(b);
-        b = cursor.getString(6).contentEquals("Y");
-        contact.setMuted(b);
+        contact.setBlocked(cursor.getString(5).contentEquals("Y"));
+        contact.setMuted(cursor.getString(6).contentEquals("Y"));
         contact.setCreated(cursor.getLong(7));
         return contact;
     }
@@ -461,7 +455,8 @@ public class MySQLiteHelper {
                 new String[] {id, fromId, fromId, id} );
     }
 
-    private int deleteAllMessagesById(String id) {
+    public int deleteAllMessagesById(String id) {
+        deleteAllDataAssociatedToMessagesWithUser("\'" + id + "\'");
         String fromId = ConversaApp.getInstance(context).getPreferences().getAccountBusinessId();
         int result = openDatabase().delete(TABLE_MESSAGES,
                 "(" + sMessageFromUserId + " = ? AND " + sMessageToUserId + " = ?)"
@@ -536,116 +531,6 @@ public class MySQLiteHelper {
         message.setProgress(cursor.getInt(18));
         return message;
     }
-
-    /* ******************************************* */
-    /* ******************************************* */
-    /* ******************************************* */
-
-//    public Statistics getStatistics() {
-//        Statistics statistics = null;
-//
-//        openStatisticsTable();
-//        Cursor cursor = myDb.query(TABLE_STATISTICS,null,null,null,null,null,null);
-//        cursor.moveToFirst();
-//
-//        while (!cursor.isAfterLast()) {
-//            statistics = cursorToStatistic(cursor);
-//            cursor.moveToNext();
-//        }
-//        // make sure to close the cursor
-//        cursor.close();
-//        closeStatisticsTable();
-//
-//        return statistics;
-//    }
-//
-//    public void saveStatistics(Statistics save) {
-//
-//        Statistics has = getStatistics();
-//
-//        if(has == null) {
-//
-//            ContentValues newStatistics = new ContentValues();
-//
-//            newStatistics.put("conversa_id", "adsflkj2r3afdsk");
-//            newStatistics.put("messages_sent_by_push_id", save.getTotalSentMessagesByPushId());
-//            newStatistics.put("messages_sent_by_business", save.getTotalSentMessages());
-//            newStatistics.put("messages_receive_by_push_id", save.getTotalReceivedMessagesByPushId());
-//            newStatistics.put("messages_receive_by_business", save.getTotalReceivedMessages());
-//            newStatistics.put("max_devices", save.getMaxDevices());
-//            newStatistics.put("category_title", save.getCategoryTitle());
-//            newStatistics.put("category_avatar", save.getCategoryAvatar());
-//            newStatistics.put("number_of_contacts", save.getNumberOfContacts());
-//            newStatistics.put("number_of_favs", save.getNumberOfFavs());
-//            newStatistics.put("number_of_block_contacts", save.getNumberOfBlockedUsers());
-//            newStatistics.put("number_of_keywords_set", save.getNumberOfKeywords());
-//            newStatistics.put("number_of_first_replies", save.getNumberOfReplies());
-//            newStatistics.put("number_of_locations", save.getNumberOfLocations());
-//            newStatistics.put("remaining_diffusion_messages", save.getRemainingDiffusion());
-//            newStatistics.put("subscription_finish", save.getExpirationDate());
-//            newStatistics.put("lastget", save.getLastget());
-//
-//            openStatisticsTable();
-//            myDb.insert(TABLE_STATISTICS, null, newStatistics);
-//            closeStatisticsTable();
-//        } else {
-//            updateStatistics(save);
-//        }
-//    }
-//
-//        /*
-//        + "\"conversa_id\" VARCHAR(255) NOT NULL, "
-//        */
-//
-//    public boolean updateStatistics(Statistics save){
-//        ContentValues contentValues = new ContentValues();
-//
-//        contentValues.put("conversa_id", "adsflkj2r3afdsk");
-//        contentValues.put("messages_sent_by_push_id",       save.getTotalSentMessagesByPushId());
-//        contentValues.put("messages_sent_by_business",      save.getTotalSentMessages());
-//        contentValues.put("messages_receive_by_push_id",    save.getTotalReceivedMessagesByPushId());
-//        contentValues.put("messages_receive_by_business",   save.getTotalReceivedMessages());
-//        contentValues.put("max_devices",                    save.getMaxDevices());
-//        contentValues.put("category_title",                 save.getCategoryTitle());
-//        contentValues.put("category_avatar",                save.getCategoryAvatar());
-//        contentValues.put("number_of_contacts",             save.getNumberOfContacts());
-//        contentValues.put("number_of_favs",                 save.getNumberOfFavs());
-//        contentValues.put("number_of_block_contacts",       save.getNumberOfBlockedUsers());
-//        contentValues.put("number_of_keywords_set",         save.getNumberOfKeywords());
-//        contentValues.put("number_of_first_replies",        save.getNumberOfReplies());
-//        contentValues.put("number_of_locations",            save.getNumberOfLocations());
-//        contentValues.put("remaining_diffusion_messages",   save.getRemainingDiffusion());
-//        contentValues.put("subscription_finish",            save.getExpirationDate());
-//        contentValues.put("lastget",                        save.getLastget());
-//
-//        openStatisticsTable();
-//        myDb.update(TABLE_STATISTICS, contentValues, "_id = ?", new String[] { "1" } );
-//        closeStatisticsTable();
-//        return true;
-//    }
-//
-//    private Statistics cursorToStatistic(Cursor cursor) {
-//        Statistics statistics = new Statistics();
-//
-//        statistics.setTotalSentMessagesByPushId     (cursor.getString(1));
-//        statistics.setTotalSentMessages             (cursor.getString(2));
-//        statistics.setTotalReceivedMessagesByPushId (cursor.getString(3));
-//        statistics.setTotalReceivedMessages         (cursor.getString(4));
-//        statistics.setMaxDevices                    (cursor.getString(5));
-//        statistics.setCategoryTitle                 (cursor.getString(6));
-//        statistics.setCategoryAvatar                (cursor.getString(7));
-//        statistics.setNumberOfContacts              (cursor.getString(8));
-//        statistics.setNumberOfFavs                  (cursor.getString(9));
-//        statistics.setNumberOfBlockedUsers          (cursor.getString(10));
-//        statistics.setNumberOfKeywords              (cursor.getString(11));
-//        statistics.setNumberOfReplies               (cursor.getString(12));
-//        statistics.setNumberOfLocations             (cursor.getString(13));
-//        statistics.setRemainingDiffusion            (cursor.getString(14));
-//        statistics.setExpirationDate                (cursor.getString(15));
-//        statistics.setLastget                       (cursor.getString(16));
-//
-//        return statistics;
-//    }
 
     /* ******************************************* */
     /* ******************************************* */

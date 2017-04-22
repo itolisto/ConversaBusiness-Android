@@ -9,6 +9,7 @@
     <include layout="@layout/actionbar_preference"/>
 
     <ScrollView
+        android:scrollbars="none"
         android:layout_marginTop="?attr/actionBarSize"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -129,6 +130,14 @@
                 android:background="@drawable/divider"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/settings_divider_height"/>
+
+            <ee.app.conversamanager.view.LightTextView
+                android:textSize="12sp"
+                android:layout_marginTop="7dp"
+                android:textColor="@color/light_gray"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/sett_account_detail_conversaid_warning" />
 
             <ee.app.conversamanager.view.BoldTextView
                 android:textAllCaps="true"

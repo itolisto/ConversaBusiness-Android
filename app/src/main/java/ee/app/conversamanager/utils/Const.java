@@ -89,7 +89,11 @@ public class Const {
 	public static final String iExtraList = "iExtraList";
 	public static final String iExtraBusinessReclaimed = "iExtraBusinessReclaimed";
 
+	public static final String iExtraSignUpDisplayName = "iExtraSignUpDisplayName";
+	public static final String iExtraSignUpConversaId = "iExtraSignUpConversaId";
 	public static final String iExtraSignUpCategory = "iExtraSignUpCategory";
 	public static final String iExtraSignUpAvatar = "iExtraSignUpAvatar";
 
+	public static final int CAPTURE_MEDIA = 368;
+	public static final int CAPTURE_VIDEO = 369;
 }

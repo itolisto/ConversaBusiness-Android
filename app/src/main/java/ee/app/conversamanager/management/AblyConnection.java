@@ -20,7 +20,6 @@ import ee.app.conversamanager.messaging.CustomMessageService;
 import ee.app.conversamanager.utils.Logger;
 import io.ably.lib.realtime.AblyRealtime;
 import io.ably.lib.realtime.Channel;
-import io.ably.lib.realtime.ChannelState;
 import io.ably.lib.realtime.ChannelStateListener;
 import io.ably.lib.realtime.CompletionListener;
 import io.ably.lib.realtime.ConnectionState;
@@ -252,13 +251,13 @@ public class AblyConnection implements Channel.MessageListener, Presence.Presenc
      *
      */
     @Override
-    public void onChannelStateChanged(ChannelState state, ErrorInfo reason) {
-        if (reason != null) {
-            Logger.error("fasdf", reason.message);
+    public void onChannelStateChanged(ChannelStateChange stateChange) {
+        if (stateChange.reason != null) {
+            Logger.error("onChannelStateChanged", stateChange.reason.message);
             return;
         }
 
-        switch (state) {
+        switch (stateChange.current) {
             case initialized:
                 break;
             case attaching:
@@ -320,7 +319,11 @@ public class AblyConnection implements Channel.MessageListener, Presence.Presenc
     }
 
     public PresenceMessage[] getPresentUsers(String channel) {
-        return ablyRealtime.channels.get("upbc:".concat(channel)).presence.get();
+        try {
+            return ablyRealtime.channels.get("upbc:".concat(channel)).presence.get();
+        } catch (AblyException ignored) {
+            return new PresenceMessage[0];
+        }
     }
 
     public ConnectionState ablyConnectionStatus() {
@@ -361,4 +364,5 @@ public class AblyConnection implements Channel.MessageListener, Presence.Presenc
 
         return sb.toString();
     }
+
 }

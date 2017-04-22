@@ -4,33 +4,34 @@ import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AlertDialog;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.afollestad.materialcamera.MaterialCamera;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
+import com.sandrios.sandriosCamera.internal.configuration.CameraConfiguration;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -38,17 +39,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import ee.app.conversamanager.ActivityCameraCrop;
 import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.R;
 import ee.app.conversamanager.extendables.BaseActivity;
 import ee.app.conversamanager.model.nCategory;
 import ee.app.conversamanager.utils.Const;
+import ee.app.conversamanager.utils.ImageFilePath;
 import ee.app.conversamanager.utils.Logger;
 import ee.app.conversamanager.view.AvatarSheetDialog;
-
-import static ee.app.conversamanager.ActivityChatWall.CAMERA_RQ;
-import static ee.app.conversamanager.R.id.btnSignUpContinue;
 
 /**
  * Created by edgargomez on 8/12/16.
@@ -57,8 +55,9 @@ public class ActivityRegister extends BaseActivity implements View.OnClickListen
 
     private EditText mEtName;
     private EditText mEtConversaId;
-    private ImageView mIvAvatar;
     private nCategory selectedCategory;
+    private SimpleDraweeView mIvAvatar;
+    private String selectedImage;
     private List<nCategory> categories;
     private AvatarSheetDialog myBottomSheet;
 
@@ -74,9 +73,10 @@ public class ActivityRegister extends BaseActivity implements View.OnClickListen
     @Override
     protected void initialization() {
         super.initialization();
+
         mEtName = (EditText) findViewById(R.id.etName);
         mEtConversaId = (EditText) findViewById(R.id.etConversaId);
-        mIvAvatar = (ImageView) findViewById(R.id.ivAvatar);
+        mIvAvatar = (SimpleDraweeView) findViewById(R.id.ivAvatar);
 
         Spinner mSpCategory = (Spinner) findViewById(R.id.spCategory);
 
@@ -84,7 +84,7 @@ public class ActivityRegister extends BaseActivity implements View.OnClickListen
         findViewById(R.id.tilConversaId).setOnClickListener(this);
         findViewById(R.id.ivAdd).setOnClickListener(this);
 
-        Button mBtnSignUpContinue = (Button) findViewById(btnSignUpContinue);
+        Button mBtnSignUpContinue = (Button) findViewById(R.id.btnSignUpContinue);
         mBtnSignUpContinue.setOnClickListener(this);
         mBtnSignUpContinue.setTypeface(ConversaApp.getInstance(this).getTfRalewayMedium());
 
@@ -106,19 +106,17 @@ public class ActivityRegister extends BaseActivity implements View.OnClickListen
             }
         }
 
-        HashMap<String, Object> params = new HashMap<>(2);
+        HashMap<String, Object> params = new HashMap<>(1);
         params.put("language", language);
-        params.put("no", 0);
 
-        ParseCloud.callFunctionInBackground("getCategories", params, new FunctionCallback<String>() {
+        ParseCloud.callFunctionInBackground("getOnlyCategories", params, new FunctionCallback<String>() {
             @Override
             public void done(String jsonCategories, ParseException e) {
                 if (e != null) {
                     showErrorMessage(getString(R.string.sign_up_register_categories_error));
                 } else {
                     try {
-                        JSONObject jsonRootObject = new JSONObject(jsonCategories);
-                        JSONArray categories = jsonRootObject.optJSONArray("ids");
+                        JSONArray categories = new JSONArray(jsonCategories);
 
                         int size = categories.length();
                         List<nCategory> categoriesList = new ArrayList<>(size);
@@ -160,6 +158,14 @@ public class ActivityRegister extends BaseActivity implements View.OnClickListen
     @Override
     public void onBackPressed() {
         Intent upIntent = NavUtils.getParentActivityIntent(this);
+        // Delete image
+        if (!TextUtils.isEmpty(selectedImage)) {
+            try {
+                boolean result = new File(selectedImage).delete();
+                Logger.error("onBackPressed", (result) ? "Image deleted" : "Image not deleted, be careful");
+            } catch (Exception ignored) {}
+        }
+
         if (NavUtils.shouldUpRecreateTask(this, upIntent)) {
             // This activity is NOT part of this app's task, so create a new task
             // when navigating up, with a synthesized back stack.
@@ -190,7 +196,7 @@ public class ActivityRegister extends BaseActivity implements View.OnClickListen
                 mEtConversaId.requestFocus();
                 break;
             }
-            case btnSignUpContinue: {
+            case R.id.btnSignUpContinue: {
                 if (validateForm()) {
                     final MaterialDialog dialog = new MaterialDialog.Builder(this)
                             .content(R.string.sign_up_checking_conversa_id)
@@ -206,8 +212,11 @@ public class ActivityRegister extends BaseActivity implements View.OnClickListen
 
                             if (e == null) {
                                 Intent intent = new Intent(getApplicationContext(), ActivityRegisterComplete.class);
+                                intent.putExtra(Const.iExtraSignUpDisplayName, mEtName.getText().toString());
+                                intent.putExtra(Const.iExtraSignUpConversaId, mEtConversaId.getText().toString());
                                 intent.putExtra(Const.iExtraSignUpCategory, selectedCategory.getObjectId());
-                                intent.putExtra(Const.iExtraSignUpAvatar, selectedCategory.getObjectId());
+                                if (!TextUtils.isEmpty(selectedImage))
+                                    intent.putExtra(Const.iExtraSignUpAvatar, selectedImage);
                                 startActivity(intent);
                             } else {
                                 showErrorMessage(getString(R.string.conversa_id_already_taken));
@@ -255,33 +264,19 @@ public class ActivityRegister extends BaseActivity implements View.OnClickListen
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // Make sure the request was successful
-        if (resultCode == RESULT_OK) {
-            // Check which request we're responding to
-            switch (requestCode) {
-                case ActivityCameraCrop.PICK_CAMERA_REQUEST:
-                case ActivityCameraCrop.PICK_GALLERY_REQUEST: {
-                    Bitmap photo = (Bitmap) data.getExtras().get("data");
-                    mIvAvatar.setImageBitmap(photo);
-                    break;
-                }
-                case CAMERA_RQ: {
-                    if (data.getType().equals("image/jpeg")) {
-                        BitmapFactory.Options options = new BitmapFactory.Options();
-                        options.inJustDecodeBounds = true;
-                        BitmapFactory.decodeFile(data.getData().getPath(), options);
+        super.onActivityResult(requestCode, resultCode, data);
 
-                    }
+        if (resultCode == RESULT_OK && data != null) {
+            switch (requestCode) {
+                case Const.CAPTURE_MEDIA: {
+                    String path = ImageFilePath.getPath(this, Uri.parse(data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH)));
+                    selectedImage = path;
+                    mIvAvatar.setImageURI(Uri.fromFile(new File(path)));
                     break;
                 }
             }
-        } else if (requestCode == CAMERA_RQ) {
-            if (data != null && data.getSerializableExtra(MaterialCamera.ERROR_EXTRA) != null) {
-                Exception e = (Exception) data.getSerializableExtra(MaterialCamera.ERROR_EXTRA);
-                if (e != null) {
-                    Logger.error("onActivityResult", e.getMessage());
-                }
-            }
+        } else {
+            Logger.error("onActivityResult", "Error");
         }
     }
 

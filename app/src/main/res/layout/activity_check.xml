@@ -30,12 +30,14 @@
                 android:background="@null"
                 android:gravity="bottom"
                 android:hint="@string/business_name"
+                android:imeOptions="actionDone"
+                android:textCursorDrawable="@null"
                 android:inputType="text"
                 android:maxLines="1"
                 android:singleLine="true"
                 android:textColor="@android:color/black"
-                android:textColorHint="@color/gray"
-                android:textSize="14sp" />
+                android:textColorHint="@color/light_gray"
+                android:textSize="13sp" />
         </android.support.design.widget.TextInputLayout>
 
         <ee.app.conversamanager.view.RegularTextView
@@ -75,10 +77,10 @@
             android:layout_alignParentBottom="true"
             android:gravity="center"
             android:text="@string/skip"
-            android:textColor="@drawable/textcolor_purple_state"
+            android:textColor="@color/secondaryPurple"
             android:textSize="14sp"
             android:textAllCaps="false"
-            android:background="@drawable/button_shape_purple_border" />
+            android:background="@android:color/transparent" />
 
     </RelativeLayout>
 </ScrollView>

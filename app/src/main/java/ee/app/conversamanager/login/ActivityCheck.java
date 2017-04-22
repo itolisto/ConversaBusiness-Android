@@ -61,13 +61,13 @@ public class ActivityCheck extends BaseActivity implements View.OnClickListener 
                 if (validateForm()) {
                     HashMap<String, Object> params = new HashMap<>(1);
                     params.put("search", mEtCheckName.getText().toString());
+
                     ParseCloud.callFunctionInBackground("businessClaimSearch", params, new FunctionCallback<String>() {
                         @Override
                         public void done(String object, ParseException e) {
                             if (e == null) {
                                 try {
-                                    JSONObject jsonRootObject = new JSONObject(object);
-                                    JSONArray results = jsonRootObject.optJSONArray("results");
+                                    JSONArray results = new JSONArray(object);
 
                                     int size = results.length();
 

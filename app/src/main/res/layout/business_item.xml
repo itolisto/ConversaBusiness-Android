@@ -58,7 +58,7 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@id/vDivider"
         android:layout_alignStart="@id/vDivider"
-        android:textColor="@color/light_dark_gray" />
+        android:textColor="@color/light_gray" />
 
     <View
         android:layout_marginLeft="84dp"

@@ -3,10 +3,16 @@ package ee.app.conversamanager.login;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.URLSpan;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -28,24 +34,27 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.R;
 import ee.app.conversamanager.extendables.BaseActivity;
 import ee.app.conversamanager.model.nCountry;
 import ee.app.conversamanager.model.parse.Account;
+import ee.app.conversamanager.utils.AppActions;
 import ee.app.conversamanager.utils.Const;
 import ee.app.conversamanager.utils.Utils;
+import ee.app.conversamanager.view.LightTextView;
+import ee.app.conversamanager.view.URLSpanNoUnderline;
 
 import static ee.app.conversamanager.R.id.btnSignUpUp;
 import static ee.app.conversamanager.utils.Const.kUserAvatarKey;
-import static ee.app.conversamanager.utils.Const.kUserCategoryKey;
-import static ee.app.conversamanager.utils.Const.kUserCountryKey;
 import static ee.app.conversamanager.utils.Const.kUserTypeKey;
 
 /**
@@ -64,6 +73,8 @@ public class ActivityRegisterComplete extends BaseActivity implements View.OnCli
 
     CustomAdapter dataAdapter;
 
+    private String displayName;
+    private String conversaId;
     private String categoryId;
     private String path;
 
@@ -78,6 +89,8 @@ public class ActivityRegisterComplete extends BaseActivity implements View.OnCli
     protected void initialization() {
         super.initialization();
 
+        displayName = getIntent().getExtras().getString(Const.iExtraSignUpDisplayName, null);
+        conversaId = getIntent().getExtras().getString(Const.iExtraSignUpConversaId, null);
         categoryId = getIntent().getExtras().getString(Const.iExtraSignUpCategory, null);
         path = getIntent().getExtras().getString(Const.iExtraSignUpAvatar, null);
 
@@ -97,6 +110,50 @@ public class ActivityRegisterComplete extends BaseActivity implements View.OnCli
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mSpCountry.setAdapter(dataAdapter);
         mSpCountry.setOnItemSelectedListener(this);
+
+        LightTextView mLtvTermsPrivacy = (LightTextView) findViewById(R.id.ltvTermsPrivacy);
+        String text = mLtvTermsPrivacy.getText().toString();
+
+        String language = ConversaApp.getInstance(this).getPreferences().getLanguage();
+
+        if (language.equals("zz")) {
+            if (Locale.getDefault().getLanguage().startsWith("es")) {
+                language = "es";
+            } else {
+                language = "en";
+            }
+        }
+
+        int indexTerms;
+        int indexPrivacy;
+
+        if (language.equals("es")) {
+            indexTerms = TextUtils.indexOf(text, "TERMINOS");
+            indexPrivacy = TextUtils.indexOf(text, "POLITICAS");
+        } else {
+            indexTerms = TextUtils.indexOf(text, "TERMS");
+            indexPrivacy = TextUtils.indexOf(text, "PRIVACY");
+        }
+
+        Spannable styledString = new SpannableString(text);
+        // url
+        styledString.setSpan(new URLSpanNoUnderline("http://manager.conversachat.com/terms"), indexTerms, indexTerms + (language.equals("es") ? 8 : 5), 0);
+        styledString.setSpan(new URLSpanNoUnderline("http://manager.conversachat.com/privacy"), indexPrivacy, text.length(), 0);
+        // change text color
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            styledString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.purple, null)),
+                    indexTerms, indexTerms + (language.equals("es") ? 8 : 5), 0);
+            styledString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.purple, null)),
+                    indexPrivacy, text.length(), 0);
+        } else {
+            styledString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.purple)),
+                    indexTerms, indexTerms + (language.equals("es") ? 8 : 5), 0);
+            styledString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.purple)),
+                    indexPrivacy, text.length(), 0);
+        }
+        // this step is mandated for the url and clickable styles.
+        mLtvTermsPrivacy.setMovementMethod(LinkMovementMethod.getInstance());
+        mLtvTermsPrivacy.setText(styledString);
 
         HashMap<String, Object> params = new HashMap<>(1);
         ParseCloud.callFunctionInBackground("getCountries", params, new FunctionCallback<String>() {
@@ -161,8 +218,7 @@ public class ActivityRegisterComplete extends BaseActivity implements View.OnCli
         if (path == null) {
             completeSignup(null);
         } else {
-            byte[] data = "Working at Parse is great!".getBytes();
-            final ParseFile file = new ParseFile("avatar.jpg", data);
+            final ParseFile file = new ParseFile(new File(path));
             file.saveInBackground(new SaveCallback() {
                 @Override
                 public void done(ParseException e) {
@@ -170,6 +226,7 @@ public class ActivityRegisterComplete extends BaseActivity implements View.OnCli
                         completeSignup(file);
                     } else {
                         // Show alert
+                        showErrorMessage(getString(R.string.sign_up_error));
                     }
                 }
             }, new ProgressCallback() {
@@ -184,15 +241,22 @@ public class ActivityRegisterComplete extends BaseActivity implements View.OnCli
     private void completeSignup(ParseFile avatar) {
         Account user = new Account();
 
-        String username = TextUtils.split(mEtSignUpEmail.getText().toString(), "@")[0];
+        String email = mEtSignUpEmail.getText().toString();
+        String parts[] = TextUtils.split(email, "@");
+        String username = parts[0];
+        String domain = TextUtils.split(parts[1], "\\.")[0];
+
+        String fusername = username + domain;
 
         user.setEmail(mEtSignUpEmail.getText().toString());
-        user.setUsername(username);
+        user.setUsername(fusername);
         user.setPassword(mEtSignUpPassword.getText().toString());
 
         user.put(kUserTypeKey, 2);
-        user.put(kUserCategoryKey, categoryId);
-        user.put(kUserCountryKey, selectedCountry.getId());
+        user.put("categoryId", categoryId);
+        user.put("countryId", selectedCountry.getId());
+        user.put("displayName", displayName);
+        user.put("conversaID", conversaId);
 
         if (avatar != null) {
             user.put(kUserAvatarKey, avatar);
@@ -205,12 +269,9 @@ public class ActivityRegisterComplete extends BaseActivity implements View.OnCli
             public void done(ParseException e) {
                 progress.dismiss();
                 if (e == null) {
-                    // Hooray! Let them use the app now.
-
+                    AuthListener(true, null);
                 } else {
-                    // Sign up didn't succeed. Look at the ParseException
-                    // to figure out what went wrong
-
+                    AuthListener(false, e);
                 }
             }
         });
@@ -222,7 +283,7 @@ public class ActivityRegisterComplete extends BaseActivity implements View.OnCli
         if (mEtSignUpEmail.getText().toString().isEmpty()) {
             title = getString(R.string.common_field_required);
         } else if (!Utils.checkEmail(mEtSignUpEmail.getText().toString())) {
-            title = getString(R.string.common_field_invalid);
+            title = getString(R.string.common_field_invalid_email);
         } else if (mEtSignUpPassword.getText().toString().isEmpty()) {
             title = getString(R.string.common_field_required);
         } else if (selectedCountry == null) {
@@ -311,71 +372,12 @@ public class ActivityRegisterComplete extends BaseActivity implements View.OnCli
 
     }
 
-//    - (void)doRegister {
-//        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-//
-//        if (self.avatar) {
-//            PFFile *filePicture = [PFFile fileWithName:@"avatar.jpg" data:UIImageJPEGRepresentation(self.avatar, 1)];
-//
-//            [filePicture saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
-//                if (error) {
-//                    [self showErrorMessage:NSLocalizedString(@"signup_complete_error", nil)];
-//                } else {
-//                    [self completeRegister:filePicture];
-//                }
-//            }];
-//        } else {
-//            [self completeRegister:nil];
-//        }
-//    }
-//
-//    - (void)doRegister {
-//        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-//
-//        if (self.avatar) {
-//            PFFile *filePicture = [PFFile fileWithName:@"avatar.jpg" data:UIImageJPEGRepresentation(self.avatar, 1)];
-//
-//            [filePicture saveInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
-//                if (error) {
-//                    [self showErrorMessage:NSLocalizedString(@"signup_complete_error", nil)];
-//                } else {
-//                    [self completeRegister:filePicture];
-//                }
-//            }];
-//        } else {
-//            [self completeRegister:nil];
-//        }
-//    }
-//
-//    - (void)completeRegister:(PFFile*)file {
-//        Account *user = [Account object];
-//        NSArray *emailPieces = [self.emailTextField.text componentsSeparatedByString: @"@"];
-//        user.username = [emailPieces objectAtIndex: 0];
-//        user.email = self.emailTextField.text;
-//        user.password = self.passwordTextField.text;
-//        // Extra fields
-//        user[kUserTypeKey] = @(2);
-//        user[kUserTypeBusinessName] = self.businessName;
-//        user[kUserTypeBusinessConversaId] = self.conversaId;
-//        user[kUserTypeBusinessCategory] = self.categoryId;
-//        user[kUserTypeBusinessCountry] = [self.countryPicked getObjectId];
-//
-//        if (file) {
-//            user[kUserTypeBusinessAvatar] = file;
-//        }
-//
-//        [user signUpInBackgroundWithBlock:^(BOOL succeeded, NSError * _Nullable error) {
-//            [MBProgressHUD hideHUDForView:self.view animated:YES];
-//            if (error) {
-//                if (error.code == kPFErrorUserEmailTaken) {
-//                    [self showErrorMessage:NSLocalizedString(@"signup_email_error", nil)];
-//                } else {
-//                    [self showErrorMessage:NSLocalizedString(@"signup_complete_error", nil)];
-//                }
-//            } else {
-//                [LoginHandler proccessLoginForAccount:[Account currentUser] fromViewController:self];
-//            }
-//        }];
-//    }
+    public void AuthListener(boolean result, ParseException error) {
+        if (result) {
+            AppActions.initSession(this);
+        } else {
+            showErrorMessage(getString(R.string.sign_up_error));
+        }
+    }
 
 }

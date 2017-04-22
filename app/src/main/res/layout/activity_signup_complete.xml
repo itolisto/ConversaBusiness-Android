@@ -33,6 +33,7 @@
             android:layout_below="@id/btvTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:theme="@style/MyTheme.Gray"
             android:padding="14dp" >
 
             <EditText
@@ -47,7 +48,7 @@
                 android:inputType="textEmailAddress"
                 android:textColor="@android:color/black"
                 android:textColorHint="@color/gray"
-                android:textSize="14sp" />
+                android:textSize="13sp" />
         </android.support.design.widget.TextInputLayout>
 
         <android.support.design.widget.TextInputLayout
@@ -55,6 +56,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@id/tilEmailSignUp"
+            android:theme="@style/MyTheme.Gray"
             android:padding="14dp" >
 
             <EditText
@@ -69,7 +71,7 @@
                 android:inputType="textPassword"
                 android:textColor="@android:color/black"
                 android:textColorHint="@color/gray"
-                android:textSize="14sp" />
+                android:textSize="13sp" />
         </android.support.design.widget.TextInputLayout>
 
         <Spinner
@@ -95,6 +97,7 @@
             android:background="@drawable/button_shape_white" />
 
         <ee.app.conversamanager.view.LightTextView
+            android:id="@+id/ltvTermsPrivacy"
             android:text="@string/signup_terms_policies_warning"
             android:layout_marginTop="40dp"
             android:textSize="12sp"

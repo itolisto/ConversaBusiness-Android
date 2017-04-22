@@ -2,6 +2,7 @@ package ee.app.conversamanager.utils;
 
 import android.content.Context;
 import android.content.Intent;
+import android.support.v7.app.AppCompatActivity;
 
 import com.onesignal.OneSignal;
 import com.parse.ParseException;
@@ -9,6 +10,7 @@ import com.parse.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import ee.app.conversamanager.ActivityMain;
 import ee.app.conversamanager.ActivitySignIn;
 import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.management.AblyConnection;
@@ -19,6 +21,25 @@ import ee.app.conversamanager.model.parse.Account;
  */
 public class AppActions {
 
+    public static void initSession(AppCompatActivity activity) {
+        Intent intent = new Intent(activity, ActivityMain.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        ConversaApp.getInstance(activity).getPreferences().setShowTutorial(false);
+        ConversaApp.getInstance(activity).getPreferences().setUploadQuality(1);
+        ConversaApp.getInstance(activity).getPreferences().setDownloadAutomatically(false);
+        ConversaApp.getInstance(activity).getPreferences().setPlaySoundWhenSending(true);
+        ConversaApp.getInstance(activity).getPreferences().setPlaySoundWhenReceiving(true);
+        ConversaApp.getInstance(activity).getPreferences().setPushNotificationSound(true);
+        ConversaApp.getInstance(activity).getPreferences().setPushNotificationPreview(true);
+        ConversaApp.getInstance(activity).getPreferences().setInAppNotificationSound(true);
+        ConversaApp.getInstance(activity).getPreferences().setInAppNotificationPreview(true);
+
+        activity.startActivity(intent);
+        activity.finish();
+    }
+
     public static boolean validateParseException(ParseException e) {
         return (e.getCode() == ParseException.INVALID_SESSION_TOKEN ||
                 e.getCode() == ParseException.INVALID_LINKED_SESSION);
@@ -28,8 +49,10 @@ public class AppActions {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                ConversaApp.getInstance(context).getJobManager().clear();
                 if (!ConversaApp.getInstance(context).getDB().deleteDatabase())
                     Logger.error("Logout", "An error has occurred while removing databased. Database not removed");
+                ConversaApp.getInstance(context).getDB().refreshDbHelper();
                 // Clean shared preferences
                 ConversaApp.getInstance(context).getPreferences().cleanSharedPreferences();
             }

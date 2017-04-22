@@ -10,7 +10,6 @@ import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.parse.GetCallback;
 import com.parse.LogInCallback;
@@ -21,11 +20,11 @@ import com.parse.ParseUser;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import ee.app.conversamanager.ActivityMain;
 import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.R;
 import ee.app.conversamanager.extendables.BaseActivity;
 import ee.app.conversamanager.model.parse.Account;
+import ee.app.conversamanager.utils.AppActions;
 import ee.app.conversamanager.utils.Const;
 import ee.app.conversamanager.utils.Utils;
 
@@ -146,7 +145,7 @@ public class ActivityLogIn extends BaseActivity implements View.OnClickListener 
             title = getString(R.string.common_field_required);
         } else if (!Utils.checkEmail(mEtSignInEmail.getText().toString())) {
             select = mEtSignInEmail;
-            title = getString(R.string.common_field_invalid);
+            title = getString(R.string.common_field_invalid_email);
         } else if (mEtSignInPassword.getText().toString().isEmpty()) {
             select = mEtSignInPassword;
             title = getString(R.string.common_field_required);
@@ -171,14 +170,23 @@ public class ActivityLogIn extends BaseActivity implements View.OnClickListener 
     }
 
     public void AuthListener(boolean result, ParseException error) {
-        if(result) {
-            Intent intent = new Intent(this, ActivityMain.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-            finish();
+        if (result) {
+            AppActions.initSession(this);
         } else {
-            Toast.makeText(this, getString(R.string.no_user_registered), Toast.LENGTH_SHORT).show();
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(getString(R.string.no_user_registered));
+
+            String positiveText = getString(android.R.string.ok);
+            builder.setPositiveButton(positiveText,
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+
+            AlertDialog dialog = builder.create();
+            dialog.show();
         }
     }
 

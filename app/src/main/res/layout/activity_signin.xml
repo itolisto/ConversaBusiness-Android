@@ -24,7 +24,7 @@
 		android:gravity="center"
 		android:textAllCaps="true"
 		android:text="@string/signin_title_message"
-		android:textColor="@color/light_dark_gray"
+		android:textColor="@color/gray"
 		android:textSize="15sp" />
 
 	<RelativeLayout

@@ -6,11 +6,13 @@ import android.database.SQLException;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.actions.MessageAction;
 import ee.app.conversamanager.delivery.DeliveryStatus;
+import ee.app.conversamanager.events.message.MessageDeleteEvent;
 import ee.app.conversamanager.events.message.MessageOutgoingEvent;
 import ee.app.conversamanager.events.message.MessageRetrieveEvent;
 import ee.app.conversamanager.events.message.MessageUpdateEvent;
@@ -95,6 +97,15 @@ public class MessageIntentService extends IntentService {
                             .getDB().getMessagesByContact(contact_id, count, skip);
                     EventBus.getDefault().post(
                             new MessageRetrieveEvent(list));
+                    break;
+                }
+                case ACTION_MESSAGE_DELETE_ALL: {
+                    // Delete from database
+                    String id = intent.getExtras().getString(INTENT_EXTRA_CONTACT_ID);
+                    ConversaApp.getInstance(this).getDB().deleteAllMessagesById(id);
+                    List<String> list = new ArrayList<>(1);
+                    list.add(id);
+                    EventBus.getDefault().post(new MessageDeleteEvent(list, MessageDeleteReason.ALL));
                     break;
                 }
             }
