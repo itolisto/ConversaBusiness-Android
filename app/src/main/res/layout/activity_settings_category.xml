@@ -48,6 +48,7 @@
                 android:layout_margin="16dp"
                 android:layout_gravity="bottom|end"
                 app:fabSize="normal"
+                app:backgroundTint="@color/purple"
                 app:layout_anchor="@id/rvCategories"
                 app:layout_anchorGravity="bottom|end" />
 

@@ -319,22 +319,21 @@
 
     <RelativeLayout
         android:id="@+id/rlInfo"
-        android:visibility="gone"
+        android:visibility="visible"
         android:background="@android:color/white"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
 
         <RelativeLayout
             android:id="@+id/rlRetry"
-            android:gravity="center"
-            android:visibility="gone"
+            android:visibility="visible"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <ee.app.conversamanager.view.MediumTextView
                 android:id="@+id/tvNoMessages"
                 android:text="@string/no_messages"
                 android:textColor="#AAAAAA"
-                android:layout_centerHorizontal="true"
+                android:layout_centerInParent="true"
                 android:textSize="22sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
@@ -343,7 +342,7 @@
                 android:id="@+id/tvNoUsers"
                 android:layout_width="75dp"
                 android:layout_height="75dp"
-                android:src="@drawable/ic_no_chats"
+                android:src="@drawable/ic_chart"
                 android:layout_marginBottom="7dp"
                 android:layout_centerHorizontal="true"
                 android:layout_above="@id/tvNoMessages"

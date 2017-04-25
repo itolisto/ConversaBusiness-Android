@@ -14,7 +14,7 @@
 
         <item name="colorPrimary">@color/purpleNavbar</item>
         <!--   darker variant for the status bar and contextual app bars -->
-        <item name="colorPrimaryDark">@color/secondaryPurple</item>
+        <item name="colorPrimaryDark">@color/statusBarPurple</item>
         <!--   theme UI controls like checkboxes and text fields e.g. FloatActionButton -->
         <item name="colorAccent">@color/colorAccent</item>
     </style>

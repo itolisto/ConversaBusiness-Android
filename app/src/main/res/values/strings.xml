@@ -222,7 +222,7 @@
     <string name="check">search</string>
     <string name="register_now">register now</string>
     <string name="ccontinue">continue</string>
-    <string name="finish">finish</string>
+    <string name="finish">register</string>
     <string name="reclaim">reclaim</string>
     <string name="email">EMAIL</string>
     <string name="password">PASSWORD</string>
@@ -235,9 +235,9 @@
     <string name="contact">CONTACT NUMBER</string>
     <string name="check_message_title">Type the business name \nto verify if it\'s already \nregistered in Conversa \nif it\'s not, you can proceed \nto register it.</string>
     <string name="signup_terms_policies_warning">By signing up you are accepting our\nterms and privacy policies</string>
-    <string name="reclaim_message_title">This business is registered\nproceed to reclaim it filling\nthe information requested</string>
+    <string name="reclaim_message_title">This business is registered \nproceed to reclaim it by filling \nthe information below requested.</string>
     <string name="reclaim_list_title">results</string>
-    <string name="reclaim_empty_title">It seems this business is not \nregistered yet but don\'t worry \nyou can register it now</string>
+    <string name="reclaim_empty_title">Type the business name \nto verify if it\'s already \nregistered in Conversa. \nOtherwise you can proceed\n to register it.</string>
     <string name="signup_contact_success">Great! We\'ll be in contact\nwith you as soon as possible</string>
     <string name="signup_contact_error">Oops, the reclaim couldn\'t be filed, please try again later</string>
     <string name="preferences__header_hi">Hi, %1s</string>
@@ -269,7 +269,7 @@
     <string name="sett_account_detail_private_title">Private information</string>
     <string name="sett_account_detail_general_title">General information</string>
     <string name="sett_account_detail_conversaid_warning">We strongly recommend to update your Conversa ID only when is required as every link share with your old Conversa ID will become useless. Be careful</string>
-    <string name="sett_account_detail_category_message">This are the categories your business will be related to</string>
+    <string name="sett_account_detail_category_message">This are the categories your account is related to</string>
     <string name="sett_account_detail_display_name_subtitle">Business Name</string>
     <string name="sett_account_detail_conversa_id_subtitle">My ID</string>
     <string name="sett_account_detail_email_subtitle">Email</string>

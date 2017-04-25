@@ -212,7 +212,7 @@
     <string name="check">buscar</string>
     <string name="register_now">registrar ahora</string>
     <string name="ccontinue">continuar</string>
-    <string name="finish">finalizar</string>
+    <string name="finish">registrar</string>
     <string name="reclaim">reclamar</string>
     <string name="email">CORREO ELECTRONICO</string>
     <string name="password">CONTRASEÑA</string>
@@ -225,9 +225,9 @@
     <string name="contact">NUMERO DE CONTACTO</string>
     <string name="check_message_title">Escribe el nombre del negocio\npara verificar si se encuentra\nregistrado en Conversa de lo\ncontrario puedes registrarlo</string>
     <string name="signup_terms_policies_warning">Al registrarte aceptas los términos y\npolíticas de privacidad</string>
-    <string name="reclaim_message_title">Este negocio está registrado\nprocede a reclamarlo llenando\nla información requerida</string>
+    <string name="reclaim_message_title">Este negocio ya está registrado,\n puedes reclamarlo llenando la \ninformación abajo requerida.</string>
     <string name="reclaim_list_title">resultados</string>
-    <string name="reclaim_empty_title">Este negocio no está registrado\naún pero no te preocupes\npuedes registrarlo ahora</string>
+    <string name="reclaim_empty_title">Parece que este negocio \naún no está registrado pero \nno te preocupes puedes \nregistrarlo ahora.</string>
     <string name="signup_contact_success">¡Genial! Estaremos en contacto contigo lo más pronto posible</string>
     <string name="signup_contact_error">Oops, el reclamo no se puedo realizar, por favor intenta más tarde</string>
     <string name="preferences__header_hi">Hola, %1s</string>
@@ -259,7 +259,7 @@
     <string name="sett_account_detail_private_title">Información privada</string>
     <string name="sett_account_detail_general_title">Información general</string>
     <string name="sett_account_detail_conversaid_warning">Recomendamos encarecidamente actualizar tu Conversa ID únicamente cuando sea necesario ya que cualquier link compartido con tu antiguo Conversa ID se hará inútil. Ten cuidado</string>
-    <string name="sett_account_detail_category_message">Estas son las categorías que están relacionadas a tu negocio</string>
+    <string name="sett_account_detail_category_message">Estas son las categorías que están relacionadas a tu cuenta</string>
     <string name="sett_account_detail_display_name_subtitle">Nombre de la Empresa</string>
     <string name="sett_account_detail_conversa_id_subtitle">Mi ID</string>
     <string name="sett_account_detail_email_subtitle">Correo electrónico</string>
@@ -269,7 +269,7 @@
     <string name="sett_category_selected_title">Seleccionadas</string>
     <string name="sett_category_available_title">Categorías</string>
     <string name="sett_category_limit_warning">Límite alcanzado</string>
-    <string name="sett_category_detail_title">Puedes seleccionar un máximo de %1$d categorías</string>
+    <string name="sett_category_detail_title">Puedes escoger hasta %1$d categorías</string>
     <string name="sett_category_info_error">No pudimos encontrar la información necesaria</string>
     <string name="conversa_id_already_taken">Este Conversa ID ya está ocupado, prueba con otro</string>
     <string name="sign_up_checking_conversa_id">Verificando información&#8230;</string>

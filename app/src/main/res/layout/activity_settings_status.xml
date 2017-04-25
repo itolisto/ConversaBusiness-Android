@@ -23,11 +23,11 @@
             <ImageView
                 android:visibility="gone"
                 android:id="@+id/ivOnlineCheck"
-                android:src="@drawable/ic_arrow_right"
+                android:src="@drawable/ic_select"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
-                android:layout_width="@dimen/settings_main_next_size"
-                android:layout_height="@dimen/settings_main_next_size" />
+                android:layout_width="18dp"
+                android:layout_height="18dp" />
 
             <View
                 android:id="@+id/vOnline"
@@ -64,11 +64,11 @@
             <ImageView
                 android:visibility="gone"
                 android:id="@+id/ivAwayCheck"
-                android:src="@drawable/ic_arrow_right"
+                android:src="@drawable/ic_select"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
-                android:layout_width="@dimen/settings_main_next_size"
-                android:layout_height="@dimen/settings_main_next_size" />
+                android:layout_width="18dp"
+                android:layout_height="18dp" />
 
             <View
                 android:id="@+id/vAway"
@@ -105,11 +105,11 @@
             <ImageView
                 android:visibility="gone"
                 android:id="@+id/ivOfflineCheck"
-                android:src="@drawable/ic_arrow_right"
+                android:src="@drawable/ic_select"
                 android:layout_alignParentEnd="true"
                 android:layout_alignParentRight="true"
-                android:layout_width="@dimen/settings_main_next_size"
-                android:layout_height="@dimen/settings_main_next_size" />
+                android:layout_width="18dp"
+                android:layout_height="18dp" />
 
             <View
                 android:id="@+id/vOffline"

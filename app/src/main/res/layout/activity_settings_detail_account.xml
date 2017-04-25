@@ -85,6 +85,7 @@
                     android:ellipsize="end"
                     android:layout_weight="1"
                     android:layout_height="0dp"
+                    android:textColor="@color/black"
                     android:layout_width="match_parent"
                     android:gravity="center_vertical|start"
                     android:text="@string/sett_account_detail_display_name_subtitle" />
@@ -114,6 +115,7 @@
                     android:ellipsize="end"
                     android:layout_weight="1"
                     android:layout_height="0dp"
+                    android:textColor="@color/black"
                     android:layout_width="match_parent"
                     android:gravity="center_vertical|start"
                     android:text="@string/sett_account_detail_conversa_id_subtitle" />
@@ -162,6 +164,7 @@
                     android:ellipsize="end"
                     android:layout_weight="1"
                     android:layout_height="0dp"
+                    android:textColor="@color/black"
                     android:layout_width="match_parent"
                     android:gravity="center_vertical|start"
                     android:text="@string/sett_account_detail_email_subtitle" />
@@ -191,6 +194,7 @@
                     android:ellipsize="end"
                     android:layout_weight="1"
                     android:layout_height="0dp"
+                    android:textColor="@color/black"
                     android:layout_width="match_parent"
                     android:gravity="center_vertical|start"
                     android:text="@string/sett_account_detail_password_subtitle" />
@@ -237,6 +241,7 @@
 
                 <ee.app.conversamanager.view.RegularTextView
                     android:ellipsize="end"
+                    android:textColor="@color/black"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_toLeftOf="@id/ivNextCategories"

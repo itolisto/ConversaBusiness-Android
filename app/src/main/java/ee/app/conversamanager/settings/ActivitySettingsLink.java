@@ -110,7 +110,7 @@ public class ActivitySettingsLink extends ConversaActivity implements View.OnCli
         share.show();
     }
 
-    public class ArrayAdapterWithIcon extends ArrayAdapter<String> {
+    private class ArrayAdapterWithIcon extends ArrayAdapter<String> {
 
         private List<Drawable> images;
 

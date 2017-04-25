@@ -19,6 +19,7 @@
             android:layout_height="wrap_content">
 
             <ee.app.conversamanager.view.BoldTextView
+                android:textColor="@color/black"
                 android:text="@string/sett_notification_push_title"
                 android:textAllCaps="true"
                 android:layout_width="wrap_content"
@@ -43,6 +44,7 @@
 
                     <ee.app.conversamanager.view.RegularTextView
                         android:text="@string/sett_notification_sound_title"
+                        android:textColor="@color/black"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:maxLines="1"
@@ -85,6 +87,7 @@
 
                     <ee.app.conversamanager.view.RegularTextView
                         android:text="@string/sett_notification_preview_title"
+                        android:textColor="@color/black"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:maxLines="1"
@@ -109,6 +112,7 @@
             </LinearLayout>
 
             <ee.app.conversamanager.view.BoldTextView
+                android:textColor="@color/black"
                 android:text="@string/sett_notification_inapp_title"
                 android:textAllCaps="true"
                 android:layout_width="wrap_content"
@@ -134,6 +138,7 @@
 
                     <ee.app.conversamanager.view.RegularTextView
                         android:text="@string/sett_notification_sound_title"
+                        android:textColor="@color/black"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:maxLines="1"
@@ -176,6 +181,7 @@
 
                     <ee.app.conversamanager.view.RegularTextView
                         android:text="@string/sett_notification_preview_title"
+                        android:textColor="@color/black"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:maxLines="1"

@@ -42,7 +42,8 @@ import ee.app.conversamanager.view.BoldTextView;
 /**
  * Created by edgargomez on 8/23/16.
  */
-public class FragmentStatistics extends ConversaFragment implements SharedPreferences.OnSharedPreferenceChangeListener, SwipeRefreshLayout.OnRefreshListener{
+public class FragmentStatistics extends ConversaFragment implements SharedPreferences.OnSharedPreferenceChangeListener,
+        SwipeRefreshLayout.OnRefreshListener, View.OnClickListener {
 
     private PieChart mLcMessageChart;
     private SwipeRefreshLayout mSrlStats;
@@ -59,6 +60,8 @@ public class FragmentStatistics extends ConversaFragment implements SharedPrefer
         mRlInfo = (RelativeLayout) rootView.findViewById(R.id.rlInfo);
         mRlRetry = (RelativeLayout) rootView.findViewById(R.id.rlRetry);
         mPbLoadingStats = (AVLoadingIndicatorView) rootView.findViewById(R.id.pbLoadingStats);
+
+        rootView.findViewById(R.id.btnRetry).setOnClickListener(this);
 
         mSrlStats = (SwipeRefreshLayout) rootView.findViewById(R.id.srlStats);
         mSrlStats.setOnRefreshListener(this);
@@ -121,6 +124,10 @@ public class FragmentStatistics extends ConversaFragment implements SharedPrefer
     }
 
     private void changeStatisticsPeriod() {
+        if (load) {
+            return;
+        }
+
         if (mRlInfo.getVisibility() == View.VISIBLE) {
             mRlInfo.setVisibility(View.GONE);
         } else {
@@ -131,8 +138,20 @@ public class FragmentStatistics extends ConversaFragment implements SharedPrefer
         mPbLoadingStats.smoothToShow();
 
         load = true;
-        HashMap<String, Object> params = new HashMap<>(1);
+
+        String language = ConversaApp.getInstance(getActivity()).getPreferences().getLanguage();
+
+        if (language.equals("zz")) {
+            if (Locale.getDefault().getLanguage().startsWith("es")) {
+                language = "es";
+            } else {
+                language = "en";
+            }
+        }
+
+        HashMap<String, Object> params = new HashMap<>(2);
         params.put("businessId", ConversaApp.getInstance(getActivity()).getPreferences().getAccountBusinessId());
+        params.put("language", language);
 
         ParseCloud.callFunctionInBackground("getBusinessStatisticsAll", params, new FunctionCallback<String>() {
             @Override
@@ -277,5 +296,12 @@ public class FragmentStatistics extends ConversaFragment implements SharedPrefer
     @Override
     public void onRefresh() {
         changeStatisticsPeriod();
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.btnRetry) {
+            changeStatisticsPeriod();
+        }
     }
 }

@@ -8,6 +8,7 @@
     <color name="white">#F7F7F7</color>
     <color name="purple">#9e7cd9</color>
     <color name="secondaryPurple">#BA92FF</color>
+    <color name="statusBarPurple">#8b6ebf</color>
     <color name="black">#505050</color>
     <color name="red">#F1015D</color>
     <color name="blue">#0A7BF6</color>
