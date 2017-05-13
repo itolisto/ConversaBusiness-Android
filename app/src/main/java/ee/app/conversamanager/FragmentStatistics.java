@@ -37,7 +37,9 @@ import java.util.Locale;
 import ee.app.conversamanager.extendables.ConversaFragment;
 import ee.app.conversamanager.settings.PreferencesKeys;
 import ee.app.conversamanager.utils.AppActions;
+import ee.app.conversamanager.utils.Utils;
 import ee.app.conversamanager.view.BoldTextView;
+import ee.app.conversamanager.view.RegularTextView;
 
 /**
  * Created by edgargomez on 8/23/16.
@@ -49,6 +51,8 @@ public class FragmentStatistics extends ConversaFragment implements SharedPrefer
     private SwipeRefreshLayout mSrlStats;
     private RelativeLayout mRlInfo;
     private RelativeLayout mRlRetry;
+    private RelativeLayout mRlChartInfo;
+    private RegularTextView mRtvChartMessage;
     private AVLoadingIndicatorView mPbLoadingStats;
     private boolean load;
 
@@ -59,6 +63,10 @@ public class FragmentStatistics extends ConversaFragment implements SharedPrefer
 
         mRlInfo = (RelativeLayout) rootView.findViewById(R.id.rlInfo);
         mRlRetry = (RelativeLayout) rootView.findViewById(R.id.rlRetry);
+
+        mRlChartInfo = (RelativeLayout) rootView.findViewById(R.id.rlChartInfo);
+        mRtvChartMessage = (RegularTextView) rootView.findViewById(R.id.rtvChartMessage);
+
         mPbLoadingStats = (AVLoadingIndicatorView) rootView.findViewById(R.id.pbLoadingStats);
 
         rootView.findViewById(R.id.btnRetry).setOnClickListener(this);
@@ -128,11 +136,9 @@ public class FragmentStatistics extends ConversaFragment implements SharedPrefer
             return;
         }
 
-        if (mRlInfo.getVisibility() == View.VISIBLE) {
-            mRlInfo.setVisibility(View.GONE);
-        } else {
-            mRlRetry.setVisibility(View.GONE);
+        if (mRlInfo.getVisibility() == View.GONE) {
             mRlInfo.setVisibility(View.VISIBLE);
+            mRlRetry.setVisibility(View.GONE);
         }
 
         mPbLoadingStats.smoothToShow();
@@ -156,6 +162,8 @@ public class FragmentStatistics extends ConversaFragment implements SharedPrefer
         ParseCloud.callFunctionInBackground("getBusinessStatisticsAll", params, new FunctionCallback<String>() {
             @Override
             public void done(String jsonStatistics, ParseException e) {
+                load = false;
+
                 if (mSrlStats.isRefreshing())
                     mSrlStats.setRefreshing(false);
 
@@ -166,88 +174,32 @@ public class FragmentStatistics extends ConversaFragment implements SharedPrefer
                         AppActions.appLogout(getActivity(), true);
                     } else {
                         mRlRetry.setVisibility(View.VISIBLE);
-                        mRlInfo.setVisibility(View.VISIBLE);
                     }
                 } else {
                     try {
                         JSONObject jsonRootObject = new JSONObject(jsonStatistics);
 
-                        int sent = jsonRootObject.optInt("ms", 0);
-                        int received = jsonRootObject.optInt("mr", 0);
-                        int favs = jsonRootObject.optInt("nf", 0);
-                        int views = jsonRootObject.optInt("np", 0);
-                        int conversations = jsonRootObject.optInt("cn", 0);
-                        int links = jsonRootObject.optInt("lc", 0);
+                        JSONObject all = jsonRootObject.getJSONObject("all");
+                        JSONObject charts = jsonRootObject.getJSONObject("charts");
 
-                        if (sent > 999) {
-                            ((BoldTextView) getView().findViewById(R.id.btvSent)).setText(
-                                    String.format(Locale.getDefault(), "%.1f", sent/1000.0)
-                            );
-                        } else {
-                            ((BoldTextView) getView().findViewById(R.id.btvSent)).setText(
-                                    String.valueOf(sent)
-                            );
-                        }
+                        int sent = all.optInt("ms", 0);
+                        int received = all.optInt("mr", 0);
+                        int favs = all.optInt("nf", 0);
+                        int views = all.optInt("np", 0);
+                        int conversations = all.optInt("cn", 0);
+                        int links = all.optInt("lc", 0);
 
-                        if (received > 999) {
-                            ((BoldTextView) getView().findViewById(R.id.btvReceived)).setText(
-                                    String.format(Locale.getDefault(), "%.1f", received/1000.0)
-                            );
-                        } else {
-                            ((BoldTextView) getView().findViewById(R.id.btvReceived)).setText(
-                                    String.valueOf(received)
-                            );
-                        }
-
-                        if (favs > 999) {
-                            ((BoldTextView) getView().findViewById(R.id.btvFavs)).setText(
-                                    String.format(Locale.getDefault(), "%.1f", favs/1000.0)
-                            );
-                        } else {
-                            ((BoldTextView) getView().findViewById(R.id.btvFavs)).setText(
-                                    String.valueOf(favs)
-                            );
-                        }
-
-                        if (views > 999) {
-                            ((BoldTextView) getView().findViewById(R.id.btvViews)).setText(
-                                    String.format(Locale.getDefault(), "%.1f", views/1000.0)
-                            );
-                        } else {
-                            ((BoldTextView) getView().findViewById(R.id.btvViews)).setText(
-                                    String.valueOf(views)
-                            );
-                        }
-
-                        if (conversations > 999) {
-                            ((BoldTextView) getView().findViewById(R.id.btvConversations)).setText(
-                                    String.format(Locale.getDefault(), "%.1f", conversations/1000.0)
-                            );
-                        } else {
-                            ((BoldTextView) getView().findViewById(R.id.btvConversations)).setText(
-                                    String.valueOf(conversations)
-                            );
-                        }
-
-                        if (links > 999) {
-                            ((BoldTextView) getView().findViewById(R.id.btvLinks)).setText(
-                                    String.format(Locale.getDefault(), "%.1f", links/1000.0)
-                            );
-                        } else {
-                            ((BoldTextView) getView().findViewById(R.id.btvLinks)).setText(
-                                    String.valueOf(links)
-                            );
-                        }
+                        ((BoldTextView) getView().findViewById(R.id.btvSent)).setText(Utils.numberWithFormat(sent));
+                        ((BoldTextView) getView().findViewById(R.id.btvReceived)).setText(Utils.numberWithFormat(received));
+                        ((BoldTextView) getView().findViewById(R.id.btvFavs)).setText(Utils.numberWithFormat(favs));
+                        ((BoldTextView) getView().findViewById(R.id.btvViews)).setText(Utils.numberWithFormat(views));
+                        ((BoldTextView) getView().findViewById(R.id.btvConversations)).setText(Utils.numberWithFormat(conversations));
+                        ((BoldTextView) getView().findViewById(R.id.btvLinks)).setText(Utils.numberWithFormat(links));
 
                         updateChart(sent, received);
 
-                        if (mRlInfo.getVisibility() == View.VISIBLE) {
-                            mRlInfo.setVisibility(View.GONE);
-                        }
+                        mRlInfo.setVisibility(View.GONE);
                     } catch (Exception ignored) {
-                        if (mRlInfo.getVisibility() == View.GONE) {
-                            mRlInfo.setVisibility(View.VISIBLE);
-                        }
                         mRlRetry.setVisibility(View.VISIBLE);
                     }
                 }
@@ -257,40 +209,48 @@ public class FragmentStatistics extends ConversaFragment implements SharedPrefer
 
 
     private void updateChart(int sent, int received) {
-        ArrayList<PieEntry> entries = new ArrayList<>(2);
-        entries.add(new PieEntry((float)sent, getString(R.string.stats_chart_sent_title)));
-        entries.add(new PieEntry((float)received, getString(R.string.stats_chart_received_title)));
+        if (sent > 0 || received > 0) {
+            ArrayList<PieEntry> entries = new ArrayList<>(2);
+            entries.add(new PieEntry((float) sent, getString(R.string.stats_chart_sent_title)));
+            entries.add(new PieEntry((float) received, getString(R.string.stats_chart_received_title)));
 
-        PieDataSet dataSet = new PieDataSet(entries, "");
-        dataSet.setSliceSpace(3f);
+            PieDataSet dataSet = new PieDataSet(entries, "");
+            dataSet.setSliceSpace(3f);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            dataSet.setColors(
-                    getResources().getColor(R.color.pieChartReceived, null),
-                    getResources().getColor(R.color.pieChartSent, null));
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                dataSet.setColors(
+                        getResources().getColor(R.color.pieChartReceived, null),
+                        getResources().getColor(R.color.pieChartSent, null));
+            } else {
+                dataSet.setColors(
+                        getResources().getColor(R.color.pieChartReceived),
+                        getResources().getColor(R.color.pieChartSent));
+            }
+
+            PieData data = new PieData(dataSet);
+            DecimalFormat pFormatter = new DecimalFormat();
+            pFormatter.setMaximumFractionDigits(1);
+            pFormatter.setMultiplier(1);
+            DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance();
+            symbols.setPercent('%');
+            pFormatter.setDecimalFormatSymbols(symbols);
+            data.setValueFormatter(new PercentFormatter(pFormatter));
+            data.setValueTextSize(11f);
+            data.setValueTextColor(ResourcesCompat.getColor(getResources(), R.color.black, null));
+            data.setValueTypeface(
+                    ConversaApp.getInstance(getActivity()).getTfRalewayLight()
+            );
+
+            mLcMessageChart.setData(data);
+            mLcMessageChart.highlightValues(null);
+            mLcMessageChart.invalidate();
+
+            mRlChartInfo.setVisibility(View.GONE);
+            mRtvChartMessage.setText("");
         } else {
-            dataSet.setColors(
-                    getResources().getColor(R.color.pieChartReceived),
-                    getResources().getColor(R.color.pieChartSent));
+            mRlChartInfo.setVisibility(View.VISIBLE);
+            mRtvChartMessage.setText(getString(R.string.stats_no_chart_available));
         }
-
-        PieData data = new PieData(dataSet);
-        DecimalFormat pFormatter = new DecimalFormat();
-        pFormatter.setMaximumFractionDigits(1);
-        pFormatter.setMultiplier(1);
-        DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance();
-        symbols.setPercent('%');
-        pFormatter.setDecimalFormatSymbols(symbols);
-        data.setValueFormatter(new PercentFormatter(pFormatter));
-        data.setValueTextSize(11f);
-        data.setValueTextColor(ResourcesCompat.getColor(getResources(), R.color.black, null));
-        data.setValueTypeface(
-                ConversaApp.getInstance(getActivity()).getTfRalewayLight()
-        );
-
-        mLcMessageChart.setData(data);
-        mLcMessageChart.highlightValues(null);
-        mLcMessageChart.invalidate();
     }
 
     @Override

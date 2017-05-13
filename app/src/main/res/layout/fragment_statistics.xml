@@ -15,29 +15,51 @@
             android:background="@android:color/white">
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:showDividers="middle">
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-                <ee.app.conversamanager.view.MediumTextView
-                    android:textSize="15sp"
-                    android:layout_marginTop="7dp"
-                    android:text="@string/stats_chart_title"
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="220dp"
                     android:gravity="center"
-                    android:textColor="@android:color/black"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+                    android:background="@android:color/white">
 
-                <com.github.mikephil.charting.charts.PieChart
-                    android:layout_marginTop="7dp"
-                    android:id="@+id/pcMessageChart"
-                    android:layout_width="match_parent"
-                    android:layout_height="220dp" />
+                    <ee.app.conversamanager.view.MediumTextView
+                        android:id="@+id/mtvTitle"
+                        android:textSize="15sp"
+                        android:layout_marginTop="7dp"
+                        android:text="@string/stats_chart_title"
+                        android:gravity="center"
+                        android:layout_alignParentTop="true"
+                        android:textColor="@android:color/black"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                    <com.github.mikephil.charting.charts.PieChart
+                        android:layout_marginTop="7dp"
+                        android:id="@+id/pcMessageChart"
+                        android:layout_below="@id/mtvTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="220dp" />
+
+                    <RelativeLayout
+                        android:id="@+id/rlChartInfo"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="@android:color/white">
+                        <ee.app.conversamanager.view.RegularTextView
+                            android:id="@+id/rtvChartMessage"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerInParent="true" />
+                    </RelativeLayout>
+                </RelativeLayout>
 
                 <LinearLayout
                     android:padding="16dp"
                     android:weightSum="2"
+                    android:id="@+id/llFirstRow"
                     android:layout_marginTop="7dp"
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
@@ -135,7 +157,9 @@
                     android:layout_marginTop="7dp"
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" >
+                    android:layout_height="match_parent"
+                    android:id="@+id/llSecondRow"
+                    android:layout_below="@id/llFirstRow">
 
                     <RelativeLayout
                         android:layout_weight="1"
@@ -228,7 +252,9 @@
                     android:layout_marginTop="7dp"
                     android:orientation="horizontal"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" >
+                    android:layout_height="match_parent"
+                    android:id="@+id/llThirdRow"
+                    android:layout_below="@id/llSecondRow">
 
                     <RelativeLayout
                         android:layout_weight="1"
@@ -319,7 +345,6 @@
 
     <RelativeLayout
         android:id="@+id/rlInfo"
-        android:visibility="visible"
         android:background="@android:color/white"
         android:layout_width="match_parent"
         android:layout_height="match_parent" >
@@ -331,10 +356,10 @@
             android:layout_height="match_parent">
             <ee.app.conversamanager.view.MediumTextView
                 android:id="@+id/tvNoMessages"
-                android:text="@string/no_messages"
+                android:text="@string/stats_retry"
                 android:textColor="#AAAAAA"
                 android:layout_centerInParent="true"
-                android:textSize="22sp"
+                android:textSize="16sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 

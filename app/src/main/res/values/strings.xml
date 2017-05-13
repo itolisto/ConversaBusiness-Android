@@ -84,6 +84,7 @@
     <string name="special_promo_title">Special promo</string>
     <string name="signup_password_regex_error">Password should contain at least one letter, one digit and a special character</string>
     <string name="settings_using_conversa">I\'m using Conversa</string>
+    <string name="settings_using_conversa_text">Chat now with %1$s, follow the link: %2$s</string>
     <string name="settings_title_menu">Account</string>
     <string name="settings_share_conversa">How do you want to share?</string>
     <string name="settings_body_conversa">I been using Conversa and I really like it (: Go to the Play Store and download it!</string>
@@ -140,7 +141,7 @@
     <string name="signup_birthday_old_error">You must be at least 13 years old to use Conversa</string>
     <string name="signup_register_error">Sorry, this email is already being used by another user, try with another</string>
     <string name="signup_birthday_invalid_error">Invalid birthday date</string>
-    <string name="send_password">Send password</string>
+    <string name="send_password">Recover</string>
     <string name="FORGOT_PASSWORD">Forgot password</string>
     <string name="profile_go_location">Go</string>
     <string name="gender_female">Female</string>
@@ -243,12 +244,14 @@
     <string name="preferences__header_hi">Hi, %1s</string>
     <string name="preferences__header_view">View my profile</string>
     <string name="stats">Stats</string>
+    <string name="stats_retry">Oops, try again</string>
     <string name="stats_sent_title">Messages Sent</string>
     <string name="stats_received_title">Messages Received</string>
     <string name="stats_favs_title">Favs</string>
     <string name="stats_views_title">Profile Views</string>
     <string name="stats_conversations_title">Conversations</string>
     <string name="stats_links_title">Clicks on my Link</string>
+    <string name="stats_no_chart_available">We still don\'t have enough data to generate your charts :(</string>
     <string name="notification_stack_text">You have %1$d new messages from %2$s</string>
     <string name="sett_account_edit_title">Edit profile</string>
     <string name="sett_account_status_title">Status</string>
@@ -265,10 +268,11 @@
     <string name="sett_status_update">Update status</string>
     <string name="sett_link_title">What is it?</string>
     <string name="sett_link_description">ConversaLink is a special \nlink with which anyone \ncan start a chat with you \nwhen they click on it.  \n\nWorks from every place</string>
+    <string name="conversalink_share_copy">Link copied</string>
     <string name="sett_account_detail_basic_title">Basic information</string>
     <string name="sett_account_detail_private_title">Private information</string>
     <string name="sett_account_detail_general_title">General information</string>
-    <string name="sett_account_detail_conversaid_warning">We strongly recommend to update your Conversa ID only when is required as every link share with your old Conversa ID will become useless. Be careful</string>
+    <string name="sett_account_detail_conversaid_warning">We remind you when you update your id, your conversalink will be updated too. We advise you to change it only if it\'s necessary, your previous links will stop working. Be careful.</string>
     <string name="sett_account_detail_category_message">This are the categories your account is related to</string>
     <string name="sett_account_detail_display_name_subtitle">Business Name</string>
     <string name="sett_account_detail_conversa_id_subtitle">My ID</string>
@@ -281,6 +285,7 @@
     <string name="sett_category_limit_warning">Limit reached</string>
     <string name="sett_category_detail_title">You can select up to %1$d categories</string>
     <string name="sett_category_info_error">We couldn\'t find the required information</string>
+    <string name="sett_redirect_premium">This is a premium feature. Please contact tech support to activate it.</string>
     <string name="conversa_id_already_taken">Conversa ID is already taken, try with another</string>
     <string name="sign_up_checking_conversa_id">Verifying information&#8230;</string>
     <string name="sign_up_register_categories_error">Unable to find categories, go back and try again</string>

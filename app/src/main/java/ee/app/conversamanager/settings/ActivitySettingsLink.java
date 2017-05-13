@@ -1,5 +1,7 @@
 package ee.app.conversamanager.settings;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,6 +14,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -55,59 +58,80 @@ public class ActivitySettingsLink extends ConversaActivity implements View.OnCli
                 )
         );
 
+        findViewById(R.id.mtvConversaLink).setOnClickListener(this);
         findViewById(R.id.btnShareConversa).setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
-        final Intent intent_one = new Intent(android.content.Intent.ACTION_SEND);
-        intent_one.setType("text/plain");
-        // Add data to the intent, the receiving app will decide what to do with it.
-        intent_one.putExtra(Intent.EXTRA_SUBJECT,
-                getString(R.string.settings_using_conversa));
-        intent_one.putExtra(Intent.EXTRA_TEXT,
-                getString(R.string.settings_body_conversa));
+        if (v.getId() == R.id.mtvConversaLink) {
+            ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText(getString(R.string.app_name),
+                    "https://conversa.link/".concat(
+                            ConversaApp.getInstance(this).getPreferences().getAccountConversaId()
+                    )
+            );
+            clipboard.setPrimaryClip(clip);
 
-        final List<ResolveInfo> activities = getPackageManager().queryIntentActivities(intent_one, 0);
+            AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+            LayoutInflater inflater = this.getLayoutInflater();
+            View dialogView = inflater.inflate(R.layout.dialog_emoji, null);
+            dialogBuilder.setView(dialogView);
 
-        List<String> appNames = new ArrayList<>(2);
-        List<Drawable> appIcons = new ArrayList<>(2);
+            MediumTextView tvMessage = (MediumTextView) dialogView.findViewById(R.id.mtvMessage);
+            tvMessage.setText(getString(R.string.conversalink_share_copy));
+            AlertDialog alertDialog = dialogBuilder.create();
+            alertDialog.show();
+        } else {
+            final Intent intent_one = new Intent(android.content.Intent.ACTION_SEND);
+            intent_one.setType("text/plain");
+            // Add data to the intent, the receiving app will decide what to do with it.
+            intent_one.putExtra(Intent.EXTRA_SUBJECT,
+                    getString(R.string.settings_using_conversa));
+            intent_one.putExtra(Intent.EXTRA_TEXT,
+                    getString(R.string.settings_body_conversa));
 
-        for (ResolveInfo info : activities) {
-            appNames.add(info.loadLabel(getPackageManager()).toString());
-            String packageName = info.activityInfo.packageName;
+            final List<ResolveInfo> activities = getPackageManager().queryIntentActivities(intent_one, 0);
 
-            try {
-                Drawable icon = getPackageManager().getApplicationIcon(packageName);
-                appIcons.add(icon);
-            } catch (PackageManager.NameNotFoundException e) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    appIcons.add(getResources().getDrawable(R.drawable.ic_business_default, null));
-                } else {
-                    appIcons.add(getResources().getDrawable(R.drawable.ic_business_default));
+            List<String> appNames = new ArrayList<>(2);
+            List<Drawable> appIcons = new ArrayList<>(2);
+
+            for (ResolveInfo info : activities) {
+                appNames.add(info.loadLabel(getPackageManager()).toString());
+                String packageName = info.activityInfo.packageName;
+
+                try {
+                    Drawable icon = getPackageManager().getApplicationIcon(packageName);
+                    appIcons.add(icon);
+                } catch (PackageManager.NameNotFoundException e) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        appIcons.add(getResources().getDrawable(R.drawable.ic_business_default, null));
+                    } else {
+                        appIcons.add(getResources().getDrawable(R.drawable.ic_business_default));
+                    }
                 }
             }
+
+            ListAdapter adapter = new ArrayAdapterWithIcon(this, appNames, appIcons);
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle(getString(R.string.settings_share_conversa));
+            builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    ResolveInfo info = activities.get(which);
+                    //if (info.activityInfo.packageName.equals("com.facebook.katana")) {
+                    // Facebook was chosen
+                    //}
+                    // Start the selected activity
+                    intent_one.setPackage(info.activityInfo.packageName);
+                    startActivity(intent_one);
+                }
+            });
+
+            AlertDialog share = builder.create();
+            share.show();
         }
-
-        ListAdapter adapter = new ArrayAdapterWithIcon(this, appNames, appIcons);
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle(getString(R.string.settings_share_conversa));
-        builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                ResolveInfo info = activities.get(which);
-                //if (info.activityInfo.packageName.equals("com.facebook.katana")) {
-                // Facebook was chosen
-                //}
-                // Start the selected activity
-                intent_one.setPackage(info.activityInfo.packageName);
-                startActivity(intent_one);
-            }
-        });
-
-        AlertDialog share = builder.create();
-        share.show();
     }
 
     private class ArrayAdapterWithIcon extends ArrayAdapter<String> {

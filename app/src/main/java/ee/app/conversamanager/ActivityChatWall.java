@@ -31,10 +31,13 @@ import android.widget.ImageButton;
 
 import com.facebook.common.util.UriUtil;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.flurry.android.FlurryAgent;
 import com.sandrios.sandriosCamera.internal.configuration.CameraConfiguration;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -113,6 +116,21 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 
 		initialization();
 		dbMessage.getAllMessageForChat(this, businessObject.getCustomerId(), 20, 0);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		Map<String, String> articleParams = new HashMap<>(1);
+		String customer_id = ConversaApp.getInstance(this).getPreferences().getAccountBusinessId();
+		articleParams.put("business", (customer_id == null) ? "" : customer_id);
+		FlurryAgent.logEvent("manager_chat_duration", articleParams, true);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		FlurryAgent.endTimedEvent("manager_chat_duration");
 	}
 
 	@Override

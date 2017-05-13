@@ -208,11 +208,6 @@
                     android:text="@string/sett_account_password_alert_title" />
             </LinearLayout>
 
-            <View
-                android:background="@drawable/divider"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/settings_divider_height"/>
-
             <ee.app.conversamanager.view.BoldTextView
                 android:textAllCaps="true"
                 android:layout_marginTop="14dp"
@@ -249,11 +244,6 @@
                     android:text="@string/sett_account_detail_category_subtitle"/>
 
             </RelativeLayout>
-
-            <View
-                android:background="@drawable/divider"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/settings_divider_height"/>
 
             <ee.app.conversamanager.view.LightTextView
                 android:textSize="12sp"

@@ -116,11 +116,6 @@
 
             </RelativeLayout>
 
-            <View
-                android:background="@drawable/divider"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/settings_divider_height"/>
-
             <ee.app.conversamanager.view.BoldTextView
                 android:textAllCaps="true"
                 android:layout_marginTop="14dp"
@@ -159,11 +154,6 @@
 
             </RelativeLayout>
 
-            <View
-                android:background="@drawable/divider"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/settings_divider_height"/>
-
             <ee.app.conversamanager.view.LightTextView
                 android:textSize="12sp"
                 android:layout_marginTop="7dp"
@@ -171,12 +161,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/sett_account_status_message" />
-
-            <View
-                android:layout_marginTop="7dp"
-                android:background="@drawable/divider"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/settings_divider_height"/>
 
             <ee.app.conversamanager.view.BoldTextView
                 android:textAllCaps="true"
@@ -213,11 +197,6 @@
                     android:text="@string/sett_account_assistance_option" />
 
             </RelativeLayout>
-
-            <View
-                android:background="@drawable/divider"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/settings_divider_height"/>
 
             <ee.app.conversamanager.view.LightTextView
                 android:textSize="12sp"

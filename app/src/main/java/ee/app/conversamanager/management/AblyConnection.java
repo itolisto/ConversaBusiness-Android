@@ -6,6 +6,7 @@ import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.greenrobot.eventbus.EventBus;
@@ -63,10 +64,14 @@ public class AblyConnection implements Channel.MessageListener, Presence.Presenc
         this.clientId = generateDeviceUUID();
     }
 
+    public AblyRealtime getAblyRealtime() {
+        return ablyRealtime;
+    }
+
     public void initAbly()  {
         try {
             ClientOptions clientOptions = new ClientOptions();
-            clientOptions.key = "zmxQkA.HfI9Xg:0UC2UioXcnDarSak";
+            clientOptions.key = "T6z9Ew.9a7FmQ:NYh49uPgi78dbMYH";
             clientOptions.logLevel = io.ably.lib.util.Log.ERROR;
             if (this.clientId != null) {
                 clientOptions.clientId = clientId;
@@ -78,6 +83,7 @@ public class AblyConnection implements Channel.MessageListener, Presence.Presenc
             ablyRealtime = new AblyRealtime(clientOptions);
             // Register listener for state changes
             ablyRealtime.connection.on(this);
+            //ablyRealtime.push.activate(context);
         } catch (AblyException e) {
             Logger.error(TAG, "InitAbly method exception: " + e.getMessage());
         }
@@ -138,16 +144,12 @@ public class AblyConnection implements Channel.MessageListener, Presence.Presenc
     public void onPresenceMessage(PresenceMessage presenceMessage) {
         Logger.error("onPresenceMessage", "Member " + presenceMessage.clientId + " : " + presenceMessage.action.toString());
 
-        switch (presenceMessage.action) {
-            case enter:
-                break;
-            case leave:
-                break;
-            case update:
-                String from = ((JsonObject) presenceMessage.data).get("from").getAsString();
+        if (presenceMessage.data != null) {
+            JsonElement jeFrom = ((JsonObject) presenceMessage.data).get("from");
+            if (jeFrom != null) {
                 boolean isUserTyping = ((JsonObject) presenceMessage.data).get("isTyping").getAsBoolean();
-                EventBus.getDefault().post(new TypingEvent(from, isUserTyping));
-                break;
+                EventBus.getDefault().post(new TypingEvent(jeFrom.getAsString(), isUserTyping));
+            }
         }
     }
 
@@ -214,7 +216,7 @@ public class AblyConnection implements Channel.MessageListener, Presence.Presenc
                 Logger.error("onConnectionStateChgd", "Closed");
                 break;
             case failed:
-                Logger.error("onConnectionStateChgd", "Failed");
+                Logger.error("onConnectionStateChgd", "Failed" + connectionStateChange.reason);
                 break;
         }
     }
@@ -254,22 +256,6 @@ public class AblyConnection implements Channel.MessageListener, Presence.Presenc
     public void onChannelStateChanged(ChannelStateChange stateChange) {
         if (stateChange.reason != null) {
             Logger.error("onChannelStateChanged", stateChange.reason.message);
-            return;
-        }
-
-        switch (stateChange.current) {
-            case initialized:
-                break;
-            case attaching:
-                break;
-            case attached:
-                break;
-            case detaching:
-                break;
-            case detached:
-                break;
-            case failed:
-                break;
         }
     }
 

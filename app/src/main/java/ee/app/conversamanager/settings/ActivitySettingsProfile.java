@@ -231,7 +231,7 @@ public class ActivitySettingsProfile extends ConversaActivity implements View.On
                     if (followers < 0)
                         followers = 0;
 
-                    mBtvFollowers.setText(String.valueOf(followers));
+                    setFollowersText(followers);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         mBtnFavorite.setBackground
                                 (getResources().getDrawable(R.drawable.ic_fav_not, null));
@@ -242,7 +242,7 @@ public class ActivitySettingsProfile extends ConversaActivity implements View.On
                 } else {
                     liked = true;
                     followers++;
-                    mBtvFollowers.setText(String.valueOf(followers));
+                    setFollowersText(followers);
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         mBtnFavorite.setBackground
                                 (getResources().getDrawable(R.drawable.ic_fav, null));
@@ -269,7 +269,7 @@ public class ActivitySettingsProfile extends ConversaActivity implements View.On
                 intent_one.setType("text/plain");
                 // Add data to the intent, the receiving app will decide what to do with it.
                 intent_one.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.settings_using_conversa));
-                intent_one.putExtra(Intent.EXTRA_TEXT, "https://conversa.link/" + ConversaApp.getInstance(this).getPreferences().getAccountConversaId());
+                intent_one.putExtra(Intent.EXTRA_TEXT, getString(R.string.settings_using_conversa_text, ConversaApp.getInstance(this).getPreferences().getAccountDisplayName(), "https://conversa.link/" + ConversaApp.getInstance(this).getPreferences().getAccountConversaId()));
 
                 final List<ResolveInfo> activities = getPackageManager().queryIntentActivities(intent_one, 0);
 
@@ -333,6 +333,10 @@ public class ActivitySettingsProfile extends ConversaActivity implements View.On
         });
     }
 
+    private void setFollowersText(int followers) {
+        mBtvFollowers.setText(Utils.numberWithFormat(followers));
+    }
+
     private void parseResult(String result) {
         try {
             if (!result.isEmpty()) {
@@ -355,7 +359,7 @@ public class ActivitySettingsProfile extends ConversaActivity implements View.On
                     }
                 }
 
-                mBtvFollowers.setText(String.valueOf(followers));
+                setFollowersText(followers);
 
                 Uri uri = Utils.getUriFromString(headerUrl);
 

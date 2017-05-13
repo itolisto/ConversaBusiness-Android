@@ -68,6 +68,16 @@ public class Utils {
 		}
 	}
 
+	public static String numberWithFormat(int number) {
+		if (number > 999999) {
+			return String.format(Locale.getDefault(), "%.1fM", number/1000000.0).replace(',', '.');
+		} else if (number > 999) {
+			return String.format(Locale.getDefault(), "%.1fK", number/1000.0).replace(',', '.');
+		} else {
+			return String.valueOf(number);
+		}
+	}
+
 	public static boolean checkEmail(String email) {
 		return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches();
 	}

@@ -75,6 +75,7 @@
     <string name="special_promo_title">Promoción especial</string>
     <string name="signup_password_regex_error">Contraseña debe contener al menos una letra, un número y un caracter especial</string>
     <string name="settings_using_conversa">Estoy usando Conversa</string>
+    <string name="settings_using_conversa_text">Chatea ahora con %1$s, sigue el link: %2$s</string>
     <string name="settings_title_menu">Cuenta</string>
     <string name="settings_share_conversa">¿Cómo quieres compartir?</string>
     <string name="settings_body_conversa">Estoy usando Conversa y realmente me encanta (: Ve a la Play Store y descargala</string>
@@ -130,7 +131,7 @@
     <string name="signup_birthday_old_error">Debes tener al menos 13 años para usar Conversa</string>
     <string name="signup_register_error">Lo sentimos, este correo electrónico ya está siendo usado por otro usuario, intenta con otro</string>
     <string name="signup_birthday_invalid_error">Fecha de nacimiento no válida</string>
-    <string name="send_password">Enviar contraseña</string>
+    <string name="send_password">Recuperar</string>
     <string name="FORGOT_PASSWORD">Recuperar contraseña</string>
     <string name="profile_go_location">Ir</string>
     <string name="gender_female">Mujer</string>
@@ -160,7 +161,7 @@
     <string name="profile_delivery_yes">Sí, sí tenemos :)</string>
     <string name="profile_status_away">Ausente</string>
     <string name="profile_status_offline">Desconectado</string>
-    <string name="profile_status_online">En línea</string>
+    <string name="profile_status_online">Conectado</string>
     <string name="profile_status_conversa">Administrado por Conversa</string>
     <string name="profile_status_online_description">Obtienes respuestas casi al instante, esto es Conversa</string>
     <string name="profile_status_offline_description">Responderemos tan pronto como sea posible</string>
@@ -233,12 +234,14 @@
     <string name="preferences__header_hi">Hola, %1s</string>
     <string name="preferences__header_view">Ver mi perfil</string>
     <string name="stats">Stats</string>
+    <string name="stats_retry">Oops, intenta de nuevo</string>
     <string name="stats_sent_title">Mensajes Enviados</string>
     <string name="stats_received_title">Mensajes Recibidos</string>
     <string name="stats_favs_title">Favs</string>
     <string name="stats_views_title">Vistas de Perfil</string>
     <string name="stats_conversations_title">Conversaciones</string>
     <string name="stats_links_title">Clicks en mi Link</string>
+    <string name="stats_no_chart_available">Aún no tenemos suficientes datos para generar tus gráficas :(</string>
     <string name="notification_stack_text">Tienes %1$d mensajes nuevos de %2$s</string>
     <string name="sett_account_edit_title">Editar perfil</string>
     <string name="sett_account_status_title">Estado</string>
@@ -255,10 +258,11 @@
     <string name="sett_status_update">Actualizar estado</string>
     <string name="sett_link_title">¿Qué es?</string>
     <string name="sett_link_description">ConversaLink es un link \nespecial con el cual cual-\nquiera puede empezar un\nchat contigo cuando  \npresionan sobre él.\n\nFunciona desde cualquier lugar</string>
+    <string name="conversalink_share_copy">Link copiado</string>
     <string name="sett_account_detail_basic_title">Información básica</string>
     <string name="sett_account_detail_private_title">Información privada</string>
     <string name="sett_account_detail_general_title">Información general</string>
-    <string name="sett_account_detail_conversaid_warning">Recomendamos encarecidamente actualizar tu Conversa ID únicamente cuando sea necesario ya que cualquier link compartido con tu antiguo Conversa ID se hará inútil. Ten cuidado</string>
+    <string name="sett_account_detail_conversaid_warning">Te recordamos que al actualizar tu id, también lo hará tu conversalink, debido a esto te recomendamos cambiarlo solamente en caso sea necesario. Los links previos dejarán de funcionar. Ten cuidado</string>
     <string name="sett_account_detail_category_message">Estas son las categorías que están relacionadas a tu cuenta</string>
     <string name="sett_account_detail_display_name_subtitle">Nombre de la Empresa</string>
     <string name="sett_account_detail_conversa_id_subtitle">Mi ID</string>
@@ -271,6 +275,7 @@
     <string name="sett_category_limit_warning">Límite alcanzado</string>
     <string name="sett_category_detail_title">Puedes escoger hasta %1$d categorías</string>
     <string name="sett_category_info_error">No pudimos encontrar la información necesaria</string>
+    <string name="sett_redirect_premium">Esta es una función premium. Contacta a soporte técnico para poder activarla.</string>
     <string name="conversa_id_already_taken">Este Conversa ID ya está ocupado, prueba con otro</string>
     <string name="sign_up_checking_conversa_id">Verificando información&#8230;</string>
     <string name="sign_up_register_categories_error">No se han podido obtener las categorías, ve atrás e intenta de nuevo</string>
@@ -284,14 +289,14 @@
     <string name="contacts_options_clear">Clear conversation</string>
     <string name="contacts_item_conversation_empty">Empieza a chatear</string>
     <string name="tutorial_skip">Empezar Ahora</string>
-    <string name="tutorial_message_five">Sin llamadas. Sin emails. Sin redes sociales. Solo chat.</string>
-    <string name="tutorial_message_four">Encuentra el negocio en Conversa y empieza a chatear</string>
-    <string name="tutorial_message_one">Hemos hecho fácil poder contactar y chatear con cualquier empresa local</string>
-    <string name="tutorial_message_three">Obtener más información del servicio que necesitas</string>
-    <string name="tutorial_message_two">Chatear y consultar sobre precios o disponibilidad de productos</string>
-    <string name="tutorial_title_five">Lo amarás en serio</string>
-    <string name="tutorial_title_four">Cuando lo necesites</string>
-    <string name="tutorial_title_one">Bienvenido a Conversa</string>
-    <string name="tutorial_title_three">O quizá</string>
-    <string name="tutorial_title_two">Ahora puedes</string>
+    <string name="tutorial_message_five">Conéctate con tu audiencia donde sea, cuando quieras</string>
+    <string name="tutorial_message_four">Haz crecer tu negocio através de chat</string>
+    <string name="tutorial_message_one">Con Conversa alcanzar tu audiencia es más fácil que nunca</string>
+    <string name="tutorial_message_three">Crea tu ID, obtén tu conversa.link y compártelo en todos lados</string>
+    <string name="tutorial_message_two">Permite a tus clientes chatear contigo sin ninguna complicación</string>
+    <string name="tutorial_title_five">Excepcional atención al cliente</string>
+    <string name="tutorial_title_four">Aumenta tu alcance</string>
+    <string name="tutorial_title_one">Bienvenido a Manager</string>
+    <string name="tutorial_title_three">Sé social</string>
+    <string name="tutorial_title_two">Mensajería instantánea</string>
 </resources>

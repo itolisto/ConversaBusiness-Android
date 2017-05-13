@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:emojicon="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@android:color/white"
     android:id="@+id/rootFirstPage"
@@ -11,8 +12,13 @@
     <ImageView
         android:src="@drawable/cam1"
         android:id="@+id/ivThirdImage"
-        android:layout_width="250dp"
-        android:layout_height="500dp"
+        android:layout_marginTop="28dp"
+        android:layout_marginEnd="35dp"
+        android:layout_marginLeft="35dp"
+        android:layout_marginRight="35dp"
+        android:layout_marginStart="35dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:scaleType="centerInside"
         android:layout_above="@+id/rlText"
         android:layout_marginBottom="-150dp"
