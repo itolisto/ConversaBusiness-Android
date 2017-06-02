@@ -18,11 +18,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
-import com.onesignal.OneSignal;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.net.MalformedURLException;
@@ -35,6 +30,8 @@ import java.util.regex.Pattern;
 
 import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.R;
+
+//import com.onesignal.OneSignal;
 
 /**
  * Utils
@@ -88,15 +85,15 @@ public class Utils {
 	}
 
 	public static void subscribeToTags(String channelName) {
-		JSONObject tags = new JSONObject();
-		try {
-			tags.put("bpbc", channelName);
-			tags.put("bpvt", channelName);
-			tags.put("usertype", 2);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		OneSignal.sendTags(tags);
+//		JSONObject tags = new JSONObject();
+//		try {
+//			tags.put("bpbc", channelName);
+//			tags.put("bpvt", channelName);
+//			tags.put("usertype", 2);
+//		} catch (JSONException e) {
+//			e.printStackTrace();
+//		}
+//		OneSignal.sendTags(tags);
 	}
 
 	public static Uri getUriFromString(String path) {

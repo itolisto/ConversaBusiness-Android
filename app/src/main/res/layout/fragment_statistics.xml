@@ -44,11 +44,14 @@
                         android:layout_height="220dp" />
 
                     <RelativeLayout
+                        android:padding="16dp"
                         android:id="@+id/rlChartInfo"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:background="@android:color/white">
                         <ee.app.conversamanager.view.RegularTextView
+                            android:minLines="2"
+                            android:maxLines="3"
                             android:id="@+id/rtvChartMessage"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -57,8 +60,8 @@
                 </RelativeLayout>
 
                 <LinearLayout
-                    android:padding="16dp"
                     android:weightSum="2"
+                    android:padding="16dp"
                     android:id="@+id/llFirstRow"
                     android:layout_marginTop="7dp"
                     android:orientation="horizontal"

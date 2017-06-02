@@ -230,14 +230,26 @@
             </intent-filter>
         </receiver>
         <!-- **************************************************************************************** -->
-        <meta-data
-            android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
-        <meta-data
-            android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDKUt70K0N8Io4DKmyn54Ym-tWkIEVEhpY" />
+        <service
+            android:name=".notifications.MyFirebaseMessagingService">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+            </intent-filter>
+        </service>
 
-        <!-- Receive data in the background with or without displaying a notification. -->
+        <service
+            android:name=".notifications.MyFirebaseInstanceIDService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+            </intent-filter>
+        </service>
+        <!--suppress AndroidDomInspection -->
+        <service
+            android:name=".notifications.RegistrationIntentService"
+            android:exported="false">
+        </service>
+
+        <!-- ONESIGNAL: Receive data in the background with or without displaying a notification. -->
         <service
             android:name="ee.app.conversamanager.notifications.onesignal.CustomNotificationExtenderService"
             android:exported="false">
@@ -248,6 +260,13 @@
         <!-- By default OneSignal will open or resume your launcher Activity when a notification is
             tapped on. You can disable this behavior by adding the meta-data tag -->
         <meta-data android:name="com.onesignal.NotificationOpened.DEFAULT" android:value="DISABLE" />
+        <!-- **************************************************************************************** -->
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDKUt70K0N8Io4DKmyn54Ym-tWkIEVEhpY" />
 
         <service
             android:name="ee.app.conversamanager.contact.ContactIntentService"

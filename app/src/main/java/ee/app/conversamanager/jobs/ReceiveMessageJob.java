@@ -20,6 +20,7 @@ import ee.app.conversamanager.delivery.DeliveryStatus;
 import ee.app.conversamanager.dialog.PushNotification;
 import ee.app.conversamanager.events.contact.ContactSaveEvent;
 import ee.app.conversamanager.events.message.MessageIncomingEvent;
+import ee.app.conversamanager.management.AblyConnection;
 import ee.app.conversamanager.model.database.NotificationInformation;
 import ee.app.conversamanager.model.database.dbCustomer;
 import ee.app.conversamanager.model.database.dbMessage;
@@ -53,6 +54,13 @@ public class ReceiveMessageJob extends Job {
     @Override
     public void onRun() throws Throwable {
         JSONObject additionalData = new JSONObject(additionalDataString);
+
+        // Check if this message came from this connectionId
+        String connectionId = additionalData.optString("connectionId", "");
+
+        if (AblyConnection.getInstance().getPublicConnectionId().equals(connectionId)) {
+            return;
+        }
 
         String messageId = additionalData.optString("messageId", null);
         String contactId = additionalData.optString("contactId", null);

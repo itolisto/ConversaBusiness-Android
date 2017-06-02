@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import com.birbit.android.jobqueue.Job;
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
-import com.onesignal.OneSignal;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 
@@ -76,7 +75,7 @@ public class BusinessInfoJob extends Job {
         // 2. Subscribe to Customer channels
         AblyConnection.getInstance().subscribeToChannels();
         // 3. Subscribe to Customer channels
-        OneSignal.setSubscription(true);
+        //OneSignal.setSubscription(true);
         Utils.subscribeToTags(objectId);
 
         ConversaApp.getInstance(getApplicationContext())

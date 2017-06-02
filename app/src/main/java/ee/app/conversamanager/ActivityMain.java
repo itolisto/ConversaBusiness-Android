@@ -2,19 +2,20 @@ package ee.app.conversamanager;
 
 import android.app.NotificationManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.onesignal.OneSignal;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
-
-import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Timer;
@@ -24,15 +25,16 @@ import ee.app.conversamanager.extendables.ConversaActivity;
 import ee.app.conversamanager.jobs.BusinessInfoJob;
 import ee.app.conversamanager.management.AblyConnection;
 import ee.app.conversamanager.model.parse.Account;
+import ee.app.conversamanager.notifications.RegistrationIntentService;
 import ee.app.conversamanager.utils.AppActions;
 import ee.app.conversamanager.utils.Foreground;
 import ee.app.conversamanager.utils.Logger;
 import ee.app.conversamanager.utils.PagerAdapter;
-import ee.app.conversamanager.utils.Utils;
 import ee.app.conversamanager.view.MediumTextView;
 
 public class ActivityMain extends ConversaActivity implements Foreground.Listener {
 
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private final String TAG = ActivityMain.class.getSimpleName();
     private ViewPager mViewPager;
     private Timer timer;
@@ -119,16 +121,17 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
                     .getJobManager()
                     .addJobInBackground(new BusinessInfoJob(Account.getCurrentUser().getObjectId()));
         } else {
-            OneSignal.getTags(new OneSignal.GetTagsHandler() {
-                @Override
-                public void tagsAvailable(JSONObject tags) {
-                    if (tags == null || tags.length() == 0) {
-                        OneSignal.setSubscription(true);
-                        Utils.subscribeToTags(ConversaApp.getInstance(getApplicationContext())
-                                .getPreferences().getAccountBusinessId());
-                    }
-                }
-            });
+            AblyConnection.getInstance().subscribeToChannels();
+//            OneSignal.getTags(new OneSignal.GetTagsHandler() {
+//                @Override
+//                public void tagsAvailable(JSONObject tags) {
+//                    if (tags == null || tags.length() == 0) {
+//                        OneSignal.setSubscription(true);
+//                        Utils.subscribeToTags(ConversaApp.getInstance(getApplicationContext())
+//                                .getPreferences().getAccountBusinessId());
+//                    }
+//                }
+//            });
         }
 
         initialization();
@@ -139,6 +142,11 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
         super.initialization();
         startTimer();
         Foreground.get(this).addListener(this);
+        if (checkPlayServices()) {
+            // Start IntentService to register this application with GCM.
+            Intent intent = new Intent(this, RegistrationIntentService.class);
+            startService(intent);
+        }
     }
 
     @Override
@@ -232,13 +240,32 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
     @Override
     public void onBecameForeground() {
         startTimer();
-        AblyConnection.getInstance().connectAbly();
     }
 
     @Override
     public void onBecameBackground() {
         stoptimertask();
-        AblyConnection.getInstance().disconnectAbly();
+    }
+
+    /**
+     * Check the device to make sure it has the Google Play Services APK. If
+     * it doesn't, display a dialog that allows users to download the APK from
+     * the Google Play Store or enable it in the device's system settings.
+     */
+    private boolean checkPlayServices() {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+                        .show();
+            } else {
+                Log.i(TAG, "This device is not supported.");
+                finish();
+            }
+            return false;
+        }
+        return true;
     }
 
 }
