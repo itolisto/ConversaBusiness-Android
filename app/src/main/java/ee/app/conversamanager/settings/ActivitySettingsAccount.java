@@ -155,29 +155,8 @@ public class ActivitySettingsAccount extends ConversaActivity implements View.On
                     .content(getString(R.string.sett_account_redirect_content))
                     .positiveColorRes(R.color.purple)
                     .negativeColorRes(R.color.black)
-                    .positiveText(getString(R.string.sett_account_redirect_ok))
-                    .negativeText(android.R.string.cancel)
+                    .positiveText(android.R.string.ok)
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
-                        @Override
-                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                            if (!ConversaApp.getInstance(getApplicationContext())
-                                    .getPreferences()
-                                    .getAccountRedirect())
-                            {
-                                ConversaApp.getInstance(getApplicationContext())
-                                        .getJobManager()
-                                        .addJobInBackground(new SettingsRedirectJob(
-                                                ConversaApp.getInstance(getApplicationContext())
-                                                .getPreferences()
-                                                .getAccountBusinessId(),
-                                                true
-                                            )
-                                        );
-                            }
-                            dialog.dismiss();
-                        }
-                    })
-                    .onNegative(new MaterialDialog.SingleButtonCallback() {
                         @Override
                         public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
                             ((SwitchCompat) findViewById(R.id.scRedirect)).setChecked(false);

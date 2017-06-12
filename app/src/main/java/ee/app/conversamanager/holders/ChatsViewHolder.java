@@ -190,13 +190,6 @@ public class ChatsViewHolder extends BaseHolder {
 
         if (info.hasUnreadMessages()) {
             this.ivUnread.setVisibility(View.VISIBLE);
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                this.ivUnread.setBackground(activity.getResources()
-                        .getDrawable(R.drawable.ic_unread_message, null));
-            } else {
-                this.ivUnread.setBackground(activity.getResources()
-                        .getDrawable(R.drawable.ic_unread_message));
-            }
         } else {
             this.ivUnread.setVisibility(View.INVISIBLE);
         }

@@ -1,10 +1,13 @@
 package ee.app.conversamanager.management;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -31,6 +34,7 @@ import io.ably.lib.types.ClientOptions;
 import io.ably.lib.types.ErrorInfo;
 import io.ably.lib.types.Message;
 import io.ably.lib.types.PresenceMessage;
+import io.ably.lib.util.IntentUtils;
 
 /**
  * Created by edgargomez on 8/17/16.
@@ -83,10 +87,82 @@ public class AblyConnection implements Channel.MessageListener, Presence.Presenc
             ablyRealtime = new AblyRealtime(clientOptions);
             // Register listener for state changes
             ablyRealtime.connection.on(this);
-            //ablyRealtime.push.activate(context);
+
+            LocalBroadcastManager.getInstance(context.getApplicationContext()).registerReceiver(new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    ErrorInfo error = IntentUtils.getErrorInfo(intent);
+                    if (error != null) {
+                        // Handle error
+                        Logger.error("onReceive", "Push failed: " + error.message);
+                        return;
+                    }
+                    // Subscribe to channels / listen for push etc.
+                    String channelname = ConversaApp.getInstance(context).getPreferences().getAccountBusinessId();
+                    ablyRealtime.channels.get("bpbc:" + channelname).push.subscribeClientAsync(context, new CompletionListener() {
+                        @Override
+                        public void onSuccess() {
+                            Logger.error("onSuccess", "Public channel subscribed for push");
+                        }
+
+                        @Override
+                        public void onError(ErrorInfo errorInfo) {
+                            Logger.error("onError", "Public channel error for push: " + errorInfo.message);
+                        }
+                    });
+
+                    ablyRealtime.channels.get("bpvt:" + channelname).push.subscribeClientAsync(context, new CompletionListener() {
+                        @Override
+                        public void onSuccess() {
+                            Logger.error("onSuccess", "Private channel subscribed for push");
+                        }
+
+                        @Override
+                        public void onError(ErrorInfo errorInfo) {
+                            Logger.error("onError", "Private channel error for push: " + errorInfo.message);
+                        }
+                    });
+                }
+            }, new IntentFilter("io.ably.broadcast.PUSH_ACTIVATE"));
+
+            ablyRealtime.push.activate(context);
         } catch (AblyException e) {
             Logger.error(TAG, "InitAbly method exception: " + e.getMessage());
         }
+    }
+
+    public void subscribeToPushNotifications(Intent intent) {
+        ErrorInfo error = IntentUtils.getErrorInfo(intent);
+        if (error != null) {
+            // Handle error
+            Logger.error("onReceive", "Push failed: " + error.message);
+            return;
+        }
+        // Subscribe to channels / listen for push etc.
+        String channelname = ConversaApp.getInstance(context).getPreferences().getAccountBusinessId();
+        ablyRealtime.channels.get("bpbc:" + channelname).push.subscribeClientAsync(context, new CompletionListener() {
+            @Override
+            public void onSuccess() {
+                Logger.error("onSuccess", "Public channel subscribed for push");
+            }
+
+            @Override
+            public void onError(ErrorInfo errorInfo) {
+                Logger.error("onError", "Public channel error for push: " + errorInfo.message);
+            }
+        });
+
+        ablyRealtime.channels.get("bpvt:" + channelname).push.subscribeClientAsync(context, new CompletionListener() {
+            @Override
+            public void onSuccess() {
+                Logger.error("onSuccess", "Private channel subscribed for push");
+            }
+
+            @Override
+            public void onError(ErrorInfo errorInfo) {
+                Logger.error("onError", "Private channel error for push: " + errorInfo.message);
+            }
+        });
     }
 
     public void connectAbly() {
@@ -107,6 +183,7 @@ public class AblyConnection implements Channel.MessageListener, Presence.Presenc
     public void disconnectAbly() {
         if (ablyRealtime != null) {
             ablyRealtime.connection.close();
+            ablyRealtime.push.deactivate(context);
         }
     }
 
@@ -265,43 +342,43 @@ public class AblyConnection implements Channel.MessageListener, Presence.Presenc
      *
      */
     public void userHasStartedTyping(String channelName) {
-        if(this.ablyRealtime.connection.state != ConnectionState.connected) {
-            return;
-        }
-
-        try {
-            JsonObject payload = new JsonObject();
-            payload.addProperty("isTyping", true);
-            payload.addProperty("from", ConversaApp.getInstance(context).getPreferences().getAccountBusinessId());
-
-            if (!ablyRealtime.channels.isEmpty()) {
-                Channel channel = ablyRealtime.channels.get("upbc:" + channelName);
-                // Not interested in callback
-                channel.presence.update(payload, null);
-            }
-        } catch (AblyException e) {
-            Logger.error(TAG, e.getMessage());
-        }
+//        if(this.ablyRealtime.connection.state != ConnectionState.connected) {
+//            return;
+//        }
+//
+//        try {
+//            JsonObject payload = new JsonObject();
+//            payload.addProperty("isTyping", true);
+//            payload.addProperty("from", ConversaApp.getInstance(context).getPreferences().getAccountBusinessId());
+//
+//            if (!ablyRealtime.channels.isEmpty()) {
+//                Channel channel = ablyRealtime.channels.get("upbc:" + channelName);
+//                // Not interested in callback
+//                channel.presence.update(payload, null);
+//            }
+//        } catch (AblyException e) {
+//            Logger.error(TAG, e.getMessage());
+//        }
     }
 
     public void userHasEndedTyping(String channelName) {
-        if(this.ablyRealtime.connection.state != ConnectionState.connected) {
-            return;
-        }
-
-        try {
-            JsonObject payload = new JsonObject();
-            payload.addProperty("isTyping", false);
-            payload.addProperty("from", ConversaApp.getInstance(context).getPreferences().getAccountBusinessId());
-
-            if (!ablyRealtime.channels.isEmpty()) {
-                Channel channel = ablyRealtime.channels.get("upbc:" + channelName);
-                // Not interested in callback
-                channel.presence.update(payload, null);
-            }
-        } catch (AblyException e) {
-            Logger.error(TAG, e.getMessage());
-        }
+//        if(this.ablyRealtime.connection.state != ConnectionState.connected) {
+//            return;
+//        }
+//
+//        try {
+//            JsonObject payload = new JsonObject();
+//            payload.addProperty("isTyping", false);
+//            payload.addProperty("from", ConversaApp.getInstance(context).getPreferences().getAccountBusinessId());
+//
+//            if (!ablyRealtime.channels.isEmpty()) {
+//                Channel channel = ablyRealtime.channels.get("upbc:" + channelName);
+//                // Not interested in callback
+//                channel.presence.update(payload, null);
+//            }
+//        } catch (AblyException e) {
+//            Logger.error(TAG, e.getMessage());
+//        }
     }
 
     public PresenceMessage[] getPresentUsers(String channel) {

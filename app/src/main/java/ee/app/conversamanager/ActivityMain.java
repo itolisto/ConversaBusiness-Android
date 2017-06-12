@@ -1,7 +1,10 @@
 package ee.app.conversamanager;
 
 import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -10,11 +13,8 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.onesignal.OneSignal;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
-
-import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.Timer;
@@ -28,7 +28,6 @@ import ee.app.conversamanager.utils.AppActions;
 import ee.app.conversamanager.utils.Foreground;
 import ee.app.conversamanager.utils.Logger;
 import ee.app.conversamanager.utils.PagerAdapter;
-import ee.app.conversamanager.utils.Utils;
 import ee.app.conversamanager.view.MediumTextView;
 
 public class ActivityMain extends ConversaActivity implements Foreground.Listener {
@@ -56,8 +55,6 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        AblyConnection.getInstance().initAbly();
 
         // Remove internet connection check
         checkInternetConnection = false;
@@ -118,18 +115,14 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
             ConversaApp.getInstance(this)
                     .getJobManager()
                     .addJobInBackground(new BusinessInfoJob(Account.getCurrentUser().getObjectId()));
-        } else {
-            OneSignal.getTags(new OneSignal.GetTagsHandler() {
-                @Override
-                public void tagsAvailable(JSONObject tags) {
-                    if (tags == null || tags.length() == 0) {
-                        OneSignal.setSubscription(true);
-                        Utils.subscribeToTags(ConversaApp.getInstance(getApplicationContext())
-                                .getPreferences().getAccountBusinessId());
-                    }
-                }
-            });
         }
+
+        ConversaApp.getInstance(getApplicationContext()).getLocalBroadcastManager().registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                AblyConnection.getInstance().subscribeToPushNotifications(intent);
+            }
+        }, new IntentFilter("io.ably.broadcast.PUSH_ACTIVATE"));
 
         initialization();
 	}
@@ -166,6 +159,8 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
                 }
             }).start();
         }
+
+        AblyConnection.getInstance().initAbly();
     }
 
     @Override

@@ -37,12 +37,12 @@
     <string name="message_sent_error">Fallido</string>
     <string name="message_sent_uploading">Subiendo</string>
     <string name="message_sent_downloading">Descargando</string>
-    <string name="message_sent_sending">Sending</string>
+    <string name="message_sent_sending">Enviando</string>
     <string name="message_sent">Enviado</string>
     <string name="mute_title_menu">Silencio</string>
     <string name="name_already_taken">Nombre no está disponible</string>
     <string name="no_messages">Sin mensajes</string>
-    <string name="no_messages_description_one">Cuando tengas mensajes\nlos verás aquí</string>
+    <string name="no_messages_description_one">Cuando tengas chats\nlos verás aquí</string>
     <string name="no_user_registered">No hay usuario registrado con esta combinación de correo electrónico o contraseña</string>
     <string name="open_on_title">Abierto</string>
     <string name="picture">Imagen</string>
@@ -252,12 +252,10 @@
     <string name="sett_account_profile_edit_indication">editar</string>
     <string name="sett_account_profile_profile_indication">perfil</string>
     <string name="sett_account_redirect_ok">Activar</string>
-    <string name="sett_account_redirect_content">Todos tus mensajes entrantes serán dirigidos a Conversa para que maneje tu comunicación ¿Deseas activar esta característica?</string>
-    <string name="sett_account_redirect_enable_fail">No pudimos habilitar la redirección a Conversa. Por favor intenta de nuevo más tarde o contacta a Soporte de Conversa para más información</string>
-    <string name="sett_account_redirect_disable_fail">No pudimos deshabilitar la redirección a Conversa. Por favor intenta de nuevo más tarde o contacta a Soporte de Conversa para más información</string>
+    <string name="sett_account_redirect_content">Esta es una función premium, chatea con nosotros para conocer más.</string>
     <string name="sett_status_update">Actualizar estado</string>
     <string name="sett_link_title">¿Qué es?</string>
-    <string name="sett_link_description">ConversaLink es un link \nespecial con el cual cual-\nquiera puede empezar un\nchat contigo cuando  \npresionan sobre él.\n\nFunciona desde cualquier lugar</string>
+    <string name="sett_link_description">Tu conversa.link es un link \nespecial con el que cualquier\npersona puede iniciar un chat\ncontigo cuando   lo presione.\n\nFunciona desde: Fb, Tw, Ig, etc.\nTu link es:</string>
     <string name="conversalink_share_copy">Link copiado</string>
     <string name="sett_account_detail_basic_title">Información básica</string>
     <string name="sett_account_detail_private_title">Información privada</string>
@@ -297,6 +295,6 @@
     <string name="tutorial_title_five">Excepcional atención al cliente</string>
     <string name="tutorial_title_four">Aumenta tu alcance</string>
     <string name="tutorial_title_one">Bienvenido a Manager</string>
-    <string name="tutorial_title_three">Sé social</string>
+    <string name="tutorial_title_three">Se social</string>
     <string name="tutorial_title_two">Mensajería instantánea</string>
 </resources>

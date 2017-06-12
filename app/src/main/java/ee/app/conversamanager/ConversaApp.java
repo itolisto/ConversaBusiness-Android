@@ -37,7 +37,6 @@ import com.birbit.android.jobqueue.config.Configuration;
 import com.birbit.android.jobqueue.log.CustomLogger;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.flurry.android.FlurryAgent;
-import com.onesignal.OneSignal;
 import com.parse.Parse;
 import com.parse.ParseObject;
 
@@ -48,8 +47,6 @@ import ee.app.conversamanager.events.MyEventBusIndex;
 import ee.app.conversamanager.management.AblyConnection;
 import ee.app.conversamanager.model.parse.Account;
 import ee.app.conversamanager.model.parse.Customer;
-import ee.app.conversamanager.notifications.onesignal.CustomNotificationOpenedHandler;
-import ee.app.conversamanager.notifications.onesignal.CustomNotificationReceivedHandler;
 import ee.app.conversamanager.settings.Preferences;
 import ee.app.conversamanager.utils.Const;
 import ee.app.conversamanager.utils.Foreground;
@@ -90,34 +87,12 @@ public class ConversaApp extends MultiDexApplication {
 		AblyConnection.initAblyManager(this);
 		AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
-		initializeOneSignal();
 		initializeParse();
 		initializeDeveloperBuild();
 		initializeJobManager();
 		initializeEventBus();
 		initializeFlurry();
 		initializeTypefaces();
-	}
-
-	private void initializeOneSignal() {
-		OneSignal
-				// Initializes OneSignal to register the device for push notifications
-				.startInit(this)
-				// Prompts the user for location permissions. This allows for geotagging so you can
-				// send notifications to users based on location.
-				.autoPromptLocation(true)
-				// How OneSignal notifications will be shown when one is received while your app is
-				// in focus
-				.inFocusDisplaying(OneSignal.OSInFocusDisplayOption.None)
-				// Sets a notification opened handler. The instance will be called when a notification
-				// is tapped on from the notification shade or when closing an Alert notification
-				// shown in the app.
-				.setNotificationOpenedHandler(new CustomNotificationOpenedHandler(this))
-				// Sets a notification received handler. The instance will be called when a
-				// notification is received whether it was displayed or not.
-				.setNotificationReceivedHandler(new CustomNotificationReceivedHandler(this))
-				// Initializes OneSignal to register the device for push notifications
-				.init();
 	}
 
 	private void initializeParse() {
@@ -127,13 +102,13 @@ public class ConversaApp extends MultiDexApplication {
 
 		// Initialize Parse.
 		Parse.initialize(new Parse.Configuration.Builder(this)
-				.applicationId("szLKzjFz66asK9SngeFKnTyN2V596EGNuMTC7YyF4tkFudvY72")
-				.clientKey("CMTFwQPd2wJFXfEQztpapGHFjP5nLZdtZr7gsHKxuFhA9waMgw1")
-				.server("http://ec2-52-71-125-28.compute-1.amazonaws.com:1337/parse/")
+//				.applicationId("szLKzjFz66asK9SngeFKnTyN2V596EGNuMTC7YyF4tkFudvY72")
+//				.clientKey("CMTFwQPd2wJFXfEQztpapGHFjP5nLZdtZr7gsHKxuFhA9waMgw1")
+//				.server("http://ec2-52-71-125-28.compute-1.amazonaws.com:1337/parse/")
 				// Localhost
-//				.applicationId("b15c83")
-//				.clientKey(null)
-//				.server("http://10.0.3.2:1337/parse/") // The trailing slash is important.
+				.applicationId("b15c83")
+				.clientKey(null)
+				.server("http://10.0.3.2:1337/parse/") // The trailing slash is important.
 				.build()
 		);
 	}

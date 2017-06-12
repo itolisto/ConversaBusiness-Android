@@ -117,7 +117,7 @@ public class FragmentStatistics extends ConversaFragment implements SharedPrefer
     @Override
     public void onResume() {
         super.onResume();
-        if (!load && !ConversaApp.getInstance(getActivity()).getPreferences().getAccountBusinessId().isEmpty()) {
+        if (!ConversaApp.getInstance(getActivity()).getPreferences().getAccountBusinessId().isEmpty()) {
             // Change load value so next time this fragment is loaded
             // we don't call Parse Server for information automatically
             changeStatisticsPeriod();
@@ -136,9 +136,12 @@ public class FragmentStatistics extends ConversaFragment implements SharedPrefer
             return;
         }
 
+        if (mRlRetry.getVisibility() == View.VISIBLE) {
+            mRlRetry.setVisibility(View.GONE);
+        }
+
         if (mRlInfo.getVisibility() == View.GONE) {
             mRlInfo.setVisibility(View.VISIBLE);
-            mRlRetry.setVisibility(View.GONE);
         }
 
         mPbLoadingStats.smoothToShow();

@@ -49,6 +49,10 @@
                         android:layout_height="match_parent"
                         android:background="@android:color/white">
                         <ee.app.conversamanager.view.RegularTextView
+                            android:layout_marginEnd="16dp"
+                            android:layout_marginLeft="16dp"
+                            android:layout_marginRight="16dp"
+                            android:layout_marginStart="16dp"
                             android:id="@+id/rtvChartMessage"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -351,7 +355,7 @@
 
         <RelativeLayout
             android:id="@+id/rlRetry"
-            android:visibility="visible"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="match_parent">
             <ee.app.conversamanager.view.MediumTextView
