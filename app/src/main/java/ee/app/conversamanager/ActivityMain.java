@@ -2,18 +2,14 @@ package ee.app.conversamanager;
 
 import android.app.NotificationManager;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GoogleApiAvailability;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 
@@ -25,7 +21,6 @@ import ee.app.conversamanager.extendables.ConversaActivity;
 import ee.app.conversamanager.jobs.BusinessInfoJob;
 import ee.app.conversamanager.management.AblyConnection;
 import ee.app.conversamanager.model.parse.Account;
-import ee.app.conversamanager.notifications.RegistrationIntentService;
 import ee.app.conversamanager.utils.AppActions;
 import ee.app.conversamanager.utils.Foreground;
 import ee.app.conversamanager.utils.Logger;
@@ -122,16 +117,7 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
                     .addJobInBackground(new BusinessInfoJob(Account.getCurrentUser().getObjectId()));
         } else {
             AblyConnection.getInstance().subscribeToChannels();
-//            OneSignal.getTags(new OneSignal.GetTagsHandler() {
-//                @Override
-//                public void tagsAvailable(JSONObject tags) {
-//                    if (tags == null || tags.length() == 0) {
-//                        OneSignal.setSubscription(true);
-//                        Utils.subscribeToTags(ConversaApp.getInstance(getApplicationContext())
-//                                .getPreferences().getAccountBusinessId());
-//                    }
-//                }
-//            });
+            AblyConnection.getInstance().subscribeToPushChannels();
         }
 
         initialization();
@@ -142,11 +128,11 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
         super.initialization();
         startTimer();
         Foreground.get(this).addListener(this);
-        if (checkPlayServices()) {
-            // Start IntentService to register this application with GCM.
-            Intent intent = new Intent(this, RegistrationIntentService.class);
-            startService(intent);
-        }
+//        if (checkPlayServices()) {
+//            // Start IntentService to register this application with GCM.
+//            Intent intent = new Intent(this, RegistrationIntentService.class);
+//            startService(intent);
+//        }
     }
 
     @Override
@@ -252,20 +238,20 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
      * it doesn't, display a dialog that allows users to download the APK from
      * the Google Play Store or enable it in the device's system settings.
      */
-    private boolean checkPlayServices() {
-        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (apiAvailability.isUserResolvableError(resultCode)) {
-                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
-                        .show();
-            } else {
-                Log.i(TAG, "This device is not supported.");
-                finish();
-            }
-            return false;
-        }
-        return true;
-    }
+//    private boolean checkPlayServices() {
+//        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+//        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+//        if (resultCode != ConnectionResult.SUCCESS) {
+//            if (apiAvailability.isUserResolvableError(resultCode)) {
+//                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+//                        .show();
+//            } else {
+//                Log.i(TAG, "This device is not supported.");
+//                finish();
+//            }
+//            return false;
+//        }
+//        return true;
+//    }
 
 }

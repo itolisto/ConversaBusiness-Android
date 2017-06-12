@@ -17,7 +17,6 @@ import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.management.AblyConnection;
 import ee.app.conversamanager.utils.AppActions;
 import ee.app.conversamanager.utils.Logger;
-import ee.app.conversamanager.utils.Utils;
 
 /**
  * Created by edgargomez on 10/12/16.
@@ -74,9 +73,7 @@ public class BusinessInfoJob extends Job {
         ConversaApp.getInstance(getApplicationContext()).getPreferences().setAccountStatus(status);
         // 2. Subscribe to Customer channels
         AblyConnection.getInstance().subscribeToChannels();
-        // 3. Subscribe to Customer channels
-        //OneSignal.setSubscription(true);
-        Utils.subscribeToTags(objectId);
+        AblyConnection.getInstance().subscribeToPushChannels();
 
         ConversaApp.getInstance(getApplicationContext())
                 .getJobManager()

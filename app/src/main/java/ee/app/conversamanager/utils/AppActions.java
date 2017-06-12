@@ -54,21 +54,17 @@ public class AppActions {
             }
         }).start();
 
-//        Collection<String> tempList = new ArrayList<>(3);
-//        tempList.add("bpbc");
-//        tempList.add("bpvt");
-//        tempList.add("usertype");
-//        OneSignal.deleteTags(tempList);
-//        OneSignal.clearOneSignalNotifications();
-//        OneSignal.setSubscription(false);
         AblyConnection.getInstance().disconnectAbly();
         Account.logOut();
 
         Intent goToSignIn = new Intent(context, ActivitySignIn.class);
+
         goToSignIn.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         goToSignIn.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
         if (invalidSession)
             goToSignIn.putExtra(Const.ACTION, -1);
+
         context.startActivity(goToSignIn);
     }
 

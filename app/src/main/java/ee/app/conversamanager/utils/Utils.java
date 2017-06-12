@@ -84,18 +84,6 @@ public class Utils {
 		return Pattern.compile(pattern).matcher(password).matches();
 	}
 
-	public static void subscribeToTags(String channelName) {
-//		JSONObject tags = new JSONObject();
-//		try {
-//			tags.put("bpbc", channelName);
-//			tags.put("bpvt", channelName);
-//			tags.put("usertype", 2);
-//		} catch (JSONException e) {
-//			e.printStackTrace();
-//		}
-//		OneSignal.sendTags(tags);
-	}
-
 	public static Uri getUriFromString(String path) {
 		if (TextUtils.isEmpty(path)) {
 			return null;

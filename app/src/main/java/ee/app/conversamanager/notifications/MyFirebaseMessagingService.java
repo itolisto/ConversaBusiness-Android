@@ -69,8 +69,9 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                         // Check if this message came from this connectionId
                         String connectionId = additionalData.optString("connectionId", "");
+                        String currentConnectionId = AblyConnection.getInstance().getPublicConnectionId();
 
-                        if (AblyConnection.getInstance().getPublicConnectionId().equals(connectionId)) {
+                        if (currentConnectionId != null && connectionId.equals(currentConnectionId)) {
                             return;
                         }
 

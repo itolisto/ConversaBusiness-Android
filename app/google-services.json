@@ -40,15 +40,15 @@
           "status": 2,
           "other_platform_oauth_client": [
             {
-              "client_id": "726872517648-batkgjvq3853g644rncmbhkdnj567ffj.apps.googleusercontent.com",
-              "client_type": 3
-            },
-            {
               "client_id": "726872517648-6orfk6d7dbc2nerkct4m1fqr5o3pm6jc.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
                 "bundle_id": "ee.app.conversamanager"
               }
+            },
+            {
+              "client_id": "726872517648-batkgjvq3853g644rncmbhkdnj567ffj.apps.googleusercontent.com",
+              "client_type": 3
             }
           ]
         },

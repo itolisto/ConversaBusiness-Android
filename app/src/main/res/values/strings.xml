@@ -262,9 +262,7 @@
     <string name="sett_account_profile_edit_indication">edit</string>
     <string name="sett_account_profile_profile_indication">profile</string>
     <string name="sett_account_redirect_ok">Enable</string>
-    <string name="sett_account_redirect_content">All your incoming messages will be redirect to Conversa to handle your communication. Are you sure you want to enable this feature?</string>
-    <string name="sett_account_redirect_enable_fail">We couldn\'t enable redirection. Please try again later or contact Conversa Support for more information</string>
-    <string name="sett_account_redirect_disable_fail">We couldn\'t disable redirection. Please try again later or contact Conversa Support for more information</string>
+    <string name="sett_account_redirect_content">This is a premium function, chat with us to know more.</string>
     <string name="sett_status_update">Update status</string>
     <string name="sett_link_title">What is it?</string>
     <string name="sett_link_description">Your conversa.link is a special \nlink with which any person\ncan start a chat with you \nwhen they click on it.  \n\nWorks from: Fb, Tw, Ig, etc.\nYour link is:</string>
@@ -295,7 +293,7 @@
     <string name="stats_chart_received_title">Received</string>
     <string name="stats_chart_title">Total Messages</string>
     <string name="contacts_options_delete">Delete conversation</string>
-    <string name="contacts_options_select">Select</string>
+    <string name="contacts_options_select">Select more</string>
     <string name="contacts_options_clear">Clear conversation</string>
     <string name="contacts_item_conversation_empty">Start chatting</string>
     <string name="tutorial_skip">Start Now</string>

@@ -5,7 +5,7 @@ ext {
     SUPPORT_LIB_VERSION = '25.3.1'
     PLAY_LIB_VERSION = '10.2.4'
     TARGET_SDK = 25
-    BUILD_TOOLS = "25.0.2"
+    BUILD_TOOLS = '25.0.2'
 }
 
 android {
@@ -27,9 +27,6 @@ android {
         targetSdkVersion TARGET_SDK
         versionCode 12
         versionName "1.3.3"
-//        manifestPlaceholders = [manifestApplicationId          : "${applicationId}",
-//                                onesignal_app_id               : "a652c1d3-e681-4538-9486-7b855d90e6aa",
-//                                onesignal_google_project_number: "362452554166"]
         buildConfigField "boolean", DEV_BUILD, "false"
         buildConfigField "boolean", JOB_LOGGER, "false"
         vectorDrawables.useSupportLibrary = true
@@ -64,23 +61,11 @@ android {
     }
 }
 
-repositories {
-    maven { url "https://dl.bintray.com/drummer-aidan/maven" }
-    maven { url "https://raw.github.com/paddybyers/Java-WebSocket/mvn-repo/" }
-}
-
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile (name:'ably-android-0.9-dev', ext:'aar')
-
-    apply from: '/Users/edgargomez/Desktop/Projects/ably-java/dependencies.gradle'
-    apply from: '/Users/edgargomez/Desktop/Projects/ably-java/android/dependencies.gradle'
-
-//    compile 'com.google.code.gson:gson:2.8.0'
     testCompile 'junit:junit:4.12'
 
     compile 'com.android.support:multidex:1.0.1'
-    compile 'com.google.firebase:firebase-messaging:10.2.4'
+    compile "com.google.firebase:firebase-messaging:$PLAY_LIB_VERSION"
     compile "com.android.support:design:$SUPPORT_LIB_VERSION"
     compile "com.android.support:percent:$SUPPORT_LIB_VERSION"
     compile "com.android.support:support-v4:$SUPPORT_LIB_VERSION"
@@ -94,12 +79,10 @@ dependencies {
     compile "com.google.android.gms:play-services-base:$PLAY_LIB_VERSION"
     compile "com.google.android.gms:play-services-location:$PLAY_LIB_VERSION"
 
-//    compile 'io.ably:ably-android:1.0.0'
     compile 'com.wang.avi:library:2.1.3'
     compile 'org.greenrobot:eventbus:3.0.0'
     compile 'me.relex:photodraweeview:1.1.3'
     compile 'com.parse:parse-android:1.15.7'
-    //compile 'com.onesignal:OneSignal:3.+@aar'
     compile 'com.facebook.fresco:fresco:1.3.0'
     compile 'com.parse.bolts:bolts-android:1.4.0'
     compile 'eu.davidea:flexible-adapter:5.0.0-rc1'
@@ -110,7 +93,7 @@ dependencies {
     compile 'de.psdev.licensesdialog:licensesdialog:1.8.2'
     compile 'com.afollestad.material-dialogs:core:0.9.2.3'
 
-//    compile group: 'com.pubnub', name: 'pubnub-gson', version: '4.6.2'
+    compile group: 'com.pubnub', name: 'pubnub-gson', version: '4.6.2'
 
     apt 'org.greenrobot:eventbus-annotation-processor:3.0.1'
 }

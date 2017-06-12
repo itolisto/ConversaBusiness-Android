@@ -73,6 +73,9 @@ public class AblyConnection extends SubscribeCallback {
     }
 
     public void subscribeToPushChannels() {
+        if (ablyRealtime == null || ConversaApp.getInstance(context).getPreferences().getPushKey().isEmpty())
+            return;
+
         this.ablyRealtime.addPushNotificationsOnChannels()
                 .pushType(PNPushType.GCM)
                 .channels(getChannels())
