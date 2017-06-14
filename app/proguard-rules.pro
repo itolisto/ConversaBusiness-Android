@@ -30,10 +30,6 @@
 -keep class com.wang.avi.** { *; }
 -keep class com.wang.avi.indicators.** { *; }
 #
-#Branch
-#
--keep class com.google.android.gms.ads.identifier.** { *; }
-#
 # MPAndroidChart
 #
 -keep class com.github.mikephil.charting.** { *; }
@@ -55,26 +51,26 @@
 # Required for Flurry
 #
 # Required to preserve the Flurry SDK
--keep class com.flurry.** { *; }
--dontwarn com.flurry.**
--keepattributes *Annotation*,EnclosingMethod,Signature
--keepclasseswithmembers class * {
-    public (android.content.Context, android.util.AttributeSet, int);
-}
+# -keep class com.flurry.** { *; }
+# -dontwarn com.flurry.**
+# -keepattributes *Annotation*,EnclosingMethod,Signature
+# -keepclasseswithmembers class * {
+#     public (android.content.Context, android.util.AttributeSet, int);
+# }
 # Google Play Services library
--keep class * extends java.util.ListResourceBundle {
-    protected Object[ ][ ] getContents();
-}
--keep public class com.google.android.gms.common.internal.safeparcel.SafeParcelable {
-    public static final *** NULL;
-}
--keepnames @com.google.android.gms.common.annotation.KeepName class *
--keepclassmembernames class * {
-    @com.google.android.gms.common.annotation.KeepName *;
-}
--keepnames class * implements android.os.Parcelable {
-    public static final ** CREATOR;
-}
+# -keep class * extends java.util.ListResourceBundle {
+#     protected Object[ ][ ] getContents();
+# }
+# -keep public class com.google.android.gms.common.internal.safeparcel.SafeParcelable {
+#     public static final *** NULL;
+# }
+# -keepnames @com.google.android.gms.common.annotation.KeepName class *
+# -keepclassmembernames class * {
+#     @com.google.android.gms.common.annotation.KeepName *;
+# }
+# -keepnames class * implements android.os.Parcelable {
+#     public static final ** CREATOR;
+# }
 #
 # Required for PubNub
 #
@@ -103,3 +99,27 @@
 -dontwarn com.pubnub.**
 #-keep class com.pubnub.** { *; }
 -dontwarn org.slf4j.**
+#
+# Required for Fresco
+#
+# Keep our interfaces so they can be used by other ProGuard rules.
+# See http://sourceforge.net/p/proguard/bugs/466/
+-keep,allowobfuscation @interface com.facebook.common.internal.DoNotStrip
+
+# Do not strip any method/class that is annotated with @DoNotStrip
+-keep @com.facebook.common.internal.DoNotStrip class *
+-keepclassmembers class * {
+    @com.facebook.common.internal.DoNotStrip *;
+}
+
+# Keep native methods
+-keepclassmembers class * {
+    native <methods>;
+}
+
+-dontwarn okio.**
+-dontwarn com.squareup.okhttp.**
+-dontwarn okhttp3.**
+-dontwarn javax.annotation.**
+-dontwarn com.android.volley.toolbox.**
+-dontwarn com.facebook.infer.**

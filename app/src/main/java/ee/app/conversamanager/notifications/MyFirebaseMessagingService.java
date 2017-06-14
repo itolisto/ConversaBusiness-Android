@@ -20,8 +20,6 @@ package ee.app.conversamanager.notifications;
  * limitations under the License.
  */
 
-import android.util.Log;
-
 import com.birbit.android.jobqueue.JobStatus;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
@@ -55,8 +53,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
-            Log.e(TAG, "Message data payload: " + remoteMessage.getData());
-
             try {
                 String data = remoteMessage.getData().get("message");
                 JSONObject additionalData = new JSONObject(data);

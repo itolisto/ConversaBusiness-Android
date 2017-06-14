@@ -34,7 +34,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
-import android.view.animation.AnimationUtils;
+import android.view.animation.TranslateAnimation;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -56,14 +56,27 @@ public class InAppNotification implements OnClickListener {
 	public static final int MEDIUM_ANIM_DURATION = 1;
 	public static final int LONG_ANIM_DURATION = 2;
 
-
-	private Animation mSlideFromTop;
-	private Animation mSlideOutTop;
-	private Animation mSlideOutTopOnClose;
-
 	private RelativeLayout mPushLayout;
 	private Context mContext;
 	private dbCustomer user;
+
+	private final TranslateAnimation mSlideFromTop = new TranslateAnimation(
+			TranslateAnimation.RELATIVE_TO_PARENT, 0,
+			TranslateAnimation.RELATIVE_TO_PARENT, 0,
+			TranslateAnimation.RELATIVE_TO_SELF, (float) -1.0,
+			TranslateAnimation.RELATIVE_TO_SELF, (float) 0);
+
+	private final TranslateAnimation mSlideOutTop = new TranslateAnimation(
+			TranslateAnimation.RELATIVE_TO_PARENT, 0,
+			TranslateAnimation.RELATIVE_TO_PARENT, 0,
+			TranslateAnimation.RELATIVE_TO_SELF, (float) 0,
+			TranslateAnimation.RELATIVE_TO_SELF, (float) -1.0);
+
+	private final TranslateAnimation mSlideOutTopOnClose = new TranslateAnimation(
+			TranslateAnimation.RELATIVE_TO_PARENT, 0,
+			TranslateAnimation.RELATIVE_TO_PARENT, 0,
+			TranslateAnimation.RELATIVE_TO_SELF, (float) 0,
+			TranslateAnimation.RELATIVE_TO_SELF, (float) -1.0);
 
 	public static InAppNotification make(Context context, RelativeLayout layout) {
 		InAppNotification notification = new InAppNotification();
@@ -181,10 +194,6 @@ public class InAppNotification implements OnClickListener {
 	}
 
 	private void setTranslateAnimations(int duration) {
-		mSlideFromTop = AnimationUtils.loadAnimation(mContext, R.anim.slide_in_top);
-		mSlideOutTop = AnimationUtils.loadAnimation(mContext, R.anim.slide_in_top);
-		mSlideOutTopOnClose = mSlideOutTop;
-
 		mSlideFromTop.setFillAfter(false);
 		mSlideFromTop.setFillEnabled(false);
 		mSlideFromTop.setDuration(duration);
