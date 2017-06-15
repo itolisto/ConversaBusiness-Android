@@ -6,14 +6,18 @@
     android:layout_width="match_parent"
     android:layout_height="140dp">
 
-    <ImageButton
+    <Button
+        android:textSize="14sp"
+        android:gravity="center"
         android:id="@+id/btnView"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:scaleType="fitCenter"
         android:layout_weight="1"
-        android:src="@drawable/ic_camara"
-        style="?android:attr/buttonBarButtonStyle" />
+        android:layout_width="0dp"
+        android:layout_marginTop="14dp"
+        android:layout_marginBottom="16dp"
+        android:layout_height="match_parent"
+        style="?android:attr/buttonBarButtonStyle"
+        android:textColor="@drawable/textcolor_purple_state"
+        android:text="@string/sett_account_detail_see_action" />
 
     <ImageButton
         android:id="@+id/btnCamera"

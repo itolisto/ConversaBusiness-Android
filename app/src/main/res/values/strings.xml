@@ -278,6 +278,7 @@
     <string name="sett_account_detail_password_subtitle">Password</string>
     <string name="sett_account_detail_category_subtitle">Categories</string>
     <string name="sett_account_detail_edit_action">Change avatar</string>
+    <string name="sett_account_detail_see_action">View avatar</string>
     <string name="sett_category_selected_title">Selected</string>
     <string name="sett_category_available_title">Categories</string>
     <string name="sett_category_limit_warning">Limit reached</string>
