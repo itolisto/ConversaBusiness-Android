@@ -63,6 +63,10 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
                             holder.toggleActivate();
                             break;
                         }
+                        case "updateAvatars" : {
+                            holder.updateAvatar(position);
+                            break;
+                        }
                         case "updatePosition" : {
                             holder.updateLastMessage(mUsers.get(position).getCustomerId());
                             break;
@@ -130,6 +134,11 @@ public class ChatsAdapter extends RecyclerView.Adapter<ChatsViewHolder> {
     public void addContact(dbCustomer user) {
         mUsers.add(0, user);
         notifyItemInserted(0);
+        // Update avatar according to position
+        int size = mUsers.size();
+        if (size > 1) {
+            notifyItemRangeChanged(1, size - 1, "updateAvatars");
+        }
     }
 
     public void updateContactPosition(String businessId) {

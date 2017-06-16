@@ -8,6 +8,9 @@ import android.util.Log;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
+import com.parse.ParseException;
 import com.pubnub.api.PNConfiguration;
 import com.pubnub.api.PubNub;
 import com.pubnub.api.callbacks.PNCallback;
@@ -19,13 +22,17 @@ import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
 import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
 import com.pubnub.api.models.consumer.push.PNPushAddChannelResult;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import ee.app.conversamanager.ConversaApp;
+import ee.app.conversamanager.events.TypingEvent;
 import ee.app.conversamanager.messaging.CustomMessageService;
+import ee.app.conversamanager.utils.AppActions;
 import ee.app.conversamanager.utils.Logger;
 
 /**
@@ -111,43 +118,38 @@ public class AblyConnection extends SubscribeCallback {
      *
      */
     public void userHasStartedTyping(String channelName) {
-//        if(this.ablyRealtime.connection.state != ConnectionState.connected) {
-//            return;
-//        }
-//
-//        try {
-//            JsonObject payload = new JsonObject();
-//            payload.addProperty("isTyping", true);
-//            payload.addProperty("from", ConversaApp.getInstance(context).getPreferences().getAccountBusinessId());
-//
-//            if (!ablyRealtime.channels.isEmpty()) {
-//                Channel channel = ablyRealtime.channels.get("upbc:" + channelName);
-//                // Not interested in callback
-//                channel.presence.update(payload, null);
-//            }
-//        } catch (AblyException e) {
-//            Logger.error(TAG, e.getMessage());
-//        }
+        final HashMap<String, Object> params = new HashMap<>(3);
+        params.put("userId", ConversaApp.getInstance(context).getPreferences().getAccountBusinessId());
+        params.put("channelName", channelName);
+        params.put("isTyping", true);
+
+        ParseCloud.callFunctionInBackground("sendPresenceMessage", params, new FunctionCallback<Integer>() {
+            @Override
+            public void done(Integer object, ParseException e) {
+                if (e != null) {
+                    if (AppActions.validateParseException(e)) {
+                        AppActions.appLogout(context, true);
+                    }
+                }
+            }
+        });
     }
 
     public void userHasEndedTyping(String channelName) {
-//        if(this.ablyRealtime.connection.state != ConnectionState.connected) {
-//            return;
-//        }
-//
-//        try {
-//            JsonObject payload = new JsonObject();
-//            payload.addProperty("isTyping", false);
-//            payload.addProperty("from", ConversaApp.getInstance(context).getPreferences().getAccountBusinessId());
-//
-//            if (!ablyRealtime.channels.isEmpty()) {
-//                Channel channel = ablyRealtime.channels.get("upbc:" + channelName);
-//                // Not interested in callback
-//                channel.presence.update(payload, null);
-//            }
-//        } catch (AblyException e) {
-//            Logger.error(TAG, e.getMessage());
-//        }
+        final HashMap<String, Object> params = new HashMap<>(2);
+        params.put("userId", ConversaApp.getInstance(context).getPreferences().getAccountBusinessId());
+        params.put("channelName", channelName);
+
+        ParseCloud.callFunctionInBackground("sendPresenceMessage", params, new FunctionCallback<Integer>() {
+            @Override
+            public void done(Integer object, ParseException e) {
+                if (e != null) {
+                    if (AppActions.validateParseException(e)) {
+                        AppActions.appLogout(context, true);
+                    }
+                }
+            }
+        });
     }
 
     public final String getPublicConnectionId() {
@@ -200,6 +202,14 @@ public class AblyConnection extends SubscribeCallback {
                 Intent msgIntent = new Intent(context, CustomMessageService.class);
                 msgIntent.putExtra("data", additionalData.toString());
                 context.startService(msgIntent);
+                break;
+            case 2:
+                Logger.error("onPresenceMessage", additionalData.toString());
+
+                String jeFrom = additionalData.optString("from", "");
+                boolean isUserTyping = additionalData.optBoolean("isTyping", false);
+                if (!jeFrom.isEmpty())
+                    EventBus.getDefault().post(new TypingEvent(jeFrom, isUserTyping));
                 break;
         }
     }

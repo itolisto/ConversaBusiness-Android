@@ -265,8 +265,9 @@
     <string name="sett_account_redirect_content">This is a premium function, chat with us to know more.</string>
     <string name="sett_status_update">Update status</string>
     <string name="sett_link_title">What is it?</string>
-    <string name="sett_link_description">Your conversa.link is a special \nlink with which any person\ncan start a chat with you \nwhen they click on it.  \n\nWorks from: Fb, Tw, Ig, etc.\nYour link is:</string>
+    <string name="sett_link_description">Your conversa.link is a special \nlink with which any person\ncan start a chat with you \nwhen they click on it.    \n\nWorks from: Fb, Tw, Ig, etc.\nYour link is:</string>
     <string name="conversalink_share_copy">Link copied</string>
+    <string name="profile_share_text">Chat now with %1$s, follow the link %2$s</string>
     <string name="sett_account_detail_basic_title">Basic information</string>
     <string name="sett_account_detail_private_title">Private information</string>
     <string name="sett_account_detail_general_title">General information</string>

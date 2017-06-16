@@ -255,8 +255,9 @@
     <string name="sett_account_redirect_content">Esta es una función premium, chatea con nosotros para conocer más.</string>
     <string name="sett_status_update">Actualizar estado</string>
     <string name="sett_link_title">¿Qué es?</string>
-    <string name="sett_link_description">Tu conversa.link es un link \nespecial con el que cualquier\npersona puede iniciar un chat\ncontigo cuando   lo presione.\n\nFunciona desde: Fb, Tw, Ig, etc.\nTu link es:</string>
+    <string name="sett_link_description">Tu conversa.link es un link \nespecial con el que cualquier\npersona puede iniciar un chat\ncontigo cuando   lo presione.  \n\nFunciona desde: Fb, Tw, Ig, etc.\nTu link es:</string>
     <string name="conversalink_share_copy">Link copiado</string>
+    <string name="profile_share_text">Chatea ahora con %1$s, sigue el link %2$s</string>
     <string name="sett_account_detail_basic_title">Información básica</string>
     <string name="sett_account_detail_private_title">Información privada</string>
     <string name="sett_account_detail_general_title">Información general</string>
@@ -287,7 +288,7 @@
     <string name="contacts_options_select">Seleccionar más</string>
     <string name="contacts_options_clear">Limpiar conversación</string>
     <string name="contacts_item_conversation_empty">Empieza a chatear</string>
-    <string name="tutorial_skip">Empezar Ahora</string>
+    <string name="tutorial_skip">Empecemos</string>
     <string name="tutorial_message_five">Conéctate con tu audiencia donde sea, cuando quieras</string>
     <string name="tutorial_message_four">Haz crecer tu negocio através de chat</string>
     <string name="tutorial_message_one">Con Conversa alcanzar tu audiencia es más fácil que nunca</string>
