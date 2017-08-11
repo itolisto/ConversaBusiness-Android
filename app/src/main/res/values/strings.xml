@@ -30,7 +30,7 @@
     <string name="email_sent">Password sent to your email address</string>
     <string name="fav_error">An error has occurred while setting commerce as favorite</string>
     <string name="forgot_password">forgot password?</string>
-    <string name="have_account">Already have an account?</string>
+    <string name="have_account">I already have an account</string>
     <string name="invalid_token_message">Token has expired.\nPlease login again.</string>
     <string name="language_spinner_title">Select language</string>
     <string name="link_title">Webpage</string>
@@ -49,7 +49,7 @@
     <string name="name_already_taken">Name is already taken</string>
     <string name="no_messages">No Messages</string>
     <string name="no_messages_description_one">When you have messages\nyou\'ll see them here</string>
-    <string name="no_user_registered">No user registered with this email or password</string>
+    <string name="no_user_registered">Your email or password is incorrect. Try again.</string>
     <string name="number_of_followers" translatable="false">Favs</string>
     <string name="open_on_title">Open</string>
     <string name="picture">Image</string>
@@ -185,7 +185,7 @@
     <string name="sett_help_policies">Privacy policies</string>
     <string name="sett_help_dialog_title">Support</string>
     <string name="sett_help_dialog_message">Retrieving support information</string>
-    <string name="sett_help_dialog_message_error">Couldn\'t find support informartion, please try again later</string>
+    <string name="sett_help_dialog_message_error">Couldn\'t find support information, please try again later</string>
     <string name="sett_account_info_title">Information</string>
     <string name="sett_account_name_title">Name</string>
     <string name="sett_account_name_alert_title">Change name</string>

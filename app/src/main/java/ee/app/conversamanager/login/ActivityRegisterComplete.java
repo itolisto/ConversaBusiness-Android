@@ -12,7 +12,6 @@ import android.text.SpannableString;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ForegroundColorSpan;
-import android.text.style.URLSpan;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -128,11 +127,11 @@ public class ActivityRegisterComplete extends BaseActivity implements View.OnCli
         int indexPrivacy;
 
         if (language.equals("es")) {
-            indexTerms = TextUtils.indexOf(text, "TERMINOS");
-            indexPrivacy = TextUtils.indexOf(text, "POLITICAS");
+            indexTerms = TextUtils.indexOf(text, "términos");
+            indexPrivacy = TextUtils.indexOf(text, "políticas");
         } else {
-            indexTerms = TextUtils.indexOf(text, "TERMS");
-            indexPrivacy = TextUtils.indexOf(text, "PRIVACY");
+            indexTerms = TextUtils.indexOf(text, "terms");
+            indexPrivacy = TextUtils.indexOf(text, "privacy");
         }
 
         Spannable styledString = new SpannableString(text);
