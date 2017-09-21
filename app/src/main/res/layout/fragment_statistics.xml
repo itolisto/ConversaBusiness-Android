@@ -44,6 +44,7 @@
                         android:layout_height="220dp" />
 
                     <RelativeLayout
+                        android:padding="16dp"
                         android:id="@+id/rlChartInfo"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
@@ -53,6 +54,8 @@
                             android:layout_marginLeft="16dp"
                             android:layout_marginRight="16dp"
                             android:layout_marginStart="16dp"
+                            android:minLines="2"
+                            android:maxLines="3"
                             android:gravity="center"
                             android:id="@+id/rtvChartMessage"
                             android:layout_width="wrap_content"
@@ -62,8 +65,8 @@
                 </RelativeLayout>
 
                 <LinearLayout
-                    android:padding="16dp"
                     android:weightSum="2"
+                    android:padding="16dp"
                     android:id="@+id/llFirstRow"
                     android:layout_marginTop="7dp"
                     android:orientation="horizontal"

@@ -86,10 +86,10 @@ public class ActivitySettingsLink extends ConversaActivity implements View.OnCli
             final Intent intent_one = new Intent(android.content.Intent.ACTION_SEND);
             intent_one.setType("text/plain");
             // Add data to the intent, the receiving app will decide what to do with it.
-            intent_one.putExtra(Intent.EXTRA_SUBJECT,
-                    getString(R.string.settings_using_conversa));
-            intent_one.putExtra(Intent.EXTRA_TEXT,
-                    getString(R.string.settings_body_conversa));
+            intent_one.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.settings_using_conversa));
+            intent_one.putExtra(Intent.EXTRA_TEXT, getString(R.string.settings_using_conversa_text,
+                    ConversaApp.getInstance(this).getPreferences().getAccountDisplayName(),
+                    "https://conversa.link/" + ConversaApp.getInstance(this).getPreferences().getAccountConversaId()));
 
             final List<ResolveInfo> activities = getPackageManager().queryIntentActivities(intent_one, 0);
 

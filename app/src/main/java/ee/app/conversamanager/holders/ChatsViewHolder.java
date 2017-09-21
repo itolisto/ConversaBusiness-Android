@@ -1,7 +1,6 @@
 package ee.app.conversamanager.holders;
 
 import android.net.Uri;
-import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.util.SparseBooleanArray;
 import android.view.View;
@@ -85,6 +84,25 @@ public class ChatsViewHolder extends BaseHolder {
 
         this.tvUser.setText(user.getDisplayName());
 
+        updateAvatar(position);
+        updateLastMessage(user.getCustomerId());
+
+        if (mSelectedPositions.get(position, false)) {
+            this.itemView.setActivated(true);
+        } else {
+            this.itemView.setActivated(false);
+        }
+    }
+
+    public void toggleActivate() {
+        if (this.itemView.isActivated()) {
+            this.itemView.setActivated(false);
+        } else {
+            this.itemView.setActivated(true);
+        }
+    }
+
+    public void updateAvatar(int position) {
         Uri uri;
         position++;
 
@@ -126,22 +144,6 @@ public class ChatsViewHolder extends BaseHolder {
         }
 
         this.ivUserImage.setImageURI(uri);
-
-        updateLastMessage(user.getCustomerId());
-
-        if (mSelectedPositions.get(position, false)) {
-            this.itemView.setActivated(true);
-        } else {
-            this.itemView.setActivated(false);
-        }
-    }
-
-    public void toggleActivate() {
-        if (this.itemView.isActivated()) {
-            this.itemView.setActivated(false);
-        } else {
-            this.itemView.setActivated(true);
-        }
     }
 
     public void updateView() {

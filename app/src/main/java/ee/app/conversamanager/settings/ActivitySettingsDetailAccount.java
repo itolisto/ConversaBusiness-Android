@@ -321,21 +321,17 @@ public class ActivitySettingsDetailAccount extends ConversaActivity implements V
                 break;
             }
             case PreferencesKeys.ACCOUNT_PASSWORD_KEY: {
-                if (Utils.checkPassword(newValue)) {
-                    Account.getCurrentUser().setPassword(newValue);
-                    Account.getCurrentUser().saveInBackground(new SaveCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            if (e == null) {
-                                showSuccessMessage(getString(R.string.settings_password_succesful));
-                            } else {
-                                showErrorMessage(getString(R.string.settings_password_error));
-                            }
+                Account.getCurrentUser().setPassword(newValue);
+                Account.getCurrentUser().saveInBackground(new SaveCallback() {
+                    @Override
+                    public void done(ParseException e) {
+                        if (e == null) {
+                            showSuccessMessage(getString(R.string.settings_password_succesful));
+                        } else {
+                            showErrorMessage(getString(R.string.settings_password_error));
                         }
-                    });
-                } else {
-                    showErrorMessage(getString(R.string.signup_password_regex_error));
-                }
+                    }
+                });
 
                 break;
             }

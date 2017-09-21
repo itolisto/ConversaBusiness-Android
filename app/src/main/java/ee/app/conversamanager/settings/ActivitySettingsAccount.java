@@ -67,9 +67,7 @@ public class ActivitySettingsAccount extends ConversaActivity implements View.On
         ((SimpleDraweeView)findViewById(R.id.sdvAvatar)).setImageURI(uri);
 
         SwitchCompat mScRedirectConversa = (SwitchCompat) findViewById(R.id.scRedirect);
-        mScRedirectConversa.setChecked(
-                ConversaApp.getInstance(this).getPreferences().getAccountRedirect()
-        );
+        mScRedirectConversa.setChecked(false);
 
         mScRedirectConversa.setOnCheckedChangeListener(this);
 
@@ -154,7 +152,6 @@ public class ActivitySettingsAccount extends ConversaActivity implements View.On
             new MaterialDialog.Builder(this)
                     .content(getString(R.string.sett_account_redirect_content))
                     .positiveColorRes(R.color.purple)
-                    .negativeColorRes(R.color.black)
                     .positiveText(android.R.string.ok)
                     .onPositive(new MaterialDialog.SingleButtonCallback() {
                         @Override
@@ -185,13 +182,7 @@ public class ActivitySettingsAccount extends ConversaActivity implements View.On
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        if (key.equals(PreferencesKeys.ACCOUNT_REDIRECT_KEY)) {
-            ((SwitchCompat) findViewById(R.id.scRedirect)).setChecked(
-                    ConversaApp.getInstance(getApplicationContext())
-                            .getPreferences()
-                            .getAccountRedirect()
-            );
-        } else if (key.equals(PreferencesKeys.ACCOUNT_STATUS_KEY)) {
+        if (key.equals(PreferencesKeys.ACCOUNT_STATUS_KEY)) {
             switch (ConversaApp.getInstance(this).getPreferences().getAccountStatus()) {
                 case 0:
                     ((RegularTextView) findViewById(R.id.rtvStatus))

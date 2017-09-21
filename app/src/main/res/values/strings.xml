@@ -30,7 +30,7 @@
     <string name="email_sent">Password sent to your email address</string>
     <string name="fav_error">An error has occurred while setting commerce as favorite</string>
     <string name="forgot_password">forgot password?</string>
-    <string name="have_account">Already have an account?</string>
+    <string name="have_account">I already have an account</string>
     <string name="invalid_token_message">Token has expired.\nPlease login again.</string>
     <string name="language_spinner_title">Select language</string>
     <string name="link_title">Webpage</string>
@@ -49,7 +49,7 @@
     <string name="name_already_taken">Name is already taken</string>
     <string name="no_messages">No Messages</string>
     <string name="no_messages_description_one">When you have messages\nyou\'ll see them here</string>
-    <string name="no_user_registered">No user registered with this email or password</string>
+    <string name="no_user_registered">Your email or password is incorrect. Try again.</string>
     <string name="number_of_followers" translatable="false">Favs</string>
     <string name="open_on_title">Open</string>
     <string name="picture">Image</string>
@@ -185,7 +185,7 @@
     <string name="sett_help_policies">Privacy policies</string>
     <string name="sett_help_dialog_title">Support</string>
     <string name="sett_help_dialog_message">Retrieving support information</string>
-    <string name="sett_help_dialog_message_error">Couldn\'t find support informartion, please try again later</string>
+    <string name="sett_help_dialog_message_error">Couldn\'t find support information, please try again later</string>
     <string name="sett_account_info_title">Information</string>
     <string name="sett_account_name_title">Name</string>
     <string name="sett_account_name_alert_title">Change name</string>
@@ -265,8 +265,9 @@
     <string name="sett_account_redirect_content">This is a premium function, chat with us to know more.</string>
     <string name="sett_status_update">Update status</string>
     <string name="sett_link_title">What is it?</string>
-    <string name="sett_link_description">Your conversa.link is a special \nlink with which any person\ncan start a chat with you \nwhen they click on it.  \n\nWorks from: Fb, Tw, Ig, etc.\nYour link is:</string>
+    <string name="sett_link_description">Your conversa.link is a special \nlink with which any person\ncan start a chat with you \nwhen they click on it.    \n\nWorks from: Fb, Tw, Ig, etc.\nYour link is:</string>
     <string name="conversalink_share_copy">Link copied</string>
+    <string name="profile_share_text">Chat now with %1$s, follow the link %2$s</string>
     <string name="sett_account_detail_basic_title">Basic information</string>
     <string name="sett_account_detail_private_title">Private information</string>
     <string name="sett_account_detail_general_title">General information</string>
@@ -294,7 +295,7 @@
     <string name="stats_chart_received_title">Received</string>
     <string name="stats_chart_title">Total Messages</string>
     <string name="contacts_options_delete">Delete conversation</string>
-    <string name="contacts_options_select">Select</string>
+    <string name="contacts_options_select">Select more</string>
     <string name="contacts_options_clear">Clear conversation</string>
     <string name="contacts_item_conversation_empty">Start chatting</string>
     <string name="tutorial_skip">Start Now</string>

@@ -99,6 +99,10 @@ public class InAppNotification implements OnClickListener {
 			setTranslateAnimations(getDuration(duration));
 			startTranslateAnimations();
 		}
+
+		if (ConversaApp.getInstance(mContext).getPreferences().getInAppNotificationSound()) {
+			playSound();
+		}
 	}
 
 	private int getDuration(int duration) {
@@ -123,9 +127,10 @@ public class InAppNotification implements OnClickListener {
 				.getDB()
 				.isContact(message.getFromUserId());
 
+		TextView mTvUserName = (TextView) mPushLayout.findViewById(R.id.tvUserName);
+		TextView mTvNotification = (TextView) mPushLayout.findViewById(R.id.tvNotification);
+
 		if (user != null) {
-			TextView mTvUserName = (TextView) mPushLayout.findViewById(R.id.tvUserName);
-			TextView mTvNotification = (TextView) mPushLayout.findViewById(R.id.tvNotification);
 			mTvUserName.setText(user.getDisplayName());
 
 			switch (message.getMessageType()) {
@@ -154,36 +159,42 @@ public class InAppNotification implements OnClickListener {
 					break;
 			}
 
-			if (ConversaApp.getInstance(mContext).getPreferences().getInAppNotificationSound()) {
-				final SoundPool sounds;
-
-				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-					AudioAttributes attributes = new AudioAttributes.Builder()
-							.setUsage(AudioAttributes.USAGE_NOTIFICATION)
-							.setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-							.build();
-					sounds = new SoundPool.Builder()
-							.setAudioAttributes(attributes)
-							.build();
-				} else {
-					sounds = new SoundPool(15, AudioManager.STREAM_NOTIFICATION, 0);
-				}
-
-				sounds.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
-					@Override
-					public void onLoadComplete(SoundPool soundPool, int soundId, int status) {
-						/** soundId for Later handling of sound pool **/
-						// in 2nd param u have to pass your desire ringtone
-						sounds.play(soundId, 0.99f, 0.99f, 1, 0, 0.99f);
-					}
-				});
-
-				sounds.load(mContext, R.raw.sound_notification_manager, 1);
-			}
-
+			mPushLayout.findViewById(R.id.btnClose).setVisibility(View.VISIBLE);
 			mPushLayout.findViewById(R.id.btnClose).setOnClickListener(this);
 			mPushLayout.setOnClickListener(this);
+		} else {
+			mTvUserName.setText("");
+			mTvNotification.setText(mContext
+					.getString(R.string.contacts_last_message_default));
+			mPushLayout.findViewById(R.id.btnClose).setVisibility(View.GONE);
 		}
+	}
+
+	private void playSound() {
+		final SoundPool sounds;
+
+		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+			AudioAttributes attributes = new AudioAttributes.Builder()
+					.setUsage(AudioAttributes.USAGE_NOTIFICATION)
+					.setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+					.build();
+			sounds = new SoundPool.Builder()
+					.setAudioAttributes(attributes)
+					.build();
+		} else {
+			sounds = new SoundPool(15, AudioManager.STREAM_NOTIFICATION, 0);
+		}
+
+		sounds.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+			@Override
+			public void onLoadComplete(SoundPool soundPool, int soundId, int status) {
+				/** soundId for Later handling of sound pool **/
+				// in 2nd param u have to pass your desire ringtone
+				sounds.play(soundId, 0.99f, 0.99f, 1, 0, 0.99f);
+			}
+		});
+
+		sounds.load(mContext, R.raw.sound_notification_manager, 1);
 	}
 
 	private void hideNotification() {

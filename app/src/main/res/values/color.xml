@@ -20,6 +20,7 @@
     <!-- Status bar colors -->
     <color name="status_bar_default">#581b96</color>
     <color name="status_bar_chat">#DEDEDE</color>
+    <color name="status_bar_search">#9b9b9b</color>
 
     <!-- Status colors -->
     <color name="profileOnline">#00E676</color>

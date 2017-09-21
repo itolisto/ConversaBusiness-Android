@@ -58,10 +58,13 @@ public class AppActions {
         Account.logOut();
 
         Intent goToSignIn = new Intent(context, ActivitySignIn.class);
+
         goToSignIn.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         goToSignIn.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
         if (invalidSession)
             goToSignIn.putExtra(Const.ACTION, -1);
+
         context.startActivity(goToSignIn);
     }
 

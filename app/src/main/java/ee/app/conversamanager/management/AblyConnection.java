@@ -7,20 +7,36 @@ import android.content.IntentFilter;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.support.v4.content.LocalBroadcastManager;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
+import com.parse.ParseException;
+import com.pubnub.api.PNConfiguration;
+import com.pubnub.api.PubNub;
+import com.pubnub.api.callbacks.PNCallback;
+import com.pubnub.api.callbacks.SubscribeCallback;
+import com.pubnub.api.enums.PNPushType;
+import com.pubnub.api.enums.PNStatusCategory;
+import com.pubnub.api.models.consumer.PNStatus;
+import com.pubnub.api.models.consumer.pubsub.PNMessageResult;
+import com.pubnub.api.models.consumer.pubsub.PNPresenceEventResult;
+import com.pubnub.api.models.consumer.push.PNPushAddChannelResult;
 
 import org.greenrobot.eventbus.EventBus;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.security.MessageDigest;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.events.TypingEvent;
 import ee.app.conversamanager.messaging.CustomMessageService;
+import ee.app.conversamanager.utils.AppActions;
 import ee.app.conversamanager.utils.Logger;
 import io.ably.lib.realtime.AblyRealtime;
 import io.ably.lib.realtime.Channel;
@@ -39,15 +55,12 @@ import io.ably.lib.util.IntentUtils;
 /**
  * Created by edgargomez on 8/17/16.
  */
-public class AblyConnection implements Channel.MessageListener, Presence.PresenceListener,
-        CompletionListener, ConnectionStateListener, ChannelStateListener {
+public class AblyConnection extends SubscribeCallback {
 
     private final String TAG = AblyConnection.class.getSimpleName();
     private static AblyConnection instance;
     private final Context context;
-    private final String clientId;
-    private boolean firstLoad;
-    private AblyRealtime ablyRealtime;
+    private PubNub ablyRealtime;
 
     public static void initAblyManager(@NonNull Context context) {
         instance = new AblyConnection(context);
@@ -64,11 +77,9 @@ public class AblyConnection implements Channel.MessageListener, Presence.Presenc
 
     private AblyConnection(Context context) {
         this.context = context;
-        this.firstLoad = true;
-        this.clientId = generateDeviceUUID();
     }
 
-    public AblyRealtime getAblyRealtime() {
+    public PubNub getAblyRealtime() {
         return ablyRealtime;
     }
 
@@ -177,7 +188,7 @@ public class AblyConnection implements Channel.MessageListener, Presence.Presenc
                     ablyRealtime.connection.connect();
                 }
             }
-        }
+        });
     }
 
     public void disconnectAbly() {
@@ -187,152 +198,76 @@ public class AblyConnection implements Channel.MessageListener, Presence.Presenc
         }
     }
 
-    /**
-     *
-     * MESSAGE LISTENER METHOD
-     *
-     */
-    @Override
-    public void onMessage(Message messages) {
-        JSONObject additionalData;
-
-        try {
-            additionalData = new JSONObject(messages.data.toString());
-        } catch (JSONException e) {
-            Logger.error(TAG, "onMessageReceived additionalData fail to parse-> " + e.getMessage());
-            return;
-        }
-
-        switch (additionalData.optInt("appAction", 0)) {
-            case 1:
-                Intent msgIntent = new Intent(context, CustomMessageService.class);
-                msgIntent.putExtra("data", additionalData.toString());
-                context.startService(msgIntent);
-                break;
-        }
+    private List<String> getChannels() {
+        String channelname = ConversaApp.getInstance(context).getPreferences().getAccountBusinessId();
+        List<String> channels = new ArrayList<>(2);
+        channels.add("bpbc_" + channelname);
+        channels.add("bpvt_" + channelname);
+        return channels;
     }
 
     /**
      *
-     * PRESENCE LISTENER METHOD
+     * HELP METHODS
      *
      */
-    @Override
-    public void onPresenceMessage(PresenceMessage presenceMessage) {
-        Logger.error("onPresenceMessage", "Member " + presenceMessage.clientId + " : " + presenceMessage.action.toString());
+    public void userHasStartedTyping(String channelName) {
+        final HashMap<String, Object> params = new HashMap<>(3);
+        params.put("userId", ConversaApp.getInstance(context).getPreferences().getAccountBusinessId());
+        params.put("channelName", channelName);
+        params.put("isTyping", true);
 
-        if (presenceMessage.data != null) {
-            JsonElement jeFrom = ((JsonObject) presenceMessage.data).get("from");
-            if (jeFrom != null) {
-                boolean isUserTyping = ((JsonObject) presenceMessage.data).get("isTyping").getAsBoolean();
-                EventBus.getDefault().post(new TypingEvent(jeFrom.getAsString(), isUserTyping));
-            }
-        }
-    }
-
-    /**
-     *
-     * COMPLETION LISTENER METHOD
-     *
-     */
-    @Override
-    public void onSuccess() {
-        Logger.error("PresenceRegistration", "\nsuccess success success\nsuccess");
-    }
-
-    @Override
-    public void onError(ErrorInfo reason) {
-        Logger.error("PresenceRegistration", reason.message);
-    }
-
-    /**
-     *
-     * CONNECTION STATE LISTENER METHOD
-     *
-     */
-    @Override
-    public void onConnectionStateChanged(ConnectionStateChange connectionStateChange) {
-        switch (connectionStateChange.current) {
-            case initialized:
-                Logger.error("onConnectionStateChgd", "Initialized");
-                break;
-            case connecting:
-                Logger.error("onConnectionStateChgd", "Connecting");
-                break;
-            case connected:
-                Logger.error("onConnectionStateChgd", "Connected");
-                if (firstLoad) {
-                    // Subscribe to all Channels
-                    subscribeToChannels();
-                    // Change first load
-                    firstLoad = false;
-                } else {
-                    if (ablyRealtime.channels.values().size() == 0) {
-                        subscribeToChannels();
-                    } else {
-                        for (Channel channel : ablyRealtime.channels.values()) {
-                            reattach(channel);
-                        }
+        ParseCloud.callFunctionInBackground("sendPresenceMessage", params, new FunctionCallback<Integer>() {
+            @Override
+            public void done(Integer object, ParseException e) {
+                if (e != null) {
+                    if (AppActions.validateParseException(e)) {
+                        AppActions.appLogout(context, true);
                     }
                 }
-                break;
-            case disconnected:
-                Logger.error("onConnectionStateChgd", "Disconnected");
-                break;
-            case suspended:
-                Logger.error("onConnectionStateChgd", "Suspended");
-                break;
-            case closing:
-                Logger.error("onConnectionStateChgd", "Closing");
-                for (Channel channel : ablyRealtime.channels.values()) {
-                    channel.unsubscribe();
-                    channel.presence.unsubscribe();
-                }
-                break;
-            case closed:
-                Logger.error("onConnectionStateChgd", "Closed");
-                break;
-            case failed:
-                Logger.error("onConnectionStateChgd", "Failed" + connectionStateChange.reason);
-                break;
-        }
-    }
-
-    public void subscribeToChannels() {
-        String channelname = ConversaApp.getInstance(context).getPreferences().getAccountBusinessId();
-        if (!channelname.isEmpty()) {
-            for (int i = 0; i < 2; i++) {
-                Channel channel;
-                if (i == 0) {
-                    channel = ablyRealtime.channels.get("bpbc:" + channelname);
-                } else {
-                    channel = ablyRealtime.channels.get("bpvt:" + channelname);
-                }
-
-                reattach(channel);
             }
-        }
+        });
     }
 
-    private void reattach(Channel channel) {
-        try {
-            channel.subscribe(this);
-            channel.presence.subscribe(this);
-            channel.presence.enter(PresenceMessage.Action.present, this);
-        } catch (AblyException e) {
-            Logger.error("reattach", "Error while trying to subscribe to channel or presence");
-        }
+    public void userHasEndedTyping(String channelName) {
+        final HashMap<String, Object> params = new HashMap<>(2);
+        params.put("userId", ConversaApp.getInstance(context).getPreferences().getAccountBusinessId());
+        params.put("channelName", channelName);
+
+        ParseCloud.callFunctionInBackground("sendPresenceMessage", params, new FunctionCallback<Integer>() {
+            @Override
+            public void done(Integer object, ParseException e) {
+                if (e != null) {
+                    if (AppActions.validateParseException(e)) {
+                        AppActions.appLogout(context, true);
+                    }
+                }
+            }
+        });
     }
 
-    /**
-     *
-     * CHANNEL STATE LISTENER METHOD
-     *
-     */
+    public final String getPublicConnectionId() {
+        if (ablyRealtime != null) {
+            return ablyRealtime.getInstanceId();
+        }
+
+        return null;
+    }
+
     @Override
-    public void onChannelStateChanged(ChannelStateChange stateChange) {
-        if (stateChange.reason != null) {
-            Logger.error("onChannelStateChanged", stateChange.reason.message);
+    public void status(PubNub pubnub, PNStatus status) {
+        if (status.getCategory() == PNStatusCategory.PNUnexpectedDisconnectCategory) {
+            // This event happens when radio / connectivity is lost
+        } else if (status.getCategory() == PNStatusCategory.PNConnectedCategory) {
+            // Connect event. You can do stuff like publish, and know you'll get it.
+            // Or just use the connected event to confirm you are subscribed for
+            // UI / internal notifications, etc
+        } else if (status.getCategory() == PNStatusCategory.PNReconnectedCategory) {
+            // Happens as part of our regular operation. This event happens when
+            // radio / connectivity is lost, then regained.
+        } else if (status.getCategory() == PNStatusCategory.PNDecryptionErrorCategory) {
+            // Handle messsage decryption error. Probably client configured to
+            // encrypt messages and on live data feed it received plain text.
         }
     }
 
@@ -381,51 +316,17 @@ public class AblyConnection implements Channel.MessageListener, Presence.Presenc
 //        }
     }
 
-    public PresenceMessage[] getPresentUsers(String channel) {
-        try {
-            return ablyRealtime.channels.get("upbc:".concat(channel)).presence.get();
-        } catch (AblyException ignored) {
-            return new PresenceMessage[0];
-        }
-    }
-
-    public ConnectionState ablyConnectionStatus() {
-        if (ablyRealtime == null) {
-            return ConnectionState.disconnected;
-        } else {
-            return ablyRealtime.connection.state;
-        }
-    }
-
-    public final String getPublicConnectionId() {
-        if (ablyRealtime != null) {
-            return ablyRealtime.connection.key;
-        }
-
-        return null;
-    }
-
-    private static String generateDeviceUUID() {
-        String serial = android.os.Build.SERIAL;
-        String androidID = Settings.Secure.ANDROID_ID;
-        String deviceUUID = serial + androidID;
-
-        MessageDigest digest;
-        byte[] result;
-        try {
-            digest = MessageDigest.getInstance("SHA-1");
-            result = digest.digest(deviceUUID.getBytes("UTF-8"));
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-
-        StringBuilder sb = new StringBuilder();
-        for (byte b : result) {
-            sb.append(String.format("%02X", b));
-        }
-
-        return sb.toString();
+    @Override
+    public void presence(PubNub pubnub, PNPresenceEventResult presence) {
+//        Logger.error("onPresenceMessage", "Member " + presenceMessage.clientId + " : " + presenceMessage.action.toString());
+//
+//        if (presenceMessage.data != null) {
+//            JsonElement jeFrom = ((JsonObject) presenceMessage.data).get("from");
+//            if (jeFrom != null) {
+//                boolean isUserTyping = ((JsonObject) presenceMessage.data).get("isTyping").getAsBoolean();
+//                EventBus.getDefault().post(new TypingEvent(jeFrom.getAsString(), isUserTyping));
+//            }
+//        }
     }
 
 }

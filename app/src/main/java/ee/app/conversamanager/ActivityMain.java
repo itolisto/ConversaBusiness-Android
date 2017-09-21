@@ -32,6 +32,7 @@ import ee.app.conversamanager.view.MediumTextView;
 
 public class ActivityMain extends ConversaActivity implements Foreground.Listener {
 
+    private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private final String TAG = ActivityMain.class.getSimpleName();
     private ViewPager mViewPager;
     private Timer timer;
@@ -132,6 +133,11 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
         super.initialization();
         startTimer();
         Foreground.get(this).addListener(this);
+//        if (checkPlayServices()) {
+//            // Start IntentService to register this application with GCM.
+//            Intent intent = new Intent(this, RegistrationIntentService.class);
+//            startService(intent);
+//        }
     }
 
     @Override
@@ -227,13 +233,32 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
     @Override
     public void onBecameForeground() {
         startTimer();
-        AblyConnection.getInstance().connectAbly();
     }
 
     @Override
     public void onBecameBackground() {
         stoptimertask();
-        AblyConnection.getInstance().disconnectAbly();
     }
+
+    /**
+     * Check the device to make sure it has the Google Play Services APK. If
+     * it doesn't, display a dialog that allows users to download the APK from
+     * the Google Play Store or enable it in the device's system settings.
+     */
+//    private boolean checkPlayServices() {
+//        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+//        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
+//        if (resultCode != ConnectionResult.SUCCESS) {
+//            if (apiAvailability.isUserResolvableError(resultCode)) {
+//                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
+//                        .show();
+//            } else {
+//                Log.i(TAG, "This device is not supported.");
+//                finish();
+//            }
+//            return false;
+//        }
+//        return true;
+//    }
 
 }
