@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
+    <color name="primary">#3F51B5</color>
+    <color name="light_black">#55000000</color>
+    <color name="green_darker">#00C03E</color>
+
     <!-- Toolbar colors -->
     <color name="purpleNavbar">#9e7cd9</color>
     <color name="whiteNavbar">#F7F7F7</color>

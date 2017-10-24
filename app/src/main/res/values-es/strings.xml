@@ -273,7 +273,8 @@
     <string name="sett_category_selected_title">Seleccionadas</string>
     <string name="sett_category_available_title">Categorías</string>
     <string name="sett_category_limit_warning">Límite alcanzado</string>
-    <string name="sett_category_detail_title">Puedes escoger hasta %1$d categorías</string>
+    <!--<string name="sett_category_detail_title">Puedes escoger hasta %1$d categorías</string>-->
+    <string name="sett_category_detail_title">Puedes escoger hasta 3 categorías</string>
     <string name="sett_category_info_error">No pudimos encontrar la información necesaria</string>
     <string name="sett_redirect_premium">Esta es una función premium. Contacta a soporte técnico para poder activarla.</string>
     <string name="conversa_id_already_taken">Este Conversa ID ya está ocupado, prueba con otro</string>
@@ -299,4 +300,16 @@
     <string name="tutorial_title_one">Bienvenido a Manager</string>
     <string name="tutorial_title_three">Se social</string>
     <string name="tutorial_title_two">Mensajería instantánea</string>
+
+    <string name="camera_permission_confirmation">This app demonstrates the usage of CameraView. In order to do that, it needs permission to access camera.</string>
+    <string name="camera_permission_not_granted">Camera app cannot do anything without camera permission.</string>
+    <string name="picture_taken">Picture taken</string>
+    <string name="aspect_ratio">Aspect ratio</string>
+    <string name="switch_flash">Switch flash</string>
+    <string name="switch_camera">Switch camera</string>
+    <string name="flash_auto">Flash auto</string>
+    <string name="flash_off">Flash off</string>
+    <string name="flash_on">Flash on</string>
+    <string name="save">Save</string>
+    <string name="no_select">No Select</string>
 </resources>

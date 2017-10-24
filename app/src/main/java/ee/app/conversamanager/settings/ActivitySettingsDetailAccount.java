@@ -99,6 +99,7 @@ public class ActivitySettingsDetailAccount extends ConversaActivity implements V
                 Account.getCurrentUser().getEmail()
         );
 
+
         ConversaApp.getInstance(this)
                 .getPreferences()
                 .getSharedPreferences()
@@ -203,7 +204,7 @@ public class ActivitySettingsDetailAccount extends ConversaActivity implements V
         if (resultCode == RESULT_OK && data != null) {
             switch (requestCode) {
                 case Const.CAPTURE_MEDIA: {
-                    final String path = ImageFilePath.getPath(this, Uri.parse(data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH)));
+                    final String path = ImageFilePath.getPath(this, Uri.parse(data.getStringExtra("imageUri")));
                     final ParseFile file = new ParseFile(new File(path));
                     file.saveInBackground(new SaveCallback() {
                         @Override

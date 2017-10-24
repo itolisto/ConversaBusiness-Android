@@ -133,7 +133,10 @@
             android:launchMode="singleTop"
             android:windowSoftInputMode="stateHidden|adjustResize"
             android:parentActivityName="ee.app.conversamanager.ActivityMain" />
-
+        <activity android:name=".camara.ImagePickerDemo"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:theme="@style/ChatWallTheme" />
         <activity
             android:name="ee.app.conversamanager.ActivityImageDetail"
             android:screenOrientation="portrait"

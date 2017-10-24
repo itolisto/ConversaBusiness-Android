@@ -17,6 +17,7 @@ import ee.app.conversamanager.ActivityChatWall;
 import ee.app.conversamanager.ActivityLocation;
 import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.R;
+import ee.app.conversamanager.camara.ImagePickerDemo;
 import ee.app.conversamanager.utils.Const;
 
 /**
@@ -61,7 +62,11 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment imple
             case R.id.btnCamera: {
                 QualityOptions qualityOptions;
 
-                switch (ConversaApp.getInstance(mActivity).getPreferences().getUploadQualityPosition()) {
+                Intent intent = new Intent(mActivity, ImagePickerDemo.class);
+                intent.putExtra("picker", "single");
+                //mActivity.startActivity(intent);
+                mActivity.startActivityForResult(intent, Const.CAPTURE_MEDIA);
+                /*switch (ConversaApp.getInstance(mActivity).getPreferences().getUploadQualityPosition()) {
                     case 0:
                         qualityOptions = QualityOptions.QUALITY_HIGH;
                         break;
@@ -74,14 +79,17 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment imple
                     default:
                         qualityOptions = QualityOptions.QUALITY_NONE;
                         break;
-                }
+                }*/
 
-                new SandriosCamera(mActivity, Const.CAPTURE_MEDIA)
+                /*new SandriosCamera(mActivity, Const.CAPTURE_MEDIA)
                         .setShowPicker(true)
                         .setMediaAction(CameraConfiguration.MEDIA_ACTION_PHOTO)
                         .enableImageCropping(false)
                         .setDefaultMediaQuality(qualityOptions)
-                        .launchCamera();
+                        .launchCamera();*/
+
+
+
                 break;
             }
             case R.id.btnLocation: {
