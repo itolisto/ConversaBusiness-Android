@@ -6,7 +6,7 @@ import android.content.Intent;
 import com.google.firebase.iid.FirebaseInstanceId;
 
 import ee.app.conversamanager.ConversaApp;
-import ee.app.conversamanager.management.AblyConnection;
+import ee.app.conversamanager.management.PubnubConnection;
 
 /**
  * Created by edgargomez on 5/16/17.
@@ -26,7 +26,7 @@ public class RegistrationIntentService extends IntentService {
         try {
             String token = FirebaseInstanceId.getInstance().getToken();
             ConversaApp.getInstance(getApplicationContext()).getPreferences().setPushKey(token);
-            AblyConnection.getInstance().subscribeToPushChannels();
+            PubnubConnection.getInstance().subscribeToPushChannels();
         } catch (Exception e) {
             e.printStackTrace();
         }

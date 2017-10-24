@@ -15,7 +15,7 @@ import java.util.HashMap;
 
 import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.delivery.DeliveryStatus;
-import ee.app.conversamanager.management.AblyConnection;
+import ee.app.conversamanager.management.PubnubConnection;
 import ee.app.conversamanager.model.database.dbMessage;
 import ee.app.conversamanager.utils.AppActions;
 import ee.app.conversamanager.utils.Const;
@@ -53,10 +53,10 @@ public class SendMessageJob extends Job {
         params.put("businessId", message.getFromUserId());
         params.put("messageType", Integer.valueOf(message.getMessageType()));
 
-        if (AblyConnection.getInstance() != null && AblyConnection.getInstance()
+        if (PubnubConnection.getInstance() != null && PubnubConnection.getInstance()
                 .getPublicConnectionId() != null)
         {
-            params.put("connectionId", AblyConnection.getInstance().getPublicConnectionId());
+            params.put("connectionId", PubnubConnection.getInstance().getPublicConnectionId());
         }
 
         switch (message.getMessageType()) {

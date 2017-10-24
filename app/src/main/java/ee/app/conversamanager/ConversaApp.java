@@ -44,7 +44,7 @@ import org.greenrobot.eventbus.EventBus;
 
 import ee.app.conversamanager.database.MySQLiteHelper;
 import ee.app.conversamanager.events.MyEventBusIndex;
-import ee.app.conversamanager.management.AblyConnection;
+import ee.app.conversamanager.management.PubnubConnection;
 import ee.app.conversamanager.model.parse.Account;
 import ee.app.conversamanager.model.parse.Customer;
 import ee.app.conversamanager.settings.Preferences;
@@ -84,7 +84,7 @@ public class ConversaApp extends MultiDexApplication {
 		setLocalBroadcastManager();
 
 		Fresco.initialize(this);
-		AblyConnection.initAblyManager(this);
+		PubnubConnection.initAblyManager(this);
 		AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
 		initializeParse();

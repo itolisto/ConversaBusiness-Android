@@ -20,7 +20,7 @@ import ee.app.conversamanager.delivery.DeliveryStatus;
 import ee.app.conversamanager.dialog.PushNotification;
 import ee.app.conversamanager.events.contact.ContactSaveEvent;
 import ee.app.conversamanager.events.message.MessageIncomingEvent;
-import ee.app.conversamanager.management.AblyConnection;
+import ee.app.conversamanager.management.PubnubConnection;
 import ee.app.conversamanager.model.database.NotificationInformation;
 import ee.app.conversamanager.model.database.dbCustomer;
 import ee.app.conversamanager.model.database.dbMessage;
@@ -57,7 +57,7 @@ public class ReceiveMessageJob extends Job {
 
         // Check if this message came from this connectionId
         String connectionId = additionalData.optString("connectionId", "");
-        String currentConnectionId = AblyConnection.getInstance().getPublicConnectionId();
+        String currentConnectionId = PubnubConnection.getInstance().getPublicConnectionId();
 
         if (currentConnectionId != null && connectionId.equals(currentConnectionId)) {
             return;

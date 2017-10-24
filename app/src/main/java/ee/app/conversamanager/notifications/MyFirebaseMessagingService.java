@@ -28,7 +28,7 @@ import org.json.JSONObject;
 
 import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.jobs.ReceiveMessageJob;
-import ee.app.conversamanager.management.AblyConnection;
+import ee.app.conversamanager.management.PubnubConnection;
 import ee.app.conversamanager.utils.Logger;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
@@ -65,7 +65,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                         // Check if this message came from this connectionId
                         String connectionId = additionalData.optString("connectionId", "");
-                        String currentConnectionId = AblyConnection.getInstance().getPublicConnectionId();
+                        String currentConnectionId = PubnubConnection.getInstance().getPublicConnectionId();
 
                         if (currentConnectionId != null && connectionId.equals(currentConnectionId)) {
                             return;

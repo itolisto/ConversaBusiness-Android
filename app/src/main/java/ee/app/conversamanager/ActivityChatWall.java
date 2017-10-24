@@ -1,7 +1,6 @@
 package ee.app.conversamanager;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.TaskStackBuilder;
 import android.content.Intent;
@@ -44,10 +43,9 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import ee.app.conversamanager.adapters.MessagesAdapter;
-import ee.app.conversamanager.camara.ImagePickerDemo;
 import ee.app.conversamanager.extendables.ConversaActivity;
 import ee.app.conversamanager.interfaces.OnMessageClickListener;
-import ee.app.conversamanager.management.AblyConnection;
+import ee.app.conversamanager.management.PubnubConnection;
 import ee.app.conversamanager.messaging.MessageDeleteReason;
 import ee.app.conversamanager.messaging.MessageUpdateReason;
 import ee.app.conversamanager.messaging.SendMessageAsync;
@@ -180,7 +178,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 		@Override
 		public void run() {
 			Logger.error("isUserTypingRunnable", "Try to send typing ended update");
-			AblyConnection.getInstance().userHasEndedTyping(businessObject.getCustomerId());
+			PubnubConnection.getInstance().userHasEndedTyping(businessObject.getCustomerId());
 			typingFlag = false;
 		}
 	};
@@ -209,7 +207,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 
 				if (!typingFlag) {
 					Logger.error("isUserTypingRunnable", "Try to send typing started update");
-					AblyConnection.getInstance().userHasStartedTyping(businessObject.getCustomerId());
+					PubnubConnection.getInstance().userHasStartedTyping(businessObject.getCustomerId());
 					typingFlag = true;
 				}
 

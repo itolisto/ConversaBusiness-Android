@@ -9,7 +9,7 @@ import com.parse.ParseException;
 import ee.app.conversamanager.ActivityMain;
 import ee.app.conversamanager.ActivitySignIn;
 import ee.app.conversamanager.ConversaApp;
-import ee.app.conversamanager.management.AblyConnection;
+import ee.app.conversamanager.management.PubnubConnection;
 import ee.app.conversamanager.model.parse.Account;
 
 /**
@@ -54,7 +54,7 @@ public class AppActions {
             }
         }).start();
 
-        AblyConnection.getInstance().disconnectAbly();
+        PubnubConnection.getInstance().disconnectAbly();
         Account.logOut();
 
         Intent goToSignIn = new Intent(context, ActivitySignIn.class);

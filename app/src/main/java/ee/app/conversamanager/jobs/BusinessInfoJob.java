@@ -14,7 +14,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 
 import ee.app.conversamanager.ConversaApp;
-import ee.app.conversamanager.management.AblyConnection;
+import ee.app.conversamanager.management.PubnubConnection;
 import ee.app.conversamanager.utils.AppActions;
 import ee.app.conversamanager.utils.Logger;
 
@@ -72,8 +72,8 @@ public class BusinessInfoJob extends Job {
         ConversaApp.getInstance(getApplicationContext()).getPreferences().setAccountAvatar(avatar);
         ConversaApp.getInstance(getApplicationContext()).getPreferences().setAccountStatus(status);
         // 2. Subscribe to Customer channels
-        AblyConnection.getInstance().subscribeToChannels();
-        AblyConnection.getInstance().subscribeToPushChannels();
+        PubnubConnection.getInstance().subscribeToChannels();
+        PubnubConnection.getInstance().subscribeToPushChannels();
 
         ConversaApp.getInstance(getApplicationContext())
                 .getJobManager()

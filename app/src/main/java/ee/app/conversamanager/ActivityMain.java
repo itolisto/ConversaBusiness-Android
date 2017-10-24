@@ -19,7 +19,7 @@ import java.util.TimerTask;
 
 import ee.app.conversamanager.extendables.ConversaActivity;
 import ee.app.conversamanager.jobs.BusinessInfoJob;
-import ee.app.conversamanager.management.AblyConnection;
+import ee.app.conversamanager.management.PubnubConnection;
 import ee.app.conversamanager.model.parse.Account;
 import ee.app.conversamanager.utils.AppActions;
 import ee.app.conversamanager.utils.Foreground;
@@ -54,7 +54,7 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        AblyConnection.getInstance().initAbly();
+        PubnubConnection.getInstance().initAbly();
 
         // Remove internet connection check
         checkInternetConnection = false;
@@ -116,8 +116,8 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
                     .getJobManager()
                     .addJobInBackground(new BusinessInfoJob(Account.getCurrentUser().getObjectId()));
         } else {
-            AblyConnection.getInstance().subscribeToChannels();
-            AblyConnection.getInstance().subscribeToPushChannels();
+            PubnubConnection.getInstance().subscribeToChannels();
+            PubnubConnection.getInstance().subscribeToPushChannels();
         }
 
         initialization();
@@ -128,11 +128,6 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
         super.initialization();
         startTimer();
         Foreground.get(this).addListener(this);
-//        if (checkPlayServices()) {
-//            // Start IntentService to register this application with GCM.
-//            Intent intent = new Intent(this, RegistrationIntentService.class);
-//            startService(intent);
-//        }
     }
 
     @Override
@@ -232,26 +227,5 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
     public void onBecameBackground() {
         stoptimertask();
     }
-
-    /**
-     * Check the device to make sure it has the Google Play Services APK. If
-     * it doesn't, display a dialog that allows users to download the APK from
-     * the Google Play Store or enable it in the device's system settings.
-     */
-//    private boolean checkPlayServices() {
-//        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-//        int resultCode = apiAvailability.isGooglePlayServicesAvailable(this);
-//        if (resultCode != ConnectionResult.SUCCESS) {
-//            if (apiAvailability.isUserResolvableError(resultCode)) {
-//                apiAvailability.getErrorDialog(this, resultCode, PLAY_SERVICES_RESOLUTION_REQUEST)
-//                        .show();
-//            } else {
-//                Log.i(TAG, "This device is not supported.");
-//                finish();
-//            }
-//            return false;
-//        }
-//        return true;
-//    }
 
 }
