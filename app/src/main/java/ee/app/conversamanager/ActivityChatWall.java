@@ -1,6 +1,7 @@
 package ee.app.conversamanager;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.TaskStackBuilder;
 import android.content.Intent;
@@ -43,6 +44,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import ee.app.conversamanager.adapters.MessagesAdapter;
+import ee.app.conversamanager.camara.ImagePickerDemo;
 import ee.app.conversamanager.extendables.ConversaActivity;
 import ee.app.conversamanager.interfaces.OnMessageClickListener;
 import ee.app.conversamanager.management.AblyConnection;
@@ -413,7 +415,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 					break;
 				}
 				case Const.CAPTURE_MEDIA: {
-					String path = ImageFilePath.getPath(this, Uri.parse(data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH)));
+					String path = ImageFilePath.getPath(this, Uri.parse(data.getStringExtra("imageUri")));
 					BitmapFactory.Options options = new BitmapFactory.Options();
 					options.inJustDecodeBounds = true;
 					BitmapFactory.decodeFile(path, options);

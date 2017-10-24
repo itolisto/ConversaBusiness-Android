@@ -128,6 +128,7 @@ public class ActivityRegisterComplete extends BaseActivity implements View.OnCli
         int indexPrivacy;
 
         if (language.equals("es")) {
+
             indexTerms = TextUtils.indexOf(text, "TERMINOS");
             indexPrivacy = TextUtils.indexOf(text, "POLITICAS");
         } else {
@@ -137,8 +138,8 @@ public class ActivityRegisterComplete extends BaseActivity implements View.OnCli
 
         Spannable styledString = new SpannableString(text);
         // url
-        styledString.setSpan(new URLSpanNoUnderline("http://manager.conversachat.com/terms"), indexTerms, indexTerms + (language.equals("es") ? 8 : 5), 0);
-        styledString.setSpan(new URLSpanNoUnderline("http://manager.conversachat.com/privacy"), indexPrivacy, text.length(), 0);
+        styledString.setSpan(new URLSpanNoUnderline("http://manager.conversachat.com/terms"), (indexTerms==-1 ? 0 : indexTerms), indexTerms + (language.equals("es") ? 8 : 5), 0);
+        styledString.setSpan(new URLSpanNoUnderline("http://manager.conversachat.com/privacy"), (indexPrivacy==-1 ? 0 : indexPrivacy), text.length(), 0);
         // change text color
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             styledString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.purple, null)),
@@ -147,9 +148,9 @@ public class ActivityRegisterComplete extends BaseActivity implements View.OnCli
                     indexPrivacy, text.length(), 0);
         } else {
             styledString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.purple)),
-                    indexTerms, indexTerms + (language.equals("es") ? 8 : 5), 0);
+                    (indexTerms==-1 ? 0 : indexTerms), (indexTerms==-1 ? 0 : indexTerms) + (language.equals("es") ? 8 : 5), 0);
             styledString.setSpan(new ForegroundColorSpan(getResources().getColor(R.color.purple)),
-                    indexPrivacy, text.length(), 0);
+                    (indexPrivacy==-1 ? 0 : indexPrivacy), text.length(), 0);
         }
         // this step is mandated for the url and clickable styles.
         mLtvTermsPrivacy.setMovementMethod(LinkMovementMethod.getInstance());

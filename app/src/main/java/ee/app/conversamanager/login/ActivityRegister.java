@@ -269,7 +269,7 @@ public class ActivityRegister extends BaseActivity implements View.OnClickListen
         if (resultCode == RESULT_OK && data != null) {
             switch (requestCode) {
                 case Const.CAPTURE_MEDIA: {
-                    String path = ImageFilePath.getPath(this, Uri.parse(data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH)));
+                    String path = ImageFilePath.getPath(this, Uri.parse(data.getStringExtra("imageUri")));
                     selectedImage = path;
                     mIvAvatar.setImageURI(Uri.fromFile(new File(path)));
                     break;
