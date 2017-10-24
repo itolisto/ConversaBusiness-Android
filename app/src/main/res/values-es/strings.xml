@@ -24,7 +24,7 @@
     <string name="email_sent">Contraseña enviada a tu correo electrónico</string>
     <string name="fav_error">Ha ocurrido un error al seleccionar como favorite este negocio</string>
     <string name="forgot_password">¿Olvidaste tu contraseña?</string>
-    <string name="have_account">¿Ya tienes una cuenta?</string>
+    <string name="have_account">Ya tienes una cuenta</string>
     <string name="invalid_token_message">Tu token ha expirado. Por favor inicia sesión de nuevo.</string>
     <string name="language_spinner_title">Seleccionar idioma</string>
     <string name="link_title">Página web</string>
@@ -43,7 +43,7 @@
     <string name="name_already_taken">Nombre no está disponible</string>
     <string name="no_messages">Sin mensajes</string>
     <string name="no_messages_description_one">Cuando tengas chats\nlos verás aquí</string>
-    <string name="no_user_registered">No hay usuario registrado con esta combinación de correo electrónico o contraseña</string>
+    <string name="no_user_registered">El correo electrónico o la contraseña es incorrecta. Intenta de nuevo.</string>
     <string name="open_on_title">Abierto</string>
     <string name="picture">Imagen</string>
     <string name="preferences__account">Mi Cuenta</string>
@@ -175,7 +175,7 @@
     <string name="sett_help_policies">Políticas de privacidad</string>
     <string name="sett_help_dialog_title">Soporte</string>
     <string name="sett_help_dialog_message">Buscando información de soporte</string>
-    <string name="sett_help_dialog_message_error">No se pudo encontrar información de soporte, por favor intente de nuevo más tarde</string>
+    <string name="sett_help_dialog_message_error">No se pudo encontrar información de soporte, por favor intenta de nuevo más tarde</string>
     <string name="sett_account_info_title">Información</string>
     <string name="sett_account_name_title">Nombre</string>
     <string name="sett_account_name_alert_title">Cambiar nombre</string>
@@ -255,7 +255,7 @@
     <string name="sett_account_redirect_content">Esta es una función premium, chatea con nosotros para conocer más.</string>
     <string name="sett_status_update">Actualizar estado</string>
     <string name="sett_link_title">¿Qué es?</string>
-    <string name="sett_link_description">Tu conversa.link es un link \nespecial con el que cualquier\npersona puede iniciar un chat\nrapidamente contigo cuando   lo presione.  \n\nFunciona desde: Fb, Tw, Ig, etc.\nTu link es:</string>
+    <string name="sett_link_description">Tu conversa.link es un link \nespecial con el que cualquier\npersona puede iniciar un chat\nrápidamente contigo cuando  \nlo presione.  \n\nFunciona desde: Fb, Tw, Ig, etc.\nTu link es:</string>
     <string name="conversalink_share_copy">Link copiado</string>
     <string name="profile_share_text">Chatea ahora con %1$s, sigue el link %2$s</string>
     <string name="sett_account_detail_basic_title">Información básica</string>
