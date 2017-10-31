@@ -57,6 +57,8 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        AblyConnection.getInstance().initAbly();
+
         // Remove internet connection check
         checkInternetConnection = false;
 
@@ -156,8 +158,6 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
                 }
             }).start();
         }
-
-        AblyConnection.getInstance().initAbly();
     }
 
     @Override

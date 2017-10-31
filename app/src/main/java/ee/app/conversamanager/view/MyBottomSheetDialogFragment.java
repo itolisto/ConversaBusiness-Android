@@ -1,5 +1,6 @@
 package ee.app.conversamanager.view;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,10 +9,15 @@ import android.support.design.widget.BottomSheetDialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
+import com.gun0912.tedpermission.PermissionListener;
+import com.gun0912.tedpermission.TedPermission;
 import com.sandrios.sandriosCamera.internal.SandriosCamera;
 import com.sandrios.sandriosCamera.internal.configuration.CameraConfiguration;
 import com.sandrios.sandriosCamera.internal.ui.model.QualityOptions;
+
+import java.util.ArrayList;
 
 import ee.app.conversamanager.ActivityChatWall;
 import ee.app.conversamanager.ActivityLocation;
@@ -60,37 +66,30 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment imple
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btnCamera: {
-                QualityOptions qualityOptions;
+                PermissionListener permissionlistener = new PermissionListener() {
+                    @Override
+                    public void onPermissionGranted() {
+                        Intent intent = new Intent(mActivity, ImagePickerDemo.class);
+                        intent.putExtra("picker", "single");
+                        mActivity.startActivityForResult(intent, Const.CAPTURE_MEDIA);
+                    }
 
-                Intent intent = new Intent(mActivity, ImagePickerDemo.class);
-                intent.putExtra("picker", "single");
-                //mActivity.startActivity(intent);
-                mActivity.startActivityForResult(intent, Const.CAPTURE_MEDIA);
-                /*switch (ConversaApp.getInstance(mActivity).getPreferences().getUploadQualityPosition()) {
-                    case 0:
-                        qualityOptions = QualityOptions.QUALITY_HIGH;
-                        break;
-                    case 1:
-                        qualityOptions = QualityOptions.QUALITY_MID;
-                        break;
-                    case 2:
-                        qualityOptions = QualityOptions.QUALITY_LOW;
-                        break;
-                    default:
-                        qualityOptions = QualityOptions.QUALITY_NONE;
-                        break;
-                }*/
+                    @Override
+                    public void onPermissionDenied(ArrayList<String> deniedPermissions) {
+                        Toast.makeText(mActivity, "Permission Denied\n" + deniedPermissions.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                };
 
-                /*new SandriosCamera(mActivity, Const.CAPTURE_MEDIA)
-                        .setShowPicker(true)
-                        .setMediaAction(CameraConfiguration.MEDIA_ACTION_PHOTO)
-                        .enableImageCropping(false)
-                        .setDefaultMediaQuality(qualityOptions)
-                        .launchCamera();*/
-
-
-
+                new TedPermission(mActivity)
+                        .setPermissionListener(permissionlistener)
+                        .setDeniedMessage("If you reject permission,you can not use this service\n\nPlease turn on permissions at [Setting] > [Permission]")
+                        .setPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        .check();
                 break;
+
+
+
+
             }
             case R.id.btnLocation: {
                 Intent intent = new Intent(mActivity, ActivityLocation.class);

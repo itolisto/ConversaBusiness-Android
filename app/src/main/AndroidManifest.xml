@@ -251,6 +251,13 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCf6IrLbTGZFv_SJZLWY-L81eohCrlhZJE" />
 
+        <meta-data
+            android:name="net.hockeyapp.android.appIdentifier"
+            android:value="1623cdc7cc9a4b939fdfa2a74af31f88" />
+        <meta-data
+            android:name="net.hockeyapp.android.appSecret"
+            android:value="cc8dab336e3c1c603e26c46f7ea0eee2" />
+
         <service
             android:name="ee.app.conversamanager.contact.ContactIntentService"
             android:exported="false" />
