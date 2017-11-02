@@ -42,7 +42,6 @@ public class BusinessInfoJob extends Job {
         HashMap<String, String> params = new HashMap<>();
 
         String json = ParseCloud.callFunction("getBusinessId", params);
-
         JSONObject jsonRootObject = new JSONObject(json);
 
         String objectId = jsonRootObject.optString("ob", "");

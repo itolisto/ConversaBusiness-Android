@@ -13,15 +13,11 @@ import android.widget.Toast;
 
 import com.gun0912.tedpermission.PermissionListener;
 import com.gun0912.tedpermission.TedPermission;
-import com.sandrios.sandriosCamera.internal.SandriosCamera;
-import com.sandrios.sandriosCamera.internal.configuration.CameraConfiguration;
-import com.sandrios.sandriosCamera.internal.ui.model.QualityOptions;
 
 import java.util.ArrayList;
 
 import ee.app.conversamanager.ActivityChatWall;
 import ee.app.conversamanager.ActivityLocation;
-import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.R;
 import ee.app.conversamanager.camara.ImagePickerDemo;
 import ee.app.conversamanager.utils.Const;
@@ -86,10 +82,6 @@ public class MyBottomSheetDialogFragment extends BottomSheetDialogFragment imple
                         .setPermissions(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                         .check();
                 break;
-
-
-
-
             }
             case R.id.btnLocation: {
                 Intent intent = new Intent(mActivity, ActivityLocation.class);

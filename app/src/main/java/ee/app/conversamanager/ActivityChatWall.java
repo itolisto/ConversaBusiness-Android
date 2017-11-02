@@ -1,21 +1,17 @@
 package ee.app.conversamanager;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.BitmapFactory;
 import android.media.AudioAttributes;
 import android.media.AudioManager;
-import android.media.MediaMetadataRetriever;
 import android.media.SoundPool;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.ContextCompat;
@@ -33,9 +29,7 @@ import android.widget.ImageButton;
 import com.facebook.common.util.UriUtil;
 import com.facebook.drawee.view.SimpleDraweeView;
 import com.flurry.android.FlurryAgent;
-import com.sandrios.sandriosCamera.internal.configuration.CameraConfiguration;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,7 +48,6 @@ import ee.app.conversamanager.messaging.SendMessageAsync;
 import ee.app.conversamanager.model.database.dbCustomer;
 import ee.app.conversamanager.model.database.dbMessage;
 import ee.app.conversamanager.utils.Const;
-import ee.app.conversamanager.utils.ImageFilePath;
 import ee.app.conversamanager.utils.Logger;
 import ee.app.conversamanager.view.MediumTextView;
 import ee.app.conversamanager.view.MyBottomSheetDialogFragment;
@@ -76,7 +69,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 	private RegularTextView mSubTitleTextView;
 	private RecyclerView mRvWallMessages;
 	private EditText mEtMessageText;
-	private BottomSheetDialogFragment myBottomSheet;
+	private MyBottomSheetDialogFragment myBottomSheet;
 	private ImageButton mBtnWallSend;
 	private MediumTextView mTitleTextView;
 	private SimpleDraweeView ivContactAvatar;
@@ -415,6 +408,7 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 					break;
 				}
 				case Const.CAPTURE_MEDIA: {
+					/*
 					String path = ImageFilePath.getPath(this, Uri.parse(data.getStringExtra("imageUri")));
 					BitmapFactory.Options options = new BitmapFactory.Options();
 					options.inJustDecodeBounds = true;
@@ -428,15 +422,23 @@ public class ActivityChatWall extends ConversaActivity implements View.OnClickLi
 							new File(path == null ? "" : path).length(),
 							addAsContact,
 							businessObject);
+					*/
 					break;
 				}
 				case Const.CAPTURE_VIDEO: {
+					/*
 					MediaMetadataRetriever retriever = new MediaMetadataRetriever();
 					retriever.setDataSource(data.getStringExtra(CameraConfiguration.Arguments.FILE_PATH));
 					int width = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH));
 					int height = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT));
 					int duration = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
 					retriever.release();
+					*/
+					break;
+				}
+				case ImagePickerDemo.CAMERA_CODE_ACTIVITY: {
+					String uri = data.getStringExtra("imageUri");
+					SendMessageAsync.sendImageMessage(this,uri,200, 200, 200 ,addAsContact, businessObject);
 					break;
 				}
 			}
