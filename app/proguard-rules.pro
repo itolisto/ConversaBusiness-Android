@@ -15,7 +15,8 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
-
+# Google
+-dontwarn com.google.android.gms.internal.**
 #
 # EventBus
 #
@@ -41,12 +42,14 @@
 #
 # Required for Parse
 #
+-keepnames class com.parse.** { *; }
 -keepattributes *Annotation*
 -keepattributes Signature
 -dontwarn android.net.SSLCertificateSocketFactory
 -dontwarn android.app.Notification
 -dontwarn com.squareup.**
 -dontwarn okio.**
+-dontwarn com.parse.**
 #
 # Required for Fresco
 #
@@ -65,9 +68,10 @@
     native <methods>;
 }
 
--dontwarn okio.**
--dontwarn com.squareup.okhttp.**
 -dontwarn okhttp3.**
 -dontwarn javax.annotation.**
 -dontwarn com.android.volley.toolbox.**
 -dontwarn com.facebook.infer.**
+# HockeyApp
+-keep public class net.hockeyapp.android.utils.* { public *; }
+-dontwarn net.hockeyapp.android.utils.**

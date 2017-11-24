@@ -36,6 +36,7 @@ import io.ably.lib.types.ClientOptions;
 import io.ably.lib.types.ErrorInfo;
 import io.ably.lib.types.Message;
 import io.ably.lib.util.IntentUtils;
+import io.ably.lib.util.Log;
 
 /**
  * Created by edgargomez on 8/17/16.
@@ -49,6 +50,18 @@ public class AblyConnection implements Channel.MessageListener,
     private AblyRealtime ablyRealtime;
     private final String clientId;
     private boolean firstLoad;
+    private BroadcastReceiver mPushBroadcaster = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            ErrorInfo error = IntentUtils.getErrorInfo(intent);
+            if (error != null) {
+                Logger.error(TAG, "PUSH ACTIVATE ERROR: " + error.message);
+                return;
+            }
+            // Subscribe to channels / listen for push etc.
+            subscribeToPushChannels();
+        }
+    };
 
     public static void initAblyManager(@NonNull Context context) {
         instance = new AblyConnection(context);
@@ -66,7 +79,17 @@ public class AblyConnection implements Channel.MessageListener,
     private AblyConnection(Context context) {
         this.context = context;
         this.firstLoad = true;
-        this.clientId = generateDeviceUUID();
+        String localId = ConversaApp.getInstance(context).getPreferences().getPushKey();
+
+        if (localId.isEmpty()) {
+            Logger.error(TAG, "NEW CLIENT ID SET");
+            localId = generateDeviceUUID();
+            ConversaApp.getInstance(context).getPreferences().setPushKey(localId);
+        }
+
+        this.clientId = localId;
+        Logger.error(TAG, "Client Id: " + localId);
+        ConversaApp.getInstance(context).getLocalBroadcastManager().unregisterReceiver(mPushBroadcaster);
     }
 
     public AblyRealtime getAblyRealtime() {
@@ -81,18 +104,10 @@ public class AblyConnection implements Channel.MessageListener,
         // Register listener for state changes
         ablyRealtime.connection.on(this);
         // Register local broadcast
-        ConversaApp.getInstance(context).getLocalBroadcastManager().registerReceiver(new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                ErrorInfo error = IntentUtils.getErrorInfo(intent);
-                if (error != null) {
-                    Logger.error(TAG, "PUSH ACTIVATE: " + error.message);
-                    return;
-                }
-                // Subscribe to channels / listen for push etc.
-                subscribeToPushChannels();
-            }
-        }, new IntentFilter("io.ably.broadcast.PUSH_ACTIVATE"));
+        ConversaApp.getInstance(context).getLocalBroadcastManager().registerReceiver(
+                mPushBroadcaster,
+                new IntentFilter("io.ably.broadcast.PUSH_ACTIVATE")
+        );
         ablyRealtime.push.activate(context);
     }
 
@@ -100,9 +115,9 @@ public class AblyConnection implements Channel.MessageListener,
         try {
             if (ablyRealtime == null) {
                 ClientOptions clientOptions = new ClientOptions();
-                clientOptions.key = "T6z9Ew.9a7FmQ:NYh49uPgi78dbMYh";
-                clientOptions.logLevel = io.ably.lib.util.Log.ERROR;
-                //clientOptions.clientId = clientId;
+                clientOptions.key = "T6z9Ew.9a7FmQ:NYh49uPgi78dbMYH";
+                clientOptions.logLevel = Log.VERBOSE;
+                clientOptions.clientId = clientId;
                 // Receive messages that they themselves publish
                 clientOptions.echoMessages = false;
                 // Ably Realtime library will open and maintain a connection to the Ably realtime servers
@@ -131,10 +146,10 @@ public class AblyConnection implements Channel.MessageListener,
         }
     }
 
-    public void subscribeToPushChannels() {
+    private void subscribeToPushChannels() {
         String channelname = ConversaApp.getInstance(context).getPreferences().getAccountBusinessId();
 
-        ablyRealtime.channels.get("bpbc:" + channelname).push.subscribeClientAsync(context, new CompletionListener() {
+        ablyRealtime.channels.get("bpbc:" + channelname).push.subscribeDeviceAsync(context, new CompletionListener() {
             @Override
             public void onSuccess() {
                 Logger.error("onSuccess", "Public channel subscribed for push");
@@ -146,7 +161,7 @@ public class AblyConnection implements Channel.MessageListener,
             }
         });
 
-        ablyRealtime.channels.get("bpvt:" + channelname).push.subscribeClientAsync(context, new CompletionListener() {
+        ablyRealtime.channels.get("bpvt:" + channelname).push.subscribeDeviceAsync(context, new CompletionListener() {
             @Override
             public void onSuccess() {
                 Logger.error("onSuccess", "Private channel subscribed for push");
@@ -170,6 +185,7 @@ public class AblyConnection implements Channel.MessageListener,
 
     public void disconnectAbly() {
         if (ablyRealtime != null) {
+            ConversaApp.getInstance(context).getLocalBroadcastManager().unregisterReceiver(mPushBroadcaster);
             ablyRealtime.push.deactivate(context);
             ablyRealtime.connection.close();
         }
@@ -243,18 +259,20 @@ public class AblyConnection implements Channel.MessageListener,
         }
 
         switch (additionalData.optInt("appAction", 0)) {
-            case 1:
+            case 1: {
                 Intent msgIntent = new Intent(context, CustomMessageService.class);
                 msgIntent.putExtra("data", additionalData.toString());
                 context.startService(msgIntent);
-                break;
-            case 2:
+            }
+            break;
+            case 2: {
                 String jeFrom = additionalData.optString("from", null);
                 if (jeFrom != null) {
                     boolean isUserTyping = additionalData.optBoolean("isTyping", false);
                     EventBus.getDefault().post(new TypingEvent(jeFrom, isUserTyping));
                 }
-                break;
+            }
+            break;
         }
     }
 
@@ -312,7 +330,6 @@ public class AblyConnection implements Channel.MessageListener,
                 Logger.error("onConnectionStateChgd", "Closing");
                 for (Channel channel : ablyRealtime.channels.values()) {
                     channel.unsubscribe();
-                    channel.presence.unsubscribe();
                 }
                 break;
             case closed:

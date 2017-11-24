@@ -33,7 +33,7 @@ import ee.app.conversamanager.utils.Logger;
 
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
-    private static final String TAG = "MyFirebaseMsgService";
+    private static final String TAG = "FirebaseMsgService";
 
     /**
      * Called when message is received.
@@ -53,8 +53,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
+            Logger.error(TAG, "Message data payload: " + remoteMessage.getData());
+
             try {
-                String data = remoteMessage.getData().get("message");
+                String data = remoteMessage.getData().toString();
                 JSONObject additionalData = new JSONObject(data);
                 Logger.error(TAG, "Full additionalData:\n" + additionalData.toString());
 
@@ -67,7 +69,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         String connectionId = additionalData.optString("connectionId", "");
                         String currentConnectionId = AblyConnection.getInstance().getPublicConnectionId();
 
-                        if (currentConnectionId != null && connectionId.equals(currentConnectionId)) {
+                        if (currentConnectionId == null || connectionId.equals(currentConnectionId)) {
                             return;
                         }
 

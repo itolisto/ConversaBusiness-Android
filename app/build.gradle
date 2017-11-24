@@ -41,13 +41,13 @@ android {
             minifyEnabled false
             buildConfigField "boolean", DEV_BUILD, "true"
             buildConfigField "boolean", JOB_LOGGER, "true"
-            proguardFiles getDefaultProguardFile('proguard-android.txt'),
-                    'proguard-rules.pro'
         }
         release {
             minifyEnabled true
             proguardFiles = buildTypes.debug.proguardFiles
             signingConfig signingConfigs.config
+            proguardFiles getDefaultProguardFile('proguard-android.txt'),
+                    'proguard-rules.pro'
         }
     }
     packagingOptions {
