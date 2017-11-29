@@ -11,10 +11,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.sandrios.sandriosCamera.internal.SandriosCamera;
-import com.sandrios.sandriosCamera.internal.configuration.CameraConfiguration;
-import com.sandrios.sandriosCamera.internal.ui.model.QualityOptions;
-
 import ee.app.conversamanager.ActivityImageDetail;
 import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.R;

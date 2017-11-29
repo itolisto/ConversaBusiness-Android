@@ -3,30 +3,34 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="ee.app.conversamanager" >
 
-    <uses-feature android:name="android.hardware.camera" android:required="false"/>
-    <uses-feature android:name="android.hardware.camera2" android:required="false"/>
-    <uses-feature android:glEsVersion="0x00020000" android:required="true"/>
-
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" tools:node="remove">
-    </uses-permission>
+    <uses-permission android:name="android.permission.RECORD_AUDIO" tools:node="remove"/>
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
     <!-- App receives GCM messages. -->
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+
+    <uses-feature android:name="android.hardware.camera.any" android:required="true"/>
+    <uses-feature android:name="android.hardware.camera.flash" android:required="false"/>
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false"/>
+    <!--<uses-feature android:name="android.hardware.camera" android:required="false"/>-->
+    <!--<uses-feature android:name="android.hardware.camera2" android:required="false"/>-->
+
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
 
     <application
         android:name="ee.app.conversamanager.ConversaApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
 
         <activity
             android:name="ee.app.conversamanager.ActivitySplashScreen"
@@ -133,10 +137,10 @@
             android:launchMode="singleTop"
             android:windowSoftInputMode="stateHidden|adjustResize"
             android:parentActivityName="ee.app.conversamanager.ActivityMain" />
+
         <activity android:name=".camara.ImagePickerDemo"
-            android:launchMode="singleTop"
-            android:screenOrientation="portrait"
-            android:theme="@style/ChatWallTheme" />
+            android:screenOrientation="portrait" />
+
         <activity
             android:name="ee.app.conversamanager.ActivityImageDetail"
             android:screenOrientation="portrait"
@@ -235,11 +239,6 @@
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
         </service>
-        <!--suppress AndroidDomInspection -->
-        <service
-            android:name=".notifications.RegistrationIntentService"
-            android:exported="false">
-        </service>
 
         <meta-data
             android:name="com.google.android.gms.version"
@@ -247,6 +246,13 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCf6IrLbTGZFv_SJZLWY-L81eohCrlhZJE" />
+
+        <meta-data
+            android:name="net.hockeyapp.android.appIdentifier"
+            android:value="1623cdc7cc9a4b939fdfa2a74af31f88" />
+        <meta-data
+            android:name="net.hockeyapp.android.appSecret"
+            android:value="cc8dab336e3c1c603e26c46f7ea0eee2" />
 
         <service
             android:name="ee.app.conversamanager.contact.ContactIntentService"

@@ -8,10 +8,6 @@ import com.google.firebase.iid.FirebaseInstanceIdService;
 import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.management.PubnubConnection;
 
-/**
- * Created by edgargomez on 5/16/17.
- */
-
 public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
 
     private static final String TAG = "MyFirebaseIIDService";
@@ -25,7 +21,7 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
     public void onTokenRefresh() {
         // Get updated InstanceID token.
         String refreshedToken = FirebaseInstanceId.getInstance().getToken();
-        Log.d(TAG, "Refreshed token: " + refreshedToken);
+        Log.e(TAG, "Refreshed token: " + refreshedToken);
 
         // If you want to send messages to this application instance or
         // manage this apps subscriptions on the server side, send the
@@ -45,5 +41,4 @@ public class MyFirebaseInstanceIDService extends FirebaseInstanceIdService {
         ConversaApp.getInstance(getApplicationContext()).getPreferences().setPushKey(token);
         PubnubConnection.getInstance().subscribeToPushChannels();
     }
-
 }

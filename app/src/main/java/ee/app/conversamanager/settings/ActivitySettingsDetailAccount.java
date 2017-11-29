@@ -21,7 +21,6 @@ import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.SaveCallback;
-import com.sandrios.sandriosCamera.internal.configuration.CameraConfiguration;
 
 import java.io.File;
 import java.util.HashMap;
