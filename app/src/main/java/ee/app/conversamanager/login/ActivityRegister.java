@@ -25,7 +25,6 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
-import com.sandrios.sandriosCamera.internal.configuration.CameraConfiguration;
 
 import org.json.JSONArray;
 import org.json.JSONException;
