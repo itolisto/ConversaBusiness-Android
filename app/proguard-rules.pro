@@ -21,7 +21,7 @@
 # EventBus
 #
 -keepattributes *Annotation*
--keepclassmembers class ** {
+-keepclassmembers class ** {x
     @org.greenrobot.eventbus.Subscribe <methods>;
 }
 -keep enum org.greenrobot.eventbus.ThreadMode { *; }
@@ -75,3 +75,4 @@
 # HockeyApp
 -keep public class net.hockeyapp.android.utils.* { public *; }
 -dontwarn net.hockeyapp.android.utils.**
+-ignorewarnings

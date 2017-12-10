@@ -359,12 +359,11 @@ public class ImagePickerDemo extends AppCompatActivity implements
                             Locale.getDefault()).format(
                             new Date());
                     String imageFileName = "JPEG_" + timeStamp + "_";
-                    File file = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+                     File file = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES),
                             imageFileName);
 
                     OutputStream os = null;
-                    Uri photoURI = FileProvider.getUriForFile(getApplicationContext(),
-                            getApplicationContext().getPackageName() + ".provider", file);
+                    Uri photoURI = Uri.fromFile(file);
 
                     bottomSheetDialogFragment.onActivityResultCamera(photoURI);
                     try {
