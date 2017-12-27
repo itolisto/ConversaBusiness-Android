@@ -38,6 +38,7 @@
             android:textColor="@android:color/black"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:textSize="@dimen/tutorial_title_size"
             android:text="@string/tutorial_title_four"/>
 
@@ -48,6 +49,7 @@
             android:layout_below="@id/mtvTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:textSize="@dimen/tutorial_message_size"
             android:layout_marginEnd="14dp"
             android:layout_marginLeft="14dp"

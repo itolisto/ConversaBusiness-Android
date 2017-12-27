@@ -250,11 +250,9 @@
             android:value="AIzaSyCf6IrLbTGZFv_SJZLWY-L81eohCrlhZJE" />
 
         <meta-data
-            android:name="net.hockeyapp.android.appIdentifier"
-            android:value="1623cdc7cc9a4b939fdfa2a74af31f88" />
-        <meta-data
-            android:name="net.hockeyapp.android.appSecret"
-            android:value="cc8dab336e3c1c603e26c46f7ea0eee2" />
+            android:name="io.fabric.ApiKey"
+            android:value="617c5ff8d2055123134c25a4b496d078123ef1da"
+            />
 
         <service
             android:name="ee.app.conversamanager.contact.ContactIntentService"

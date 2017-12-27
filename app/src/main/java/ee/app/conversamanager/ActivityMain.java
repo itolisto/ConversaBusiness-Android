@@ -10,6 +10,7 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.crashlytics.android.Crashlytics;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 
@@ -26,6 +27,7 @@ import ee.app.conversamanager.utils.Foreground;
 import ee.app.conversamanager.utils.Logger;
 import ee.app.conversamanager.utils.PagerAdapter;
 import ee.app.conversamanager.view.MediumTextView;
+import io.fabric.sdk.android.Fabric;
 
 public class ActivityMain extends ConversaActivity implements Foreground.Listener {
 
@@ -54,6 +56,8 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+        Fabric.with(this, new Crashlytics());
         AblyConnection.getInstance().initAbly();
 
         // Remove internet connection check
