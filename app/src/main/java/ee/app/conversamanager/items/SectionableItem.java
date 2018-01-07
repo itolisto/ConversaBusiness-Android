@@ -2,9 +2,7 @@ package ee.app.conversamanager.items;
 
 import android.content.Context;
 import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import java.util.List;
 
@@ -58,17 +56,15 @@ public class SectionableItem extends AbstractSectionableItem<CategoryViewHolder,
     }
 
     @Override
-    public CategoryViewHolder createViewHolder(FlexibleAdapter adapter, LayoutInflater inflater, ViewGroup parent) {
-        return new CategoryViewHolder(inflater.inflate(getLayoutRes(), parent, false), adapter);
+    public CategoryViewHolder createViewHolder(View view, FlexibleAdapter adapter) {
+        return new CategoryViewHolder(view, adapter);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public void bindViewHolder(final FlexibleAdapter adapter, CategoryViewHolder holder, int position, List payloads) {
         if (payloads.size() > 0) {
-            //Logger.error("UPDATE", "[" + getTitle() + "," + position + "," + adapter.getSectionItems(getHeader()).size() + "]");
             if (getHeader().getId().equals("0")) {
-                //Logger.error("DIVIDER", position == adapter.getSectionItems(getHeader()).size() ? "hide" : "show");
                 if (position == adapter.getSectionItems(getHeader()).size()) {
                     holder.removeDivider(true);
                 } else {

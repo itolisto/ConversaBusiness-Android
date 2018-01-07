@@ -116,7 +116,7 @@ public class AblyConnection implements Channel.MessageListener,
             if (ablyRealtime == null) {
                 ClientOptions clientOptions = new ClientOptions();
                 clientOptions.key = "T6z9Ew.9a7FmQ:NYh49uPgi78dbMYH";
-                clientOptions.logLevel = Log.VERBOSE;
+                clientOptions.logLevel = Log.ERROR;
                 clientOptions.clientId = clientId;
                 // Receive messages that they themselves publish
                 clientOptions.echoMessages = false;

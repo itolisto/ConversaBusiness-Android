@@ -24,6 +24,7 @@
 
 package ee.app.conversamanager;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.StrictMode;
@@ -42,6 +43,9 @@ import com.parse.ParseObject;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
 import ee.app.conversamanager.database.MySQLiteHelper;
 import ee.app.conversamanager.events.MyEventBusIndex;
 import ee.app.conversamanager.management.AblyConnection;
@@ -50,6 +54,11 @@ import ee.app.conversamanager.model.parse.Customer;
 import ee.app.conversamanager.settings.Preferences;
 import ee.app.conversamanager.utils.Const;
 import ee.app.conversamanager.utils.Foreground;
+import ee.app.conversamanager.utils.Logger;
+import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
 
 /**
  * Basic Application class, holds references to often used single instance
@@ -100,23 +109,32 @@ public class ConversaApp extends MultiDexApplication {
 		ParseObject.registerSubclass(Account.class);
 		ParseObject.registerSubclass(Customer.class);
 
+		OkHttpClient.Builder client = new OkHttpClient.Builder()
+				.addNetworkInterceptor(new LoggingInterceptor())
+				.connectTimeout(60, TimeUnit.SECONDS)
+				.readTimeout(60, TimeUnit.SECONDS);
+
 		// Initialize Parse
-		if (BuildConfig.DEV_BUILD) {
-			Parse.initialize(new Parse.Configuration.Builder(this)
-					//localhost
-					.applicationId("b15c83")
-					.clientKey(null)
-					.server("http://10.0.3.2:1337/parse/") // The trailing slash is important.
-					.build()
-			);
-		} else {
+//		if (BuildConfig.DEV_BUILD) {
+//			Parse.initialize(new Parse.Configuration.Builder(this)
+//					//localhost
+//					.applicationId("b15c83")
+//					.clientKey(null)
+//					.server("http://10.0.3.2:1337/parse/") // The trailing slash is important.
+//					.clientBuilder(client)
+//					.build()
+//			);
+//		} else {
+
 			Parse.initialize(new Parse.Configuration.Builder(this)
 					.applicationId("szLKzjFz66asK9SngeFKnTyN2V596EGNuMTC7YyF4tkFudvY72")
 					.clientKey("CMTFwQPd2wJFXfEQztpapGHFjP5nLZdtZr7gsHKxuFhA9waMgw1")
 					.server("https://api.conversachat.com/parse/")
+					.clientBuilder(client)
 					.build()
 			);
-		}
+
+//		}
 	}
 
 	private void initializeDeveloperBuild() {
@@ -239,6 +257,26 @@ public class ConversaApp extends MultiDexApplication {
 
 	public Typeface getTfRalewayBold() {
 		return mTfRalewayBold;
+	}
+
+
+	class LoggingInterceptor implements Interceptor {
+		@SuppressLint("DefaultLocale")
+		@Override public Response intercept(Interceptor.Chain chain) throws IOException {
+			Request request = chain.request();
+
+			long t1 = System.nanoTime();
+			Logger.error("LoggingInterceptor", String.format("Sending request %s on %s%n%s",
+					request.url(), chain.connection(), request.headers()));
+
+			Response response = chain.proceed(request);
+
+			long t2 = System.nanoTime();
+			Logger.error("LoggingInterceptor", String.format("Received response for %s in %.1fms%n%s",
+					response.request().url(), (t2 - t1) / 1e6d, response.headers()));
+
+			return response;
+		}
 	}
 
 }

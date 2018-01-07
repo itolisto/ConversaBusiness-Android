@@ -37,6 +37,7 @@ import ee.app.conversamanager.view.RegularTextView;
 import eu.davidea.flexibleadapter.FlexibleAdapter;
 import eu.davidea.flexibleadapter.common.SmoothScrollLinearLayoutManager;
 import eu.davidea.flexibleadapter.items.AbstractFlexibleItem;
+import eu.davidea.flexibleadapter.items.IFlexible;
 import eu.davidea.flexibleadapter.items.ISectionable;
 
 /**
@@ -199,7 +200,9 @@ public class ActivitySettingsCategory extends ConversaActivity implements Flexib
 
                         findViewById(R.id.rlInfo).setVisibility(View.GONE);
                     } catch (JSONException ignored) {
-                        findViewById(R.id.rtvInfo).setVisibility(View.VISIBLE);
+                        ((RegularTextView)findViewById(R.id.rtvInfo)).setText(
+                                getString(R.string.sett_category_info_error)
+                        );
                     }
                 }
             }
@@ -220,14 +223,13 @@ public class ActivitySettingsCategory extends ConversaActivity implements Flexib
 
             mAdapter.removeItem(position);
             flexibleItem.setHeader(categoriesHeader);
-            mAdapter.addItemToSection(flexibleItem, categoriesHeader, new Comparator<SectionableItem>() {
+
+            mAdapter.addItemToSection(flexibleItem, categoriesHeader, new Comparator<IFlexible>() {
                 @Override
-                public int compare(SectionableItem object1, SectionableItem object2) {
-                    return object1.getTitle().compareTo(object2.getTitle());
+                public int compare(IFlexible object1, IFlexible object2) {
+                    return ((SectionableItem) object1).getTitle().compareTo(((SectionableItem) object2).getTitle());
                 }
             });
-
-            //Logger.error("REMOVE", "[" + flexibleItem.getTitle() + "," + position + "," + size + "]");
 
             // Update divider
             if (position == size) {
@@ -248,10 +250,11 @@ public class ActivitySettingsCategory extends ConversaActivity implements Flexib
                 if (mAdapter.getSectionItems(selectedHeader).size() + 1 <= limit) {
                     mAdapter.removeItem(position);
                     flexibleItem.setHeader(selectedHeader);
-                    mAdapter.addItemToSection(flexibleItem, selectedHeader, new Comparator<SectionableItem>() {
+
+                    mAdapter.addItemToSection(flexibleItem, selectedHeader, new Comparator<IFlexible>() {
                         @Override
-                        public int compare(SectionableItem object1, SectionableItem object2) {
-                            return object1.getTitle().compareTo(object2.getTitle());
+                        public int compare(IFlexible object1, IFlexible object2) {
+                            return ((SectionableItem) object1).getTitle().compareTo(((SectionableItem) object2).getTitle());
                         }
                     });
 

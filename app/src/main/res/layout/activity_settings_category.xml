@@ -63,10 +63,10 @@
 
             <ee.app.conversamanager.view.RegularTextView
                 android:maxLines="2"
+                android:textSize="14sp"
                 android:id="@+id/rtvInfo"
                 android:gravity="center"
                 android:layout_margin="16dp"
-                android:visibility="gone"
                 android:textColor="@color/light_gray"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
