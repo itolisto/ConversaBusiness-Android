@@ -45,7 +45,7 @@ import ee.app.conversamanager.R;
 public class Preferences {
 
     private final Context context;
-    private final SharedPreferences sharedPreferences;
+    public final SharedPreferences sharedPreferences;
 
     /**
      * Gets a SharedPreferences instance that points to the default file that is

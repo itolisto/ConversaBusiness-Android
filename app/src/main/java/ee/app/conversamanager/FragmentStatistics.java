@@ -37,6 +37,7 @@ import java.util.Locale;
 import ee.app.conversamanager.extendables.ConversaFragment;
 import ee.app.conversamanager.settings.PreferencesKeys;
 import ee.app.conversamanager.utils.AppActions;
+import ee.app.conversamanager.utils.Logger;
 import ee.app.conversamanager.utils.Utils;
 import ee.app.conversamanager.view.BoldTextView;
 import ee.app.conversamanager.view.RegularTextView;
@@ -105,23 +106,27 @@ public class FragmentStatistics extends ConversaFragment implements SharedPrefer
 
         load = false;
 
+        ConversaApp.getInstance(getContext()).getPreferences().sharedPreferences.registerOnSharedPreferenceChangeListener(this);
+
+        if (!ConversaApp.getInstance(getActivity()).getPreferences().getAccountBusinessId().isEmpty()) {
+            // Change load value so next time this fragment is loaded
+            // we don't call Parse Server for information automatically
+            changeStatisticsPeriod();
+        }
+
         return rootView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ConversaApp.getInstance(getContext()).getPreferences().sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
     }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         menu.clear();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (!ConversaApp.getInstance(getActivity()).getPreferences().getAccountBusinessId().isEmpty()) {
-            // Change load value so next time this fragment is loaded
-            // we don't call Parse Server for information automatically
-            changeStatisticsPeriod();
-        }
     }
 
     @Override

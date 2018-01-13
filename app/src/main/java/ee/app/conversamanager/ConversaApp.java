@@ -115,7 +115,7 @@ public class ConversaApp extends MultiDexApplication {
 				.addNetworkInterceptor(new LoggingInterceptor())
 				.connectTimeout(60, TimeUnit.SECONDS)
 				.readTimeout(60, TimeUnit.SECONDS);
-				
+
 			Parse.initialize(new Parse.Configuration.Builder(this)
 					//localhost
 					.applicationId("b15c83")
