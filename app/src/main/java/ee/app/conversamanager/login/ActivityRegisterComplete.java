@@ -261,8 +261,8 @@ public class ActivityRegisterComplete extends BaseActivity implements View.OnCli
             user.put(kUserAvatarKey, avatar);
         }
 
-        final ProgressDialog progress = new ProgressDialog(this);
-        progress.show();
+        final ProgressDialog progress = ProgressDialog.show(this, null, null, true, false);
+        progress.setContentView(R.layout.progress_layout);
 
         user.signUpInBackground(new SignUpCallback() {
             public void done(ParseException e) {

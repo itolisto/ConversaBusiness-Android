@@ -99,33 +99,14 @@ public class ActivityLogIn extends BaseActivity implements View.OnClickListener 
                     final String mSignInEmail = mEtSignInEmail.getText().toString();
                     final String mSignInPassword = mEtSignInPassword.getText().toString();
 
-                    ParseQuery<Account> query = ParseQuery.getQuery(Account.class);
-                    query.whereEqualTo(Const.kUserEmailKey, mSignInEmail);
-                    query.whereEqualTo(Const.kUserTypeKey, 2);
+                    final ProgressDialog progress = ProgressDialog.show(this, null, null, true, false);
+                    progress.setContentView(R.layout.progress_layout);
 
-                    Collection<String> collection = new ArrayList<>();
-                    collection.add(Const.kUserUsernameKey);
-                    query.selectKeys(collection);
-
-                    final ProgressDialog progress = new ProgressDialog(this);
-                    progress.show();
-
-                    query.getFirstInBackground(new GetCallback<Account>() {
-                        @Override
-                        public void done(Account object, ParseException e) {
+                    ParseUser.logInInBackground(mSignInEmail, mSignInPassword, new LogInCallback() {
+                        public void done(ParseUser user, ParseException e) {
                             progress.dismiss();
-
-                            if (e == null) {
-                                String username = object.getUsername();
-                                ParseUser.logInInBackground(username, mSignInPassword, new LogInCallback() {
-                                    public void done(ParseUser user, ParseException e) {
-                                        if (user != null) {
-                                            AuthListener(true, null);
-                                        } else {
-                                            AuthListener(false, e);
-                                        }
-                                    }
-                                });
+                            if (user != null) {
+                                AuthListener(true, null);
                             } else {
                                 AuthListener(false, e);
                             }
