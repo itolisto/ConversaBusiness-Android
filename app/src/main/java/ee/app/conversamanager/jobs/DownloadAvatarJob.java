@@ -8,12 +8,12 @@ import android.support.annotation.Nullable;
 import com.birbit.android.jobqueue.Job;
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
-import com.parse.ParseException;
 
 import java.io.IOException;
 import java.io.InputStream;
 
 import ee.app.conversamanager.ConversaApp;
+import ee.app.conversamanager.networking.FirebaseCustomException;
 import ee.app.conversamanager.utils.AppActions;
 import ee.app.conversamanager.utils.Logger;
 import ee.app.conversamanager.utils.Utils;
@@ -79,8 +79,8 @@ public class DownloadAvatarJob extends Job {
 
     @Override
     protected RetryConstraint shouldReRunOnThrowable(@NonNull Throwable throwable, int runCount, int maxRunCount) {
-        if (throwable instanceof ParseException) {
-            if (AppActions.validateParseException((ParseException) throwable)) {
+        if (throwable instanceof FirebaseCustomException) {
+            if (AppActions.validateParseException((FirebaseCustomException) throwable)) {
                 AppActions.appLogout(getApplicationContext(), true);
                 return RetryConstraint.CANCEL;
             }

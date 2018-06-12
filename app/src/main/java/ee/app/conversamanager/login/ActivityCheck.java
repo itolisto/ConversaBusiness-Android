@@ -8,10 +8,6 @@ import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.EditText;
 
-import com.parse.FunctionCallback;
-import com.parse.ParseCloud;
-import com.parse.ParseException;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,7 +17,10 @@ import java.util.HashMap;
 
 import ee.app.conversamanager.R;
 import ee.app.conversamanager.extendables.BaseActivity;
+import ee.app.conversamanager.interfaces.FunctionCallback;
 import ee.app.conversamanager.model.nBusiness;
+import ee.app.conversamanager.networking.FirebaseCustomException;
+import ee.app.conversamanager.networking.NetworkingManager;
 import ee.app.conversamanager.utils.Const;
 
 /**
@@ -62,12 +61,12 @@ public class ActivityCheck extends BaseActivity implements View.OnClickListener 
                     HashMap<String, Object> params = new HashMap<>(1);
                     params.put("search", mEtCheckName.getText().toString());
 
-                    ParseCloud.callFunctionInBackground("businessClaimSearch", params, new FunctionCallback<String>() {
+                    NetworkingManager.getInstance().post("businessClaimSearch", params, new FunctionCallback<Object>() {
                         @Override
-                        public void done(String object, ParseException e) {
-                            if (e == null) {
+                        public void done(Object json, FirebaseCustomException exception) {
+                            if (exception == null) {
                                 try {
-                                    JSONArray results = new JSONArray(object);
+                                    JSONArray results = new JSONArray(json.toString());
 
                                     int size = results.length();
 

@@ -11,8 +11,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.crashlytics.android.Crashlytics;
-import com.parse.ParseCloud;
-import com.parse.ParseException;
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.HashMap;
 import java.util.Timer;
@@ -21,7 +20,8 @@ import java.util.TimerTask;
 import ee.app.conversamanager.extendables.ConversaActivity;
 import ee.app.conversamanager.jobs.BusinessInfoJob;
 import ee.app.conversamanager.management.AblyConnection;
-import ee.app.conversamanager.model.parse.Account;
+import ee.app.conversamanager.networking.FirebaseCustomException;
+import ee.app.conversamanager.networking.NetworkingManager;
 import ee.app.conversamanager.utils.AppActions;
 import ee.app.conversamanager.utils.Foreground;
 import ee.app.conversamanager.utils.Logger;
@@ -33,24 +33,21 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
 
     private static final int PLAY_SERVICES_RESOLUTION_REQUEST = 9000;
     private final String TAG = ActivityMain.class.getSimpleName();
-    private ViewPager mViewPager;
-    private Timer timer;
-    private boolean resetNotifications;
-
-    private ImageView mIvConversa;
-    private MediumTextView mRtvTitle;
-
     private final int[] tabIcons = {
             R.drawable.tab_chat_inactive,
             R.drawable.tab_trending_inactive,
             R.drawable.tab_store_inactive
     };
-
     private final int[] tabSelectedIcons = {
             R.drawable.tab_chat_active,
             R.drawable.tab_trending_active,
             R.drawable.tab_store_active
     };
+    private ViewPager mViewPager;
+    private Timer timer;
+    private boolean resetNotifications;
+    private ImageView mIvConversa;
+    private MediumTextView mRtvTitle;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -118,7 +115,7 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
             // 1. Get Customer Id
             ConversaApp.getInstance(this)
                     .getJobManager()
-                    .addJobInBackground(new BusinessInfoJob(Account.getCurrentUser().getObjectId()));
+                    .addJobInBackground(new BusinessInfoJob(FirebaseAuth.getInstance().getCurrentUser().getUid()));
         } else {
             AblyConnection.getInstance().subscribeToChannels();
         }
@@ -199,8 +196,8 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
                     params.put("businessId", id);
 
                     try {
-                        ParseCloud.callFunction("updateBusinessLastConnection", params);
-                    } catch (ParseException e) {
+                        NetworkingManager.getInstance().postSync("updateBusinessLastConnection", params);
+                    } catch (FirebaseCustomException e) {
                         if (AppActions.validateParseException(e)) {
                             AppActions.appLogout(getApplicationContext(), true);
                         } else {

@@ -1,16 +1,20 @@
 package ee.app.conversamanager.model.parse;
 
-import com.parse.ParseClassName;
-import com.parse.ParseObject;
-
 /**
  * Created by edgargomez on 4/15/16.
  */
-@ParseClassName("Customer")
-public class Customer extends ParseObject {
+public class Customer {
+
+    private String displayName;
+
+    public Customer() {}
+
+    public Customer(String displayName) {
+        this.displayName = displayName;
+    }
 
     public String getDisplayName() {
-        return getString("displayName");
+        return displayName;
     }
 
 }

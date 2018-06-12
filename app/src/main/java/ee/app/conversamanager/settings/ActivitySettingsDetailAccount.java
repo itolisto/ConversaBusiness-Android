@@ -16,11 +16,15 @@ import android.view.View;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.facebook.drawee.view.SimpleDraweeView;
-import com.parse.FunctionCallback;
-import com.parse.ParseCloud;
-import com.parse.ParseException;
-import com.parse.ParseFile;
-import com.parse.SaveCallback;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.util.HashMap;
@@ -28,7 +32,9 @@ import java.util.HashMap;
 import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.R;
 import ee.app.conversamanager.extendables.ConversaActivity;
-import ee.app.conversamanager.model.parse.Account;
+import ee.app.conversamanager.interfaces.FunctionCallback;
+import ee.app.conversamanager.networking.FirebaseCustomException;
+import ee.app.conversamanager.networking.NetworkingManager;
 import ee.app.conversamanager.utils.Const;
 import ee.app.conversamanager.utils.ImageFilePath;
 import ee.app.conversamanager.utils.Logger;
@@ -95,7 +101,7 @@ public class ActivitySettingsDetailAccount extends ConversaActivity implements V
                 ConversaApp.getInstance(this).getPreferences().getAccountConversaId()
         );
         ((LightTextView)findViewById(R.id.ltvEmail)).setText(
-                Account.getCurrentUser().getEmail()
+                FirebaseAuth.getInstance().getCurrentUser().getEmail()
         );
 
 
@@ -203,18 +209,40 @@ public class ActivitySettingsDetailAccount extends ConversaActivity implements V
         if (resultCode == RESULT_OK && data != null) {
             switch (requestCode) {
                 case Const.CAPTURE_MEDIA: {
-                    final String path = ImageFilePath.getPath(this, Uri.parse(data.getStringExtra("imageUri")));
-                    final ParseFile file = new ParseFile(new File(path));
-                    file.saveInBackground(new SaveCallback() {
-                        @Override
-                        public void done(ParseException e) {
-                            if (e == null) {
-                                saveAvatar(file, path);
-                            } else {
+                    // Create FirebaseStorage
+                    FirebaseStorage storage = FirebaseStorage.getInstance();
+                    // Create a storage reference from our app
+                    StorageReference storageRef = storage.getReference();
+                    // Reference to messages images
+                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+                    if (user != null) {
+                        final Uri file = Uri.fromFile(new File("path/to/images/rivers.jpg"));
+                        final String path = ImageFilePath.getPath(this, Uri.parse(data.getStringExtra("imageUri")));
+
+                        StorageReference riversRef = storageRef.child(user.getUid() + file.getLastPathSegment());
+                        // Create upload task
+                        UploadTask uploadTask = riversRef.putFile(file);
+
+                        // Register observers to listen for when the download is done or if it fails
+                        uploadTask.addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception exception) {
                                 showErrorMessage(getString(R.string.settings_avatar_error));
                             }
-                        }
-                    });
+                        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                            @Override
+                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                                // TODO: review this method
+                                Uri downloadUrl = taskSnapshot.getUploadSessionUri();
+                                if (downloadUrl != null)
+                                    saveAvatar(downloadUrl.getPath(), path);
+                                else
+                                    showErrorMessage(getString(R.string.settings_avatar_error));
+                            }
+                        });
+                    }
                     break;
                 }
             }
@@ -223,14 +251,14 @@ public class ActivitySettingsDetailAccount extends ConversaActivity implements V
         }
     }
 
-    private void saveAvatar(ParseFile file, final String path) {
+    private void saveAvatar(String file, final String path) {
         final HashMap<String, Object> params = new HashMap<>(9);
         params.put("avatar", file);
         params.put("businessId", ConversaApp.getInstance(this).getPreferences().getAccountBusinessId());
-        ParseCloud.callFunctionInBackground("updateBusinessAvatar", params, new FunctionCallback<Object>() {
+        NetworkingManager.getInstance().post("updateBusinessAvatar", params, new FunctionCallback<Object>() {
             @Override
-            public void done(Object object, ParseException e) {
-                if (e == null) {
+            public void done(Object json, FirebaseCustomException exception) {
+                if (exception == null) {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -305,9 +333,9 @@ public class ActivitySettingsDetailAccount extends ConversaActivity implements V
                 HashMap<String, String> params = new HashMap<>(2);
                 params.put("displayName", newName);
                 params.put("businessId", ConversaApp.getInstance(this).getPreferences().getAccountBusinessId());
-                ParseCloud.callFunctionInBackground("updateBusinessName", params, new FunctionCallback<Integer>() {
+                NetworkingManager.getInstance().post("updateBusinessName", params, new FunctionCallback<Integer>() {
                     @Override
-                    public void done(Integer object, ParseException e) {
+                    public void done(Integer object, FirebaseCustomException e) {
                         if (e == null) {
                             ConversaApp.getInstance(getApplicationContext())
                                     .getPreferences()
@@ -321,18 +349,21 @@ public class ActivitySettingsDetailAccount extends ConversaActivity implements V
                 break;
             }
             case PreferencesKeys.ACCOUNT_PASSWORD_KEY: {
-                Account.getCurrentUser().setPassword(newValue);
-                Account.getCurrentUser().saveInBackground(new SaveCallback() {
-                    @Override
-                    public void done(ParseException e) {
-                        if (e == null) {
-                            showSuccessMessage(getString(R.string.settings_password_succesful));
-                        } else {
-                            showErrorMessage(getString(R.string.settings_password_error));
-                        }
-                    }
-                });
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
+                if (user != null) {
+                    user.updatePassword(newValue)
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    showSuccessMessage(getString(R.string.settings_password_succesful));
+                                } else {
+                                    showErrorMessage(getString(R.string.settings_password_error));
+                                }
+                            }
+                        });
+                }
                 break;
             }
             default:
@@ -347,9 +378,9 @@ public class ActivitySettingsDetailAccount extends ConversaActivity implements V
                 HashMap<String, String> params = new HashMap<>(2);
                 params.put("conversaId", newName);
                 params.put("businessId", ConversaApp.getInstance(this).getPreferences().getAccountBusinessId());
-                ParseCloud.callFunctionInBackground("updateBusinessId", params, new FunctionCallback<Integer>() {
+                NetworkingManager.getInstance().post("updateBusinessId", params, new FunctionCallback<Integer>() {
                     @Override
-                    public void done(Integer object, ParseException e) {
+                    public void done(Integer object, FirebaseCustomException e) {
                         if (e == null) {
                             ConversaApp.getInstance(getApplicationContext())
                                     .getPreferences()

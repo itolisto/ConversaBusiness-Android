@@ -3,8 +3,10 @@ package ee.app.conversamanager.login;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.Spannable;
@@ -21,13 +23,16 @@ import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.parse.FunctionCallback;
-import com.parse.ParseCloud;
-import com.parse.ParseException;
-import com.parse.ParseFile;
-import com.parse.ProgressCallback;
-import com.parse.SaveCallback;
-import com.parse.SignUpCallback;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,17 +49,16 @@ import java.util.Locale;
 import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.R;
 import ee.app.conversamanager.extendables.BaseActivity;
+import ee.app.conversamanager.interfaces.FunctionCallback;
 import ee.app.conversamanager.model.nCountry;
 import ee.app.conversamanager.model.parse.Account;
+import ee.app.conversamanager.networking.FirebaseCustomException;
+import ee.app.conversamanager.networking.NetworkingManager;
 import ee.app.conversamanager.utils.AppActions;
 import ee.app.conversamanager.utils.Const;
 import ee.app.conversamanager.utils.Utils;
 import ee.app.conversamanager.view.LightTextView;
 import ee.app.conversamanager.view.URLSpanNoUnderline;
-
-import static ee.app.conversamanager.R.id.btnSignUpUp;
-import static ee.app.conversamanager.utils.Const.kUserAvatarKey;
-import static ee.app.conversamanager.utils.Const.kUserTypeKey;
 
 /**
  * Created by edgargomez on 1/3/17.
@@ -100,7 +104,7 @@ public class ActivityRegisterComplete extends BaseActivity implements View.OnCli
         findViewById(R.id.tilEmailSignUp).setOnClickListener(this);
         findViewById(R.id.tilPasswordSignUp).setOnClickListener(this);
 
-        Button mBtnSignUpUp = (Button) findViewById(btnSignUpUp);
+        Button mBtnSignUpUp = (Button) findViewById(R.id.btnSignUpUp);
         mBtnSignUpUp.setOnClickListener(this);
         mBtnSignUpUp.setTypeface(ConversaApp.getInstance(this).getTfRalewayMedium());
 
@@ -155,14 +159,14 @@ public class ActivityRegisterComplete extends BaseActivity implements View.OnCli
         mLtvTermsPrivacy.setText(styledString);
 
         HashMap<String, Object> params = new HashMap<>(1);
-        ParseCloud.callFunctionInBackground("getCountries", params, new FunctionCallback<String>() {
+        NetworkingManager.getInstance().post("getCountries", params, new FunctionCallback<Object>() {
             @Override
-            public void done(String jsonCountries, ParseException e) {
-                if (e != null) {
+            public void done(Object json, FirebaseCustomException exception) {
+                if (exception != null) {
                     showErrorMessage(getString(R.string.sign_up_register_countries_error));
                 } else {
                     try {
-                        JSONArray countries = new JSONArray(jsonCountries);
+                        JSONArray countries = new JSONArray(json.toString());
 
                         int size = countries.length();
                         List<nCountry> countryList = new ArrayList<>(size);
@@ -204,7 +208,7 @@ public class ActivityRegisterComplete extends BaseActivity implements View.OnCli
                 mEtSignUpPassword.requestFocus();
                 break;
             }
-            case btnSignUpUp: {
+            case R.id.btnSignUpUp: {
                 if (validateForm()) {
                     uploadAvatar();
                 }
@@ -215,65 +219,80 @@ public class ActivityRegisterComplete extends BaseActivity implements View.OnCli
 
     private void uploadAvatar() {
         if (path == null) {
-            completeSignup(null);
+            completeSignup("");
         } else {
-            final ParseFile file = new ParseFile(new File(path));
-            file.saveInBackground(new SaveCallback() {
+            FirebaseStorage storage = FirebaseStorage.getInstance();
+
+            FirebaseAuth mAuth = FirebaseAuth.getInstance();
+            FirebaseUser currentUser = mAuth.getCurrentUser();
+
+            Uri file = Uri.fromFile(new File(path));
+
+//            StorageReference storageRef = storage.getReference();
+//            StorageReference avatarRef = storageRef.child("avatar/" + currentUser.getUid() + "/" + file.getLastPathSegment());
+            StorageReference storageRef = storage.getReference("avatar/" + currentUser.getUid() + "/" + file.getLastPathSegment());
+
+            UploadTask uploadTask = storageRef.putFile(file);
+            // Register observers to listen for when the download is done or if it fails
+            uploadTask.addOnFailureListener(new OnFailureListener() {
                 @Override
-                public void done(ParseException e) {
-                    if (e == null) {
-                        completeSignup(file);
-                    } else {
-                        // Show alert
-                        showErrorMessage(getString(R.string.sign_up_error));
-                    }
+                public void onFailure(@NonNull Exception exception) {
+                    showErrorMessage(getString(R.string.sign_up_error));
                 }
-            }, new ProgressCallback() {
+            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
-                public void done(Integer percentDone) {
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                    // TODO: review this method
+                    Uri downloadUrl = taskSnapshot.getUploadSessionUri();
+                    if (downloadUrl != null)
+                        completeSignup(downloadUrl.toString());
+                    else
+                        showErrorMessage(getString(R.string.settings_avatar_error));
 
                 }
             });
         }
     }
 
-    private void completeSignup(ParseFile avatar) {
+    private void completeSignup(String avatar) {
         Account user = new Account();
 
         String email = mEtSignUpEmail.getText().toString();
+        String password = mEtSignUpPassword.getText().toString();
+
         String parts[] = TextUtils.split(email, "@");
         String username = parts[0];
         String domain = TextUtils.split(parts[1], "\\.")[0];
-
         String fusername = username + domain;
 
-        user.setEmail(mEtSignUpEmail.getText().toString());
+        user.setEmail(email);
         user.setUsername(fusername);
-        user.setPassword(mEtSignUpPassword.getText().toString());
+        user.setUserType(2);
+        user.setAvatarUrl(avatar);
+        user.setCountryId(selectedCountry.getId());
+        user.setDisplayName(displayName);
+        user.setConversaId(conversaId);
 
-        user.put(kUserTypeKey, 2);
-        user.put("categoryId", categoryId);
-        user.put("countryId", selectedCountry.getId());
-        user.put("displayName", displayName);
-        user.put("conversaID", conversaId);
-
-        if (avatar != null) {
-            user.put(kUserAvatarKey, avatar);
-        }
+//        user.put("categoryId", categoryId);
 
         final ProgressDialog progress = ProgressDialog.show(this, null, null, true, false);
         progress.setContentView(R.layout.progress_layout);
 
-        user.signUpInBackground(new SignUpCallback() {
-            public void done(ParseException e) {
-                progress.dismiss();
-                if (e == null) {
-                    AuthListener(true, null);
-                } else {
-                    AuthListener(false, e);
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
+        mAuth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    progress.dismiss();
+                    if (task.isSuccessful()) {
+                        AuthListener(true, null);
+                    } else {
+                        AuthListener(false, task.getException());
+                    }
                 }
-            }
-        });
+            });
     }
 
     private boolean validateForm() {
@@ -371,7 +390,7 @@ public class ActivityRegisterComplete extends BaseActivity implements View.OnCli
 
     }
 
-    public void AuthListener(boolean result, ParseException error) {
+    public void AuthListener(boolean result, Exception error) {
         if (result) {
             AppActions.initSession(this);
         } else {

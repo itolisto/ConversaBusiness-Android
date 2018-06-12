@@ -6,8 +6,6 @@ import android.support.annotation.Nullable;
 import com.birbit.android.jobqueue.Job;
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
-import com.parse.ParseException;
-import com.parse.ParseQuery;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
@@ -76,122 +74,122 @@ public class ReceiveMessageJob extends Job {
 
         boolean newContact = false;
 
-        // 1. Find if user is already a contact
-        if (dbcustomer == null) {
-            newContact = true;
-            // 2. Call Parse for User information
-            ParseQuery<Customer> query = ParseQuery.getQuery(Customer.class);
-            query.whereEqualTo(Const.kCustomerActiveKey, true);
-
-            Collection<String> collection = new ArrayList<>();
-            collection.add(Const.kCustomerDisplayNameKey);
-            query.selectKeys(collection);
-
-            Customer customer;
-
-            try {
-                customer = query.get(contactId);
-            } catch (ParseException e) {
-                if (AppActions.validateParseException(e)) {
-                    AppActions.appLogout(getApplicationContext(), true);
-                }
-
-                return;
-            }
-
-            // 3. If Customer was found, save to Local Database
-            dbcustomer = new dbCustomer();
-            dbcustomer.setCustomerId(contactId);
-            dbcustomer.setDisplayName(customer.getDisplayName());
-
-            ConversaApp.getInstance(getApplicationContext()).getDB().saveContact(dbcustomer);
-
-            if (dbcustomer.getId() == -1) {
-                Logger.error(TAG, "Error guardando Business");
-                return;
-            }
-        }
-
-        // 2. Save to Local Database
-        dbMessage dbmessage = new dbMessage();
-        dbmessage.setFromUserId(contactId);
-        dbmessage.setToUserId(ConversaApp.getInstance(getApplicationContext()).getPreferences().getAccountBusinessId());
-        dbmessage.setMessageType(messageType);
-        dbmessage.setDeliveryStatus(DeliveryStatus.statusReceived);
-        dbmessage.setMessageId(messageId);
-
-        switch (messageType) {
-            case Const.kMessageTypeText:
-                dbmessage.setBody(additionalData.optString("message", ""));
-                break;
-            case Const.kMessageTypeLocation:
-                dbmessage.setLatitude((float) additionalData.optDouble("latitude", 0));
-                dbmessage.setLongitude((float) additionalData.optDouble("longitude", 0));
-                break;
-            case Const.kMessageTypeAudio:
-            case Const.kMessageTypeVideo:
-                dbmessage.setDeliveryStatus(DeliveryStatus.statusDownloading);
-                dbmessage.setBytes(additionalData.optInt("size", 0));
-                dbmessage.setDuration(additionalData.optInt("duration", 0));
-                dbmessage.setRemoteUrl(additionalData.optString("file", ""));
-                break;
-            case Const.kMessageTypeImage:
-                dbmessage.setDeliveryStatus(DeliveryStatus.statusDownloading);
-                dbmessage.setBytes(additionalData.optInt("size", 0));
-                dbmessage.setWidth(additionalData.optInt("width", 0));
-                dbmessage.setHeight(additionalData.optInt("height", 0));
-                dbmessage.setRemoteUrl(additionalData.optString("file", ""));
-                break;
-        }
-
-        ConversaApp.getInstance(getApplicationContext()).getDB().saveMessage(dbmessage);
-
-        if (dbmessage.getId() == -1) {
-            Logger.error(TAG, "Error guardando Message");
-            return;
-        }
-
-        if (Foreground.get().isBackground()) {
-            if (ConversaApp.getInstance(getApplicationContext())
-                    .getPreferences().getPushNotificationPreview()) {
-
-                // Autoincrement count
-                NotificationInformation summary = ConversaApp.getInstance(getApplicationContext())
-                        .getDB().getGroupInformation(contactId);
-
-                if (summary.getNotificationId() == -1) {
-                    ConversaApp.getInstance(getApplicationContext()).getDB()
-                            .incrementGroupCount(summary, true);
-                } else {
-                    ConversaApp.getInstance(getApplicationContext()).getDB()
-                            .incrementGroupCount(summary, false);
-                }
-
-                PushNotification.showMessageNotification(
-                        getApplicationContext(),
-                        dbcustomer.getDisplayName(),
-                        additionalData.toString(),
-                        dbmessage,
-                        summary
-                );
-            }
-        }
-
-        // 4. Broadcast results as from IntentService ain't possible to access ui thread
-        if (newContact) {
-            EventBus.getDefault().post(new ContactSaveEvent(dbcustomer));
-        }
-
-        EventBus.getDefault().post(new MessageIncomingEvent(dbmessage));
-
-        if (dbmessage.getMessageType().equals(Const.kMessageTypeAudio) ||
-                dbmessage.getMessageType().equals(Const.kMessageTypeVideo) ||
-                dbmessage.getMessageType().equals(Const.kMessageTypeImage))
-        {
-            ConversaApp.getInstance(getApplicationContext())
-                    .getJobManager()
-                    .addJob(new DownloadFileJob(dbmessage.getFromUserId(), dbmessage.getId()));
-        }
+//        // 1. Find if user is already a contact
+//        if (dbcustomer == null) {
+//            newContact = true;
+//            // 2. Call Parse for User information
+//            ParseQuery<Customer> query = ParseQuery.getQuery(Customer.class);
+//            query.whereEqualTo(Const.kCustomerActiveKey, true);
+//
+//            Collection<String> collection = new ArrayList<>();
+//            collection.add(Const.kCustomerDisplayNameKey);
+//            query.selectKeys(collection);
+//
+//            Customer customer;
+//
+//            try {
+//                customer = query.get(contactId);
+//            } catch (ParseException e) {
+//                if (AppActions.validateParseException(e)) {
+//                    AppActions.appLogout(getApplicationContext(), true);
+//                }
+//
+//                return;
+//            }
+//
+//            // 3. If Customer was found, save to Local Database
+//            dbcustomer = new dbCustomer();
+//            dbcustomer.setCustomerId(contactId);
+//            dbcustomer.setDisplayName(customer.getDisplayName());
+//
+//            ConversaApp.getInstance(getApplicationContext()).getDB().saveContact(dbcustomer);
+//
+//            if (dbcustomer.getId() == -1) {
+//                Logger.error(TAG, "Error guardando Business");
+//                return;
+//            }
+//        }
+//
+//        // 2. Save to Local Database
+//        dbMessage dbmessage = new dbMessage();
+//        dbmessage.setFromUserId(contactId);
+//        dbmessage.setToUserId(ConversaApp.getInstance(getApplicationContext()).getPreferences().getAccountBusinessId());
+//        dbmessage.setMessageType(messageType);
+//        dbmessage.setDeliveryStatus(DeliveryStatus.statusReceived);
+//        dbmessage.setMessageId(messageId);
+//
+//        switch (messageType) {
+//            case Const.kMessageTypeText:
+//                dbmessage.setBody(additionalData.optString("message", ""));
+//                break;
+//            case Const.kMessageTypeLocation:
+//                dbmessage.setLatitude((float) additionalData.optDouble("latitude", 0));
+//                dbmessage.setLongitude((float) additionalData.optDouble("longitude", 0));
+//                break;
+//            case Const.kMessageTypeAudio:
+//            case Const.kMessageTypeVideo:
+//                dbmessage.setDeliveryStatus(DeliveryStatus.statusDownloading);
+//                dbmessage.setBytes(additionalData.optInt("size", 0));
+//                dbmessage.setDuration(additionalData.optInt("duration", 0));
+//                dbmessage.setRemoteUrl(additionalData.optString("file", ""));
+//                break;
+//            case Const.kMessageTypeImage:
+//                dbmessage.setDeliveryStatus(DeliveryStatus.statusDownloading);
+//                dbmessage.setBytes(additionalData.optInt("size", 0));
+//                dbmessage.setWidth(additionalData.optInt("width", 0));
+//                dbmessage.setHeight(additionalData.optInt("height", 0));
+//                dbmessage.setRemoteUrl(additionalData.optString("file", ""));
+//                break;
+//        }
+//
+//        ConversaApp.getInstance(getApplicationContext()).getDB().saveMessage(dbmessage);
+//
+//        if (dbmessage.getId() == -1) {
+//            Logger.error(TAG, "Error guardando Message");
+//            return;
+//        }
+//
+//        if (Foreground.get().isBackground()) {
+//            if (ConversaApp.getInstance(getApplicationContext())
+//                    .getPreferences().getPushNotificationPreview()) {
+//
+//                // Autoincrement count
+//                NotificationInformation summary = ConversaApp.getInstance(getApplicationContext())
+//                        .getDB().getGroupInformation(contactId);
+//
+//                if (summary.getNotificationId() == -1) {
+//                    ConversaApp.getInstance(getApplicationContext()).getDB()
+//                            .incrementGroupCount(summary, true);
+//                } else {
+//                    ConversaApp.getInstance(getApplicationContext()).getDB()
+//                            .incrementGroupCount(summary, false);
+//                }
+//
+//                PushNotification.showMessageNotification(
+//                        getApplicationContext(),
+//                        dbcustomer.getDisplayName(),
+//                        additionalData.toString(),
+//                        dbmessage,
+//                        summary
+//                );
+//            }
+//        }
+//
+//        // 4. Broadcast results as from IntentService ain't possible to access ui thread
+//        if (newContact) {
+//            EventBus.getDefault().post(new ContactSaveEvent(dbcustomer));
+//        }
+//
+//        EventBus.getDefault().post(new MessageIncomingEvent(dbmessage));
+//
+//        if (dbmessage.getMessageType().equals(Const.kMessageTypeAudio) ||
+//                dbmessage.getMessageType().equals(Const.kMessageTypeVideo) ||
+//                dbmessage.getMessageType().equals(Const.kMessageTypeImage))
+//        {
+//            ConversaApp.getInstance(getApplicationContext())
+//                    .getJobManager()
+//                    .addJob(new DownloadFileJob(dbmessage.getFromUserId(), dbmessage.getId()));
+//        }
     }
 
     @Override

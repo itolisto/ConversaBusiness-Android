@@ -1,22 +1,28 @@
 package ee.app.conversamanager.jobs;
 
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.birbit.android.jobqueue.Job;
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
-import com.parse.ParseCloud;
-import com.parse.ParseException;
-import com.parse.ParseFile;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.concurrent.ExecutionException;
 
 import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.delivery.DeliveryStatus;
 import ee.app.conversamanager.management.AblyConnection;
 import ee.app.conversamanager.model.database.dbMessage;
+import ee.app.conversamanager.networking.FirebaseCustomException;
+import ee.app.conversamanager.networking.NetworkingManager;
 import ee.app.conversamanager.utils.AppActions;
 import ee.app.conversamanager.utils.Const;
 import ee.app.conversamanager.utils.Logger;
@@ -63,12 +69,34 @@ public class SendMessageJob extends Job {
             case Const.kMessageTypeAudio:
             case Const.kMessageTypeImage:
             case Const.kMessageTypeVideo: {
-                ParseFile file;
+                Uri file = Uri.fromFile(new File(message.getLocalUrl()));
+                // Create FirebaseStorage
+                FirebaseStorage storage = FirebaseStorage.getInstance();
+                // Create a storage reference from our app
+                StorageReference storageRef = storage.getReference();
+                // Reference to messages images
+                StorageReference riversRef = storageRef.child("messages/" + file.getLastPathSegment());
+                // Create upload task
+                UploadTask uploadTask = riversRef.putFile(file);
 
                 try {
-                    file = new ParseFile(new File(message.getLocalUrl()));
-                    file.save();
-                } catch (NullPointerException|ParseException e) {
+                    com.google.android.gms.tasks.Tasks.await(
+                            // Register observers to listen for when the download is done or if it fails
+                            uploadTask.addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception exception) {
+                                    // Handle unsuccessful uploads
+                                }
+                            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                                @Override
+                                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+                                    // TODO: Review method
+                                    Uri downloadUrl = taskSnapshot.getUploadSessionUri();
+                                }
+                            })
+                    );
+                } catch (ExecutionException |InterruptedException e) {
                     Logger.error("SendMessageJob", "File couldn't be added to message " + e.getMessage());
                     message.updateMessageStatus(getApplicationContext(), DeliveryStatus.statusParseError);
                     return;
@@ -93,9 +121,9 @@ public class SendMessageJob extends Job {
         }
 
         try {
-            ParseCloud.callFunction("sendUserMessage", params);
+            NetworkingManager.getInstance().postSync("sendUserMessage", params);
             message.updateMessageStatus(getApplicationContext(), DeliveryStatus.statusAllDelivered);
-        } catch (ParseException e) {
+        } catch (FirebaseCustomException e) {
             if (AppActions.validateParseException(e)) {
                 AppActions.appLogout(getApplicationContext(), true);
             } else {

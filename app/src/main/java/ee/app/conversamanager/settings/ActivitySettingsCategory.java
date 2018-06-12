@@ -11,9 +11,6 @@ import android.view.View;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
-import com.parse.FunctionCallback;
-import com.parse.ParseCloud;
-import com.parse.ParseException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -29,8 +26,11 @@ import java.util.Locale;
 import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.R;
 import ee.app.conversamanager.extendables.ConversaActivity;
+import ee.app.conversamanager.interfaces.FunctionCallback;
 import ee.app.conversamanager.items.HeaderItem;
 import ee.app.conversamanager.items.SectionableItem;
+import ee.app.conversamanager.networking.FirebaseCustomException;
+import ee.app.conversamanager.networking.NetworkingManager;
 import ee.app.conversamanager.utils.AppActions;
 import ee.app.conversamanager.utils.Logger;
 import ee.app.conversamanager.view.RegularTextView;
@@ -99,11 +99,11 @@ public class ActivitySettingsCategory extends ConversaActivity implements Flexib
         params.put("language", language);
         params.put("businessId", ConversaApp.getInstance(this).getPreferences().getAccountBusinessId());
 
-        ParseCloud.callFunctionInBackground("getBusinessCategories", params, new FunctionCallback<String>() {
+        NetworkingManager.getInstance().post("getBusinessCategories", params, new FunctionCallback<Object>() {
             @Override
-            public void done(String jsonCategories, ParseException e) {
-                if (e != null) {
-                    if (AppActions.validateParseException(e)) {
+            public void done(Object json, FirebaseCustomException exception) {
+                if (exception != null) {
+                    if (AppActions.validateParseException(exception)) {
                         AppActions.appLogout(getApplicationContext(), true);
                     } else {
                         ((RegularTextView)findViewById(R.id.rtvInfo)).setText(
@@ -118,7 +118,7 @@ public class ActivitySettingsCategory extends ConversaActivity implements Flexib
                             categoriesHeader = new HeaderItem("1", getString(R.string.sett_category_available_title));
                         }
 
-                        JSONObject jsonRootObject = new JSONObject(jsonCategories);
+                        JSONObject jsonRootObject = new JSONObject(json.toString());
                         JSONArray unsortedCategories = jsonRootObject.optJSONArray("ids");
                         JSONArray selectedIds = jsonRootObject.optJSONArray("select");
                         limit = jsonRootObject.optInt("limit", 0);
@@ -325,9 +325,9 @@ public class ActivitySettingsCategory extends ConversaActivity implements Flexib
             params.put("categories", selectedIdsString);
             params.put("businessId", ConversaApp.getInstance(this).getPreferences().getAccountBusinessId());
             params.put("limit", limit);
-            ParseCloud.callFunctionInBackground("updateBusinessCategory", params, new FunctionCallback<Integer>() {
+            NetworkingManager.getInstance().post("updateBusinessCategory", params, new FunctionCallback<Integer>() {
                 @Override
-                public void done(Integer jsonCategories, ParseException e) {
+                public void done(Integer jsonCategories, FirebaseCustomException e) {
                     if (e != null) {
                         if (AppActions.validateParseException(e)) {
                             AppActions.appLogout(getApplicationContext(), true);

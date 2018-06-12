@@ -9,17 +9,16 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.parse.FunctionCallback;
-import com.parse.ParseCloud;
-import com.parse.ParseException;
-
 import java.util.HashMap;
 
 import ee.app.conversamanager.ActivitySignIn;
 import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.R;
 import ee.app.conversamanager.extendables.BaseActivity;
+import ee.app.conversamanager.interfaces.FunctionCallback;
 import ee.app.conversamanager.model.nBusiness;
+import ee.app.conversamanager.networking.FirebaseCustomException;
+import ee.app.conversamanager.networking.NetworkingManager;
 import ee.app.conversamanager.utils.Const;
 import ee.app.conversamanager.utils.Utils;
 
@@ -89,9 +88,9 @@ public class ActivityContact extends BaseActivity implements View.OnClickListene
                     params.put("email", mEtEmail.getText().toString());
                     params.put("position", mEtJob.getText().toString());
                     params.put("contact", mEtNumber.getText().toString());
-                    ParseCloud.callFunctionInBackground("businessClaimRequest", params, new FunctionCallback<Integer>() {
+                    NetworkingManager.getInstance().post("businessClaimRequest", params, new FunctionCallback<Integer>() {
                         @Override
-                        public void done(Integer object, ParseException e) {
+                        public void done(Integer object, FirebaseCustomException e) {
                             String title;
 
                             if (e == null) {

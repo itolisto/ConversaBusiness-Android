@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AlertDialog;
@@ -11,21 +12,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.parse.GetCallback;
-import com.parse.LogInCallback;
-import com.parse.ParseException;
-import com.parse.ParseQuery;
-import com.parse.ParseUser;
-
-import java.util.ArrayList;
-import java.util.Collection;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
 
 import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.R;
 import ee.app.conversamanager.extendables.BaseActivity;
-import ee.app.conversamanager.model.parse.Account;
 import ee.app.conversamanager.utils.AppActions;
-import ee.app.conversamanager.utils.Const;
 import ee.app.conversamanager.utils.Utils;
 
 /**
@@ -96,22 +91,26 @@ public class ActivityLogIn extends BaseActivity implements View.OnClickListener 
                 break;
             case R.id.btnSignInIn:
                 if (validateForm()) {
-                    final String mSignInEmail = mEtSignInEmail.getText().toString();
-                    final String mSignInPassword = mEtSignInPassword.getText().toString();
+                    final String email = mEtSignInEmail.getText().toString();
+                    final String password = mEtSignInPassword.getText().toString();
 
                     final ProgressDialog progress = ProgressDialog.show(this, null, null, true, false);
                     progress.setContentView(R.layout.progress_layout);
 
-                    ParseUser.logInInBackground(mSignInEmail, mSignInPassword, new LogInCallback() {
-                        public void done(ParseUser user, ParseException e) {
-                            progress.dismiss();
-                            if (user != null) {
-                                AuthListener(true, null);
-                            } else {
-                                AuthListener(false, e);
+                    FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
+                    mAuth.signInWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<AuthResult> task) {
+                                progress.dismiss();
+                                if (task.isSuccessful()) {
+                                    AuthListener(true, null);
+                                } else {
+                                    AuthListener(false, task.getException());
+                                }
                             }
-                        }
-                    });
+                        });
                 }
                 break;
         }
@@ -150,7 +149,7 @@ public class ActivityLogIn extends BaseActivity implements View.OnClickListener 
         return true;
     }
 
-    public void AuthListener(boolean result, ParseException error) {
+    public void AuthListener(boolean result, Exception error) {
         if (result) {
             AppActions.initSession(this);
         } else {

@@ -33,9 +33,6 @@ import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
-import com.parse.FunctionCallback;
-import com.parse.ParseCloud;
-import com.parse.ParseException;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,6 +44,9 @@ import java.util.List;
 import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.R;
 import ee.app.conversamanager.extendables.ConversaActivity;
+import ee.app.conversamanager.interfaces.FunctionCallback;
+import ee.app.conversamanager.networking.FirebaseCustomException;
+import ee.app.conversamanager.networking.NetworkingManager;
 import ee.app.conversamanager.utils.AppActions;
 import ee.app.conversamanager.utils.Logger;
 import ee.app.conversamanager.utils.Utils;
@@ -200,13 +200,13 @@ public class ActivitySettingsProfile extends ConversaActivity implements View.On
         params.put("businessId", ConversaApp.getInstance(this).getPreferences().getAccountBusinessId());
         params.put("count", false);
 
-        ParseCloud.callFunctionInBackground("getBusinessProfile", params, new FunctionCallback<String>() {
+        NetworkingManager.getInstance().post("getBusinessProfile", params, new FunctionCallback<Object>() {
             @Override
-            public void done(String result, ParseException e) {
-                if(e == null) {
-                    parseResult(result);
+            public void done(Object json, FirebaseCustomException exception) {
+                if(exception == null) {
+                    parseResult(json.toString());
                 } else {
-                    if (AppActions.validateParseException(e)) {
+                    if (AppActions.validateParseException(exception)) {
                         AppActions.appLogout(getApplicationContext(), true);
                     } else {
                         parseResult("");

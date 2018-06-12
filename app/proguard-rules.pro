@@ -15,8 +15,18 @@
 #-keepclassmembers class fqcn.of.javascript.interface.for.webview {
 #   public *;
 #}
+
+#
+# Keep source file names, line numbers
+#
+-keepattributes SourceFile,LineNumberTable
+
+
+#
 # Google
+#
 -dontwarn com.google.android.gms.internal.**
+
 #
 # EventBus
 #
@@ -25,53 +35,61 @@
     @org.greenrobot.eventbus.Subscribe <methods>;
 }
 -keep enum org.greenrobot.eventbus.ThreadMode { *; }
+
 #
-#AVLoadingIndicatorView
+# AVLoadingIndicatorView
 #
 -keep class com.wang.avi.** { *; }
 -keep class com.wang.avi.indicators.** { *; }
+
 #
 # MPAndroidChart
 #
 -keep class com.github.mikephil.charting.** { *; }
+
 #
-# Keep source file names, line numbers, and Parse class/method names for easier debugging
-#
--keepattributes SourceFile,LineNumberTable
--keepnames class com.parse.** { *; }
-#
-# Required for Parse
-#
--keepnames class com.parse.** { *; }
--keepattributes *Annotation*
--keepattributes Signature
--dontwarn android.net.SSLCertificateSocketFactory
--dontwarn android.app.Notification
--dontwarn com.squareup.**
--dontwarn okio.**
--dontwarn com.parse.**
-#
-# Required for Fresco
+# Fresco
 #
 # Keep our interfaces so they can be used by other ProGuard rules.
 # See http://sourceforge.net/p/proguard/bugs/466/
 -keep,allowobfuscation @interface com.facebook.common.internal.DoNotStrip
-
 # Do not strip any method/class that is annotated with @DoNotStrip
 -keep @com.facebook.common.internal.DoNotStrip class *
 -keepclassmembers class * {
     @com.facebook.common.internal.DoNotStrip *;
 }
-
 # Keep native methods
 -keepclassmembers class * {
     native <methods>;
 }
 
+#
+# OkHttp
+#
 -dontwarn okhttp3.**
+-dontwarn okio.**
 -dontwarn javax.annotation.**
--dontwarn com.android.volley.toolbox.**
--dontwarn com.facebook.infer.**
+# A resource is loaded with a relative path so the package of this class must be preserved.
+-keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
+# -dontwarn com.android.volley.toolbox.**
+# -dontwarn com.facebook.infer.**
+
+#
 # HockeyApp
+#
 -keep public class net.hockeyapp.android.utils.* { public *; }
 -dontwarn net.hockeyapp.android.utils.**
+
+
+
+#
+# Parse
+#
+#-keepnames class com.parse.** { *; }
+#-keepattributes *Annotation*
+#-keepattributes Signature
+#-dontwarn android.net.SSLCertificateSocketFactory
+#-dontwarn android.app.Notification
+#-dontwarn com.squareup.**
+#-dontwarn okio.**
+#-dontwarn com.parse.**

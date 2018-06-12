@@ -22,9 +22,6 @@ import android.widget.TextView;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.facebook.drawee.view.SimpleDraweeView;
-import com.parse.FunctionCallback;
-import com.parse.ParseCloud;
-import com.parse.ParseException;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -41,7 +38,10 @@ import java.util.Locale;
 import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.R;
 import ee.app.conversamanager.extendables.BaseActivity;
+import ee.app.conversamanager.interfaces.FunctionCallback;
 import ee.app.conversamanager.model.nCategory;
+import ee.app.conversamanager.networking.FirebaseCustomException;
+import ee.app.conversamanager.networking.NetworkingManager;
 import ee.app.conversamanager.utils.Const;
 import ee.app.conversamanager.utils.ImageFilePath;
 import ee.app.conversamanager.utils.Logger;
@@ -108,14 +108,14 @@ public class ActivityRegister extends BaseActivity implements View.OnClickListen
         HashMap<String, Object> params = new HashMap<>(1);
         params.put("language", language);
 
-        ParseCloud.callFunctionInBackground("getOnlyCategories", params, new FunctionCallback<String>() {
+        NetworkingManager.getInstance().post("getOnlyCategories", params, new FunctionCallback<Object>() {
             @Override
-            public void done(String jsonCategories, ParseException e) {
-                if (e != null) {
+            public void done(Object json, FirebaseCustomException exception) {
+                if (exception != null) {
                     showErrorMessage(getString(R.string.sign_up_register_categories_error));
                 } else {
                     try {
-                        JSONArray categories = new JSONArray(jsonCategories);
+                        JSONArray categories = new JSONArray(json.toString());
 
                         int size = categories.length();
                         List<nCategory> categoriesList = new ArrayList<>(size);
@@ -204,9 +204,10 @@ public class ActivityRegister extends BaseActivity implements View.OnClickListen
 
                     HashMap<String, Object> params = new HashMap<>(1);
                     params.put("conversaID", mEtConversaId.getText().toString());
-                    ParseCloud.callFunctionInBackground("businessValidateId", params, new FunctionCallback<Object>() {
+
+                    NetworkingManager.getInstance().post("businessValidateId", params, new FunctionCallback<Object>() {
                         @Override
-                        public void done(Object object, ParseException e) {
+                        public void done(Object object, FirebaseCustomException e) {
                             dialog.dismiss();
 
                             if (e == null) {

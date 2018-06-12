@@ -21,9 +21,6 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
-import com.parse.FunctionCallback;
-import com.parse.ParseCloud;
-import com.parse.ParseException;
 import com.wang.avi.AVLoadingIndicatorView;
 
 import org.json.JSONObject;
@@ -35,9 +32,11 @@ import java.util.HashMap;
 import java.util.Locale;
 
 import ee.app.conversamanager.extendables.ConversaFragment;
+import ee.app.conversamanager.interfaces.FunctionCallback;
+import ee.app.conversamanager.networking.FirebaseCustomException;
+import ee.app.conversamanager.networking.NetworkingManager;
 import ee.app.conversamanager.settings.PreferencesKeys;
 import ee.app.conversamanager.utils.AppActions;
-import ee.app.conversamanager.utils.Logger;
 import ee.app.conversamanager.utils.Utils;
 import ee.app.conversamanager.view.BoldTextView;
 import ee.app.conversamanager.view.RegularTextView;
@@ -167,9 +166,9 @@ public class FragmentStatistics extends ConversaFragment implements SharedPrefer
         params.put("businessId", ConversaApp.getInstance(getActivity()).getPreferences().getAccountBusinessId());
         params.put("language", language);
 
-        ParseCloud.callFunctionInBackground("getBusinessStatisticsAll", params, new FunctionCallback<String>() {
+        NetworkingManager.getInstance().post("getBusinessStatisticsAll", params, new FunctionCallback<Object>() {
             @Override
-            public void done(String jsonStatistics, ParseException e) {
+            public void done(Object json, FirebaseCustomException exception) {
                 load = false;
 
                 if (mSrlStats.isRefreshing())
@@ -177,15 +176,15 @@ public class FragmentStatistics extends ConversaFragment implements SharedPrefer
 
                 mPbLoadingStats.smoothToHide();
 
-                if (e != null) {
-                    if (AppActions.validateParseException(e)) {
+                if (exception != null) {
+                    if (AppActions.validateParseException(exception)) {
                         AppActions.appLogout(getActivity(), true);
                     } else {
                         mRlRetry.setVisibility(View.VISIBLE);
                     }
                 } else {
                     try {
-                        JSONObject jsonRootObject = new JSONObject(jsonStatistics);
+                        JSONObject jsonRootObject = new JSONObject(json.toString());
 
                         JSONObject all = jsonRootObject.getJSONObject("all");
                         JSONObject charts = jsonRootObject.getJSONObject("charts");

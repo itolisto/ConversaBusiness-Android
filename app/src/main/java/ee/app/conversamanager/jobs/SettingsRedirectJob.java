@@ -6,12 +6,12 @@ import android.support.annotation.Nullable;
 import com.birbit.android.jobqueue.Job;
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
-import com.parse.ParseCloud;
-import com.parse.ParseException;
 
 import java.util.HashMap;
 
 import ee.app.conversamanager.ConversaApp;
+import ee.app.conversamanager.networking.FirebaseCustomException;
+import ee.app.conversamanager.networking.NetworkingManager;
 import ee.app.conversamanager.utils.AppActions;
 import ee.app.conversamanager.utils.Logger;
 
@@ -43,7 +43,7 @@ public class SettingsRedirectJob extends Job {
                 .getPreferences().getAccountBusinessId());
         params.put("redirect", redirect);
 
-        ParseCloud.callFunction("updateBusinessRedirect", params);
+        NetworkingManager.getInstance().postSync("updateBusinessRedirect", params);
 
         ConversaApp.getInstance(getApplicationContext())
                 .getPreferences()
@@ -67,8 +67,8 @@ public class SettingsRedirectJob extends Job {
 
     @Override
     protected RetryConstraint shouldReRunOnThrowable(@NonNull Throwable throwable, int runCount, int maxRunCount) {
-        if (throwable instanceof ParseException) {
-            if (AppActions.validateParseException((ParseException) throwable)) {
+        if (throwable instanceof FirebaseCustomException) {
+            if (AppActions.validateParseException((FirebaseCustomException) throwable)) {
                 AppActions.appLogout(getApplicationContext(), true);
                 return RetryConstraint.CANCEL;
             }
