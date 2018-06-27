@@ -108,7 +108,7 @@ public class ActivityRegister extends BaseActivity implements View.OnClickListen
         HashMap<String, Object> params = new HashMap<>(1);
         params.put("language", language);
 
-        NetworkingManager.getInstance().post("getOnlyCategories", params, new FunctionCallback<Object>() {
+        NetworkingManager.getInstance().post("general/getOnlyCategories", params, new FunctionCallback<Object>() {
             @Override
             public void done(Object json, FirebaseCustomException exception) {
                 if (exception != null) {
@@ -205,7 +205,7 @@ public class ActivityRegister extends BaseActivity implements View.OnClickListen
                     HashMap<String, Object> params = new HashMap<>(1);
                     params.put("conversaID", mEtConversaId.getText().toString());
 
-                    NetworkingManager.getInstance().post("businessValidateId", params, new FunctionCallback<Object>() {
+                    NetworkingManager.getInstance().post("business/businessValidateId", params, new FunctionCallback<Object>() {
                         @Override
                         public void done(Object object, FirebaseCustomException e) {
                             dialog.dismiss();

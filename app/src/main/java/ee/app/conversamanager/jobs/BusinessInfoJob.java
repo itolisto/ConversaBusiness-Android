@@ -41,7 +41,7 @@ public class BusinessInfoJob extends Job {
     public void onRun() throws Throwable {
         HashMap<String, String> params = new HashMap<>();
 
-        String json = NetworkingManager.getInstance().postSync("getBusinessId", params);
+        String json = NetworkingManager.getInstance().postSync("business/getBusinessId", params);
         JSONObject jsonRootObject = new JSONObject(json);
 
         String objectId = jsonRootObject.optString("ob", "");

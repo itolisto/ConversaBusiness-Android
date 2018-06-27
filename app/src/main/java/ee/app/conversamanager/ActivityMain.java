@@ -196,7 +196,7 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
                     params.put("businessId", id);
 
                     try {
-                        NetworkingManager.getInstance().postSync("updateBusinessLastConnection", params);
+                        NetworkingManager.getInstance().postSync("business/updateBusinessLastConnection", params);
                     } catch (FirebaseCustomException e) {
                         if (AppActions.validateParseException(e)) {
                             AppActions.appLogout(getApplicationContext(), true);

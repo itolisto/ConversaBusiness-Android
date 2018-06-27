@@ -61,7 +61,7 @@ public class ActivityCheck extends BaseActivity implements View.OnClickListener 
                     HashMap<String, Object> params = new HashMap<>(1);
                     params.put("search", mEtCheckName.getText().toString());
 
-                    NetworkingManager.getInstance().post("businessClaimSearch", params, new FunctionCallback<Object>() {
+                    NetworkingManager.getInstance().post("general/searchBusiness", params, new FunctionCallback<Object>() {
                         @Override
                         public void done(Object json, FirebaseCustomException exception) {
                             if (exception == null) {

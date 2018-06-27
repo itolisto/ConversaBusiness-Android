@@ -88,7 +88,7 @@ public class ActivityContact extends BaseActivity implements View.OnClickListene
                     params.put("email", mEtEmail.getText().toString());
                     params.put("position", mEtJob.getText().toString());
                     params.put("contact", mEtNumber.getText().toString());
-                    NetworkingManager.getInstance().post("businessClaimRequest", params, new FunctionCallback<Integer>() {
+                    NetworkingManager.getInstance().post("business/businessClaimRequest", params, new FunctionCallback<Integer>() {
                         @Override
                         public void done(Integer object, FirebaseCustomException e) {
                             String title;

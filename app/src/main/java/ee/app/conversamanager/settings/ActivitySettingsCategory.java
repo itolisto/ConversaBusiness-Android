@@ -99,7 +99,7 @@ public class ActivitySettingsCategory extends ConversaActivity implements Flexib
         params.put("language", language);
         params.put("businessId", ConversaApp.getInstance(this).getPreferences().getAccountBusinessId());
 
-        NetworkingManager.getInstance().post("getBusinessCategories", params, new FunctionCallback<Object>() {
+        NetworkingManager.getInstance().post("business/getBusinessCategories", params, new FunctionCallback<Object>() {
             @Override
             public void done(Object json, FirebaseCustomException exception) {
                 if (exception != null) {
@@ -325,7 +325,7 @@ public class ActivitySettingsCategory extends ConversaActivity implements Flexib
             params.put("categories", selectedIdsString);
             params.put("businessId", ConversaApp.getInstance(this).getPreferences().getAccountBusinessId());
             params.put("limit", limit);
-            NetworkingManager.getInstance().post("updateBusinessCategory", params, new FunctionCallback<Integer>() {
+            NetworkingManager.getInstance().post("business/updateBusinessCategory", params, new FunctionCallback<Integer>() {
                 @Override
                 public void done(Integer jsonCategories, FirebaseCustomException e) {
                     if (e != null) {

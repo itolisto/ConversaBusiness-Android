@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import ee.app.conversamanager.BuildConfig;
 import ee.app.conversamanager.interfaces.FunctionCallback;
 import ee.app.conversamanager.interfaces.OnCompleteFileFunction;
 import okhttp3.Call;
@@ -42,7 +43,7 @@ public class NetworkingManager {
 
     private static NetworkingManager INSTANCE = null;
 
-    private final String BASE_URL = "https://api.twitter.com/1/";
+    private final String BASE_URL = "https://us-central1-luminous-inferno-3905.cloudfunctions.net/api/";
     private final MediaType MEDIA_JSON = MediaType.parse("application/json; charset=utf-8");
     private final MediaType MEDIA_IMAGE = MediaType.parse("image/png");
 
@@ -76,6 +77,9 @@ public class NetworkingManager {
         final Headers.Builder headersBuilder = new Headers.Builder();
         headersBuilder.set("Accept", "application/json");
         headersBuilder.set("Content-Type", "text/json; Charset=UTF-8");
+        headersBuilder.set("X-Conversa-Application-Id", "abc");
+        headersBuilder.set("X-Conversa-Client-Version", BuildConfig.VERSION_NAME);
+        headersBuilder.set("X-Conversa-Client-Key", "fdas");
         headersBuilder.set("Authorization", "Bearer " + ((tokenId == null) ? "" : tokenId));
         return headersBuilder.build();
     }

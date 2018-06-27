@@ -166,7 +166,7 @@ public class FragmentStatistics extends ConversaFragment implements SharedPrefer
         params.put("businessId", ConversaApp.getInstance(getActivity()).getPreferences().getAccountBusinessId());
         params.put("language", language);
 
-        NetworkingManager.getInstance().post("getBusinessStatisticsAll", params, new FunctionCallback<Object>() {
+        NetworkingManager.getInstance().post("business/getBusinessStatisticsAll", params, new FunctionCallback<Object>() {
             @Override
             public void done(Object json, FirebaseCustomException exception) {
                 load = false;

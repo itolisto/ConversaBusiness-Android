@@ -159,7 +159,7 @@ public class ActivityRegisterComplete extends BaseActivity implements View.OnCli
         mLtvTermsPrivacy.setText(styledString);
 
         HashMap<String, Object> params = new HashMap<>(1);
-        NetworkingManager.getInstance().post("getCountries", params, new FunctionCallback<Object>() {
+        NetworkingManager.getInstance().post("general/getCountries", params, new FunctionCallback<Object>() {
             @Override
             public void done(Object json, FirebaseCustomException exception) {
                 if (exception != null) {
