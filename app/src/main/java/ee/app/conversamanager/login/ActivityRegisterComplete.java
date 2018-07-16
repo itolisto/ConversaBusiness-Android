@@ -40,6 +40,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -159,7 +160,7 @@ public class ActivityRegisterComplete extends BaseActivity implements View.OnCli
         mLtvTermsPrivacy.setText(styledString);
 
         HashMap<String, Object> params = new HashMap<>(1);
-        NetworkingManager.getInstance().post("general/getCountries", params, new FunctionCallback<Object>() {
+        NetworkingManager.getInstance().post("public/getCountries", params, new FunctionCallback<Object>() {
             @Override
             public void done(Object json, FirebaseCustomException exception) {
                 if (exception != null) {
@@ -169,7 +170,7 @@ public class ActivityRegisterComplete extends BaseActivity implements View.OnCli
                         JSONArray countries = new JSONArray(json.toString());
 
                         int size = countries.length();
-                        List<nCountry> countryList = new ArrayList<>(size);
+                        final List<nCountry> countryList = new ArrayList<>(size);
 
                         for (int i = 0; i < size; i++) {
                             JSONObject jsonCategory = countries.getJSONObject(i);
@@ -188,7 +189,12 @@ public class ActivityRegisterComplete extends BaseActivity implements View.OnCli
                             }
                         });
 
-                        dataAdapter.setItems(countryList);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                dataAdapter.setItems(countryList);
+                            }
+                        });
                     } catch (JSONException ignored) {
                         showErrorMessage(getString(R.string.sign_up_register_countries_error));
                     }
@@ -218,81 +224,74 @@ public class ActivityRegisterComplete extends BaseActivity implements View.OnCli
     }
 
     private void uploadAvatar() {
-        if (path == null) {
+//        if (path == null) {
             completeSignup("");
-        } else {
-            FirebaseStorage storage = FirebaseStorage.getInstance();
-
-            FirebaseAuth mAuth = FirebaseAuth.getInstance();
-            FirebaseUser currentUser = mAuth.getCurrentUser();
-
-            Uri file = Uri.fromFile(new File(path));
-
-//            StorageReference storageRef = storage.getReference();
-//            StorageReference avatarRef = storageRef.child("avatar/" + currentUser.getUid() + "/" + file.getLastPathSegment());
-            StorageReference storageRef = storage.getReference("avatar/" + currentUser.getUid() + "/" + file.getLastPathSegment());
-
-            UploadTask uploadTask = storageRef.putFile(file);
-            // Register observers to listen for when the download is done or if it fails
-            uploadTask.addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    showErrorMessage(getString(R.string.sign_up_error));
-                }
-            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                    // TODO: review this method
-                    Uri downloadUrl = taskSnapshot.getUploadSessionUri();
-                    if (downloadUrl != null)
-                        completeSignup(downloadUrl.toString());
-                    else
-                        showErrorMessage(getString(R.string.settings_avatar_error));
-
-                }
-            });
-        }
+//        } else {
+//            FirebaseStorage storage = FirebaseStorage.getInstance("gs://luminous-inferno-3905-business");
+//
+//            FirebaseAuth mAuth = FirebaseAuth.getInstance();
+//            FirebaseUser currentUser = mAuth.getCurrentUser();
+//
+//            Uri file = Uri.fromFile(new File(path));
+//
+////            StorageReference storageRef = storage.getReference();
+////            StorageReference avatarRef = storageRef.child("avatar/" + currentUser.getUid() + "/" + file.getLastPathSegment());
+//            StorageReference storageRef = storage.getReference("avatar/" + currentUser.getUid() + "/" + file.getLastPathSegment());
+//
+//            UploadTask uploadTask = storageRef.putFile(file);
+//            // Register observers to listen for when the download is done or if it fails
+//            uploadTask.addOnFailureListener(new OnFailureListener() {
+//                @Override
+//                public void onFailure(@NonNull Exception exception) {
+//                    showErrorMessage(getString(R.string.sign_up_error));
+//                }
+//            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+//                @Override
+//                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+//                    // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
+//                    // TODO: review this method
+//                    Uri downloadUrl = taskSnapshot.getUploadSessionUri();
+//                    if (downloadUrl != null)
+//                        completeSignup(downloadUrl.toString());
+//                    else
+//                        showErrorMessage(getString(R.string.settings_avatar_error));
+//
+//                }
+//            });
+//        }
     }
 
     private void completeSignup(String avatar) {
-        Account user = new Account();
-
-        String email = mEtSignUpEmail.getText().toString();
-        String password = mEtSignUpPassword.getText().toString();
-
-        String parts[] = TextUtils.split(email, "@");
-        String username = parts[0];
-        String domain = TextUtils.split(parts[1], "\\.")[0];
-        String fusername = username + domain;
-
-        user.setEmail(email);
-        user.setUsername(fusername);
-        user.setUserType(2);
-        user.setAvatarUrl(avatar);
-        user.setCountryId(selectedCountry.getId());
-        user.setDisplayName(displayName);
-        user.setConversaId(conversaId);
-
-//        user.put("categoryId", categoryId);
-
+//        user.setUserType(2);
         final ProgressDialog progress = ProgressDialog.show(this, null, null, true, false);
         progress.setContentView(R.layout.progress_layout);
 
-        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        final String email = mEtSignUpEmail.getText().toString();
+        final String password = mEtSignUpPassword.getText().toString();
+        String parts[] = TextUtils.split(email, "@");
+        String username = parts[0];
 
-        mAuth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    progress.dismiss();
-                    if (task.isSuccessful()) {
-                        AuthListener(true, null);
-                    } else {
-                        AuthListener(false, task.getException());
-                    }
+        HashMap<String, Object> params = new HashMap<>(5);
+
+        params.put("email", email);
+        params.put("username", username);
+        params.put("password", password);
+        params.put("avatar", avatar);
+        params.put("countryId", selectedCountry.getId());
+        params.put("displayName", displayName);
+        params.put("conversaID", conversaId);
+        params.put("categoryId", categoryId);
+        NetworkingManager.getInstance().post("users", params, new FunctionCallback<JSONObject>() {
+            @Override
+            public void done(JSONObject json, FirebaseCustomException exception) {
+                progress.dismiss();
+                if (exception == null) {
+                    SignListener(true, null);
+                } else {
+                    SignListener(false, exception);
                 }
-            });
+            }
+        });
     }
 
     private boolean validateForm() {
@@ -387,7 +386,41 @@ public class ActivityRegisterComplete extends BaseActivity implements View.OnCli
         public View getView(int position, View convertView, ViewGroup parent) {
             return getCustomView(position, convertView, parent);
         }
+    }
 
+    public void SignListener(boolean result, Exception error) {
+        if (result) {
+            String email = mEtSignUpEmail.getText().toString();
+            String password = mEtSignUpPassword.getText().toString();
+
+            FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
+            mAuth.signInWithEmailAndPassword(email, password)
+                    .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                        @Override
+                        public void onComplete(@NonNull Task<AuthResult> task) {
+                            if (task.isSuccessful()) {
+                                AuthListener(true, null);
+                            } else {
+                                AuthListener(false, task.getException());
+                            }
+                        }
+                    });
+        } else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage(getString(R.string.signup_register_error));
+
+            String positiveText = getString(android.R.string.ok);
+            builder.setPositiveButton(positiveText,
+                    new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        }
     }
 
     public void AuthListener(boolean result, Exception error) {

@@ -60,10 +60,11 @@ public class ActivityCheck extends BaseActivity implements View.OnClickListener 
                 if (validateForm()) {
                     HashMap<String, Object> params = new HashMap<>(1);
                     params.put("search", mEtCheckName.getText().toString());
+                    params.put("skip", 0); // Not needed for search but we add this parameter as api requires it
 
-                    NetworkingManager.getInstance().post("general/searchBusiness", params, new FunctionCallback<Object>() {
+                    NetworkingManager.getInstance().post("public/searchBusiness", params, new FunctionCallback<JSONArray>() {
                         @Override
-                        public void done(Object json, FirebaseCustomException exception) {
+                        public void done(JSONArray json, FirebaseCustomException exception) {
                             if (exception == null) {
                                 try {
                                     JSONArray results = new JSONArray(json.toString());

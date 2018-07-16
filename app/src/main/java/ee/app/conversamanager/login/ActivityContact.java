@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import org.json.JSONObject;
+
 import java.util.HashMap;
 
 import ee.app.conversamanager.ActivitySignIn;
@@ -88,9 +90,9 @@ public class ActivityContact extends BaseActivity implements View.OnClickListene
                     params.put("email", mEtEmail.getText().toString());
                     params.put("position", mEtJob.getText().toString());
                     params.put("contact", mEtNumber.getText().toString());
-                    NetworkingManager.getInstance().post("business/businessClaimRequest", params, new FunctionCallback<Integer>() {
+                    NetworkingManager.getInstance().post("public/businessClaimRequest", params, new FunctionCallback<JSONObject>() {
                         @Override
-                        public void done(Integer object, FirebaseCustomException e) {
+                        public void done(JSONObject object, FirebaseCustomException e) {
                             String title;
 
                             if (e == null) {

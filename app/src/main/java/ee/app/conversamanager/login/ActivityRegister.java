@@ -108,15 +108,13 @@ public class ActivityRegister extends BaseActivity implements View.OnClickListen
         HashMap<String, Object> params = new HashMap<>(1);
         params.put("language", language);
 
-        NetworkingManager.getInstance().post("general/getOnlyCategories", params, new FunctionCallback<Object>() {
+        NetworkingManager.getInstance().post("public/getOnlyCategories", params, new FunctionCallback<JSONArray>() {
             @Override
-            public void done(Object json, FirebaseCustomException exception) {
+            public void done(JSONArray categories, FirebaseCustomException exception) {
                 if (exception != null) {
                     showErrorMessage(getString(R.string.sign_up_register_categories_error));
                 } else {
                     try {
-                        JSONArray categories = new JSONArray(json.toString());
-
                         int size = categories.length();
                         List<nCategory> categoriesList = new ArrayList<>(size);
 
@@ -205,7 +203,7 @@ public class ActivityRegister extends BaseActivity implements View.OnClickListen
                     HashMap<String, Object> params = new HashMap<>(1);
                     params.put("conversaID", mEtConversaId.getText().toString());
 
-                    NetworkingManager.getInstance().post("business/businessValidateId", params, new FunctionCallback<Object>() {
+                    NetworkingManager.getInstance().post("public/businessValidateId", params, new FunctionCallback<Object>() {
                         @Override
                         public void done(Object object, FirebaseCustomException e) {
                             dialog.dismiss();
