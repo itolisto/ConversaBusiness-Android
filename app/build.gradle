@@ -102,6 +102,8 @@ dependencies {
     implementation 'com.afollestad.material-dialogs:core:0.9.6.0'
     implementation 'com.google.firebase:firebase-firestore:17.0.1'
     implementation 'com.google.firebase:firebase-messaging:17.0.0'
+    // For StringUtils
+    implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.0'
 
     implementation('com.crashlytics.sdk.android:crashlytics:2.9.2@aar') {
         transitive = true

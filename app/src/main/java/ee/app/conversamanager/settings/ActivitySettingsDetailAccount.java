@@ -16,6 +16,7 @@ import android.view.View;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.facebook.drawee.view.SimpleDraweeView;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -25,6 +26,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+
+import org.json.JSONObject;
 
 import java.io.File;
 import java.util.HashMap;
@@ -210,36 +213,39 @@ public class ActivitySettingsDetailAccount extends ConversaActivity implements V
             switch (requestCode) {
                 case Const.CAPTURE_MEDIA: {
                     // Create FirebaseStorage
-                    FirebaseStorage storage = FirebaseStorage.getInstance();
+                    FirebaseStorage storage = FirebaseStorage.getInstance("gs://luminous-inferno-3905-business");
                     // Create a storage reference from our app
                     StorageReference storageRef = storage.getReference();
                     // Reference to messages images
                     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
                     if (user != null) {
-                        final Uri file = Uri.fromFile(new File("path/to/images/rivers.jpg"));
                         final String path = ImageFilePath.getPath(this, Uri.parse(data.getStringExtra("imageUri")));
+                        final Uri file = Uri.fromFile(new File(path));
 
-                        StorageReference riversRef = storageRef.child(user.getUid() + file.getLastPathSegment());
+                        final StorageReference riversRef = storageRef.child(ConversaApp.getInstance(this).getPreferences().getAccountBusinessId() + "/" + Utils.queryName(getContentResolver(), file));
                         // Create upload task
                         UploadTask uploadTask = riversRef.putFile(file);
 
-                        // Register observers to listen for when the download is done or if it fails
-                        uploadTask.addOnFailureListener(new OnFailureListener() {
+                        uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                             @Override
-                            public void onFailure(@NonNull Exception exception) {
-                                showErrorMessage(getString(R.string.settings_avatar_error));
+                            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                                if (!task.isSuccessful()) {
+                                    throw task.getException();
+                                }
+
+                                // Continue with the task to get the download URL
+                                return riversRef.getDownloadUrl();
                             }
-                        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+                        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
                             @Override
-                            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                                // taskSnapshot.getMetadata() contains file metadata such as size, content-type, and download URL.
-                                // TODO: review this method
-                                Uri downloadUrl = taskSnapshot.getUploadSessionUri();
-                                if (downloadUrl != null)
-                                    saveAvatar(downloadUrl.getPath(), path);
-                                else
+                            public void onComplete(@NonNull Task<Uri> task) {
+                                if (task.isSuccessful()) {
+                                    Uri downloadUri = task.getResult();
+                                    saveAvatar(downloadUri.toString(), path);
+                                } else {
                                     showErrorMessage(getString(R.string.settings_avatar_error));
+                                }
                             }
                         });
                     }
@@ -333,9 +339,9 @@ public class ActivitySettingsDetailAccount extends ConversaActivity implements V
                 HashMap<String, String> params = new HashMap<>(2);
                 params.put("displayName", newName);
                 params.put("businessId", ConversaApp.getInstance(this).getPreferences().getAccountBusinessId());
-                NetworkingManager.getInstance().post("business/updateBusinessName", params, new FunctionCallback<Integer>() {
+                NetworkingManager.getInstance().post("business/updateBusinessName", params, new FunctionCallback<JSONObject>() {
                     @Override
-                    public void done(Integer object, FirebaseCustomException e) {
+                    public void done(JSONObject object, FirebaseCustomException e) {
                         if (e == null) {
                             ConversaApp.getInstance(getApplicationContext())
                                     .getPreferences()
@@ -378,9 +384,9 @@ public class ActivitySettingsDetailAccount extends ConversaActivity implements V
                 HashMap<String, String> params = new HashMap<>(2);
                 params.put("conversaId", newName);
                 params.put("businessId", ConversaApp.getInstance(this).getPreferences().getAccountBusinessId());
-                NetworkingManager.getInstance().post("business/updateBusinessId", params, new FunctionCallback<Integer>() {
+                NetworkingManager.getInstance().post("business/updateBusinessId", params, new FunctionCallback<JSONObject>() {
                     @Override
-                    public void done(Integer object, FirebaseCustomException e) {
+                    public void done(JSONObject object, FirebaseCustomException e) {
                         if (e == null) {
                             ConversaApp.getInstance(getApplicationContext())
                                     .getPreferences()

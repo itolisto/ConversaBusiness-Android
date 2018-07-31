@@ -86,25 +86,6 @@ public class NetworkingManager {
         return headersBuilder.build();
     }
 
-    private String getUrlWithQueries(@NonNull String url, @Nullable Map<String, String> queries) {
-        HttpUrl urlParse = HttpUrl.parse(url);
-        if (urlParse != null) {
-            HttpUrl.Builder urlBuilder = urlParse.newBuilder();
-
-            if (queries != null) {
-                for (Map.Entry<String, String> entry : queries.entrySet()) {
-                    String key = entry.getKey();
-                    String value = entry.getValue();
-                    urlBuilder.addQueryParameter(key, value);
-                }
-            }
-
-            return urlBuilder.build().toString();
-        } else {
-            return url;
-        }
-    }
-
     public <T> void post(@NonNull final String functionName, @NonNull final HashMap<String, ?> requestJson, @Nullable final FunctionCallback<T> callback) {
         FirebaseUser current = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -120,8 +101,6 @@ public class NetworkingManager {
             current.getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
                 @Override
                 public void onComplete(@NonNull Task<GetTokenResult> task) {
-                    //RequestBody body = RequestBody.create(MEDIA_JSON, requestJson.toString());
-
                     Request request = new Request.Builder()
                             .headers(getFirebaseHeaders(task.getResult().getToken()))
                             .url(getAbsoluteUrl(functionName))
@@ -146,6 +125,23 @@ public class NetworkingManager {
         String token = "";
 
         if (current != null) {
+            final Object hack = new Object();
+            synchronized (hack) {
+                current.getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<GetTokenResult> task) {
+                        synchronized (hack) {
+                            hack.notifyAll();
+                        }
+                    }
+                });
+
+                try {
+                    hack.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
             token = current.getIdToken(false).getResult().getToken();
         }
 
@@ -163,46 +159,6 @@ public class NetworkingManager {
                 .post(body.build())
                 .build();
         return (T)executeSync(request);
-    }
-
-    public void get(@NonNull final String functionName, @NonNull final HashMap<String, String> requestJson, @Nullable final FunctionCallback callback) {
-        FirebaseUser current = FirebaseAuth.getInstance().getCurrentUser();
-        if (current != null) {
-            current.getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
-                @Override
-                public void onComplete(@NonNull Task<GetTokenResult> task) {
-                    Request request = new Request.Builder()
-                            .headers(getFirebaseHeaders(task.getResult().getToken()))
-                            .url(getUrlWithQueries(getAbsoluteUrl(functionName), requestJson))
-                            .get()
-                            .build();
-                    execute(request, callback);
-                }
-            });
-        } else {
-            Request request = new Request.Builder()
-                    .headers(getFirebaseHeaders(""))
-                    .url(getAbsoluteUrl(functionName))
-                    .get()
-                    .build();
-            execute(request, callback);
-        }
-    }
-
-    public <T> T getSync(@NonNull final String functionName, @NonNull final HashMap<String, String> requestJson) throws FirebaseCustomException {
-        FirebaseUser current = FirebaseAuth.getInstance().getCurrentUser();
-        String token = "";
-
-        if (current != null) {
-            token = current.getIdToken(true).getResult().getToken();
-        }
-
-        Request request = new Request.Builder()
-                .headers(getFirebaseHeaders(token))
-                .url(getUrlWithQueries(getAbsoluteUrl(functionName), requestJson))
-                .get()
-                .build();
-        return (T) executeSync(request);
     }
 
     private void execute(@NonNull final Request request, @Nullable final FunctionCallback callback) {
@@ -227,7 +183,13 @@ public class NetworkingManager {
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
                     if (response.isSuccessful()) {
-                        String json = response.body().string().trim();
+                        String json = "";
+
+                        if (response.body() != null) {
+                            json = response.body().string().trim();
+                            response.body().close();
+                        }
+
                         Handler handler = new Handler(Looper.getMainLooper());
 
                         try {
@@ -292,26 +254,24 @@ public class NetworkingManager {
             if (response.isSuccessful()) {
                 String json = "";
 
-                if (response.body() != null)
+                if (response.body() != null) {
                     json = response.body().string().trim();
-
-                Object results;
-
-                try {
-                    results = new JSONArray(json);
-                    return (T) results;
-                } catch (JSONException ignored) {}
+                    response.body().close();
+                }
 
                 try {
-                    results = new JSONObject(json);
-                    return (T) results;
-                } catch (JSONException ignored) {}
+                    return (T) new JSONArray(json);
+                } catch (Exception ignored) {}
+
+                try {
+                    return (T) new JSONObject(json);
+                } catch (Exception ignored) {}
 
                 return null;
             } else {
                 throw new IOException("Unexpected code " + response);
             }
-        } catch (@NonNull IllegalStateException | IOException ignored) {
+        } catch (@NonNull Exception ignored) {
             return null;
         }
     }

@@ -41,35 +41,35 @@ public class DownloadAvatarJob extends Job {
     @SuppressWarnings("ConstantConditions")
     @Override
     public void onRun() throws Throwable {
-        OkHttpClient client = new OkHttpClient();
-        Request request = new Request.Builder()
-                .url(
-                        ConversaApp.getInstance(getApplicationContext())
-                                .getPreferences()
-                                .getAccountAvatar()
-                )
-                .build();
-
-        try {
-            Response response = client.newCall(request).execute();
-
-            if (response.isSuccessful()) {
-                InputStream inputStream = response.body().byteStream();
-                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
-
-                ConversaApp.getInstance(getApplicationContext())
-                        .getPreferences()
-                        .setAccountAvatar(
-                                Utils.saveAvatarToInternalStorage(
-                                        getApplicationContext(),
-                                        bitmap)
-                        );
-            } else {
-                Logger.error(TAG, "Request received unsuccessful response code: " + response.code());
-            }
-        } catch (IOException|IllegalStateException e) {
-            Logger.error(TAG, "Image download error: " + e.getMessage());
-        }
+//        OkHttpClient client = new OkHttpClient();
+//        Request request = new Request.Builder()
+//                .url(
+//                        ConversaApp.getInstance(getApplicationContext())
+//                                .getPreferences()
+//                                .getAccountAvatar()
+//                )
+//                .build();
+//
+//        try {
+//            Response response = client.newCall(request).execute();
+//
+//            if (response.isSuccessful()) {
+//                InputStream inputStream = response.body().byteStream();
+//                Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+//
+//                ConversaApp.getInstance(getApplicationContext())
+//                        .getPreferences()
+//                        .setAccountAvatar(
+//                                Utils.saveAvatarToInternalStorage(
+//                                        getApplicationContext(),
+//                                        bitmap)
+//                        );
+//            } else {
+//                Logger.error(TAG, "Request received unsuccessful response code: " + response.code());
+//            }
+//        } catch (IOException|IllegalStateException e) {
+//            Logger.error(TAG, "Image download error: " + e.getMessage());
+//        }
     }
 
     @Override

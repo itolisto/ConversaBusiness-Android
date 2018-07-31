@@ -12,6 +12,7 @@ import android.view.View;
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -99,9 +100,9 @@ public class ActivitySettingsCategory extends ConversaActivity implements Flexib
         params.put("language", language);
         params.put("businessId", ConversaApp.getInstance(this).getPreferences().getAccountBusinessId());
 
-        NetworkingManager.getInstance().post("business/getBusinessCategories", params, new FunctionCallback<Object>() {
+        NetworkingManager.getInstance().post("business/getBusinessCategories", params, new FunctionCallback<JSONObject>() {
             @Override
-            public void done(Object json, FirebaseCustomException exception) {
+            public void done(JSONObject json, FirebaseCustomException exception) {
                 if (exception != null) {
                     if (AppActions.validateParseException(exception)) {
                         AppActions.appLogout(getApplicationContext(), true);
@@ -118,10 +119,9 @@ public class ActivitySettingsCategory extends ConversaActivity implements Flexib
                             categoriesHeader = new HeaderItem("1", getString(R.string.sett_category_available_title));
                         }
 
-                        JSONObject jsonRootObject = new JSONObject(json.toString());
-                        JSONArray unsortedCategories = jsonRootObject.optJSONArray("ids");
-                        JSONArray selectedIds = jsonRootObject.optJSONArray("select");
-                        limit = jsonRootObject.optInt("limit", 0);
+                        JSONArray unsortedCategories = json.optJSONArray("ids");
+                        JSONArray selectedIds = json.optJSONArray("select");
+                        limit = json.optInt("limit", 0);
 
                         int size = unsortedCategories.length();
                         List<SectionableItem>sortedCategory = new ArrayList<>(size);
@@ -322,28 +322,18 @@ public class ActivitySettingsCategory extends ConversaActivity implements Flexib
             Logger.error("saveCategories", "items:" + selectedIdsString);
 
             HashMap<String, Object> params = new HashMap<>(3);
-            params.put("categories", selectedIdsString);
+            params.put("categories", StringUtils.join(selectedIdsString,","));
             params.put("businessId", ConversaApp.getInstance(this).getPreferences().getAccountBusinessId());
             params.put("limit", limit);
-            NetworkingManager.getInstance().post("business/updateBusinessCategory", params, new FunctionCallback<Integer>() {
+            NetworkingManager.getInstance().post("business/updateBusinessCategory", params, new FunctionCallback<JSONObject>() {
                 @Override
-                public void done(Integer jsonCategories, FirebaseCustomException e) {
+                public void done(JSONObject jsonCategories, FirebaseCustomException e) {
                     if (e != null) {
                         if (AppActions.validateParseException(e)) {
                             AppActions.appLogout(getApplicationContext(), true);
                         } else {
                             if (!isFinishing()) {
-                                new MaterialDialog.Builder(getApplicationContext())
-                                        .content(getString(R.string.sett_category_limit_warning))
-                                        .positiveColorRes(R.color.purple)
-                                        .positiveText(getString(android.R.string.ok))
-                                        .onPositive(new MaterialDialog.SingleButtonCallback() {
-                                            @Override
-                                            public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                                                dialog.dismiss();
-                                            }
-                                        })
-                                        .show();
+                                showDialog();
                             }
                         }
                     } else {
@@ -356,5 +346,19 @@ public class ActivitySettingsCategory extends ConversaActivity implements Flexib
                 }
             });
         }
+    }
+
+    private void showDialog() {
+        new MaterialDialog.Builder(this)
+                .content(getString(R.string.sett_category_limit_warning))
+                .positiveColorRes(R.color.purple)
+                .positiveText(getString(android.R.string.ok))
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        dialog.dismiss();
+                    }
+                })
+                .show();
     }
 }

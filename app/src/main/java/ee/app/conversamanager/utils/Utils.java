@@ -4,10 +4,12 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.provider.OpenableColumns;
 import android.support.annotation.AnyRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.WorkerThread;
@@ -217,12 +219,22 @@ public class Utils {
 		return directory;
 	}
 
-	public static String getResourceName(File mediaDirectory) {
+	private static String getResourceName(File mediaDirectory) {
 		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss",
 				Locale.getDefault()).format(new Date(System.currentTimeMillis()));
 
 		return mediaDirectory.getPath() + File.separator
 				+ "IMG_" + timeStamp + ".jpg";
+	}
+
+	public static String queryName(ContentResolver resolver, Uri uri) {
+		Cursor returnCursor = resolver.query(uri, null, null, null, null);
+		assert returnCursor != null;
+		int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+		returnCursor.moveToFirst();
+		String name = returnCursor.getString(nameIndex);
+		returnCursor.close();
+		return name;
 	}
 
 	@WorkerThread
