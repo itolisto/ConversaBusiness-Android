@@ -222,8 +222,10 @@ public class ActivitySettingsDetailAccount extends ConversaActivity implements V
                     if (user != null) {
                         final String path = ImageFilePath.getPath(this, Uri.parse(data.getStringExtra("imageUri")));
                         final Uri file = Uri.fromFile(new File(path));
+                        // Schema is of type file://......
+                        File files = new File(file.getPath());
 
-                        final StorageReference riversRef = storageRef.child(ConversaApp.getInstance(this).getPreferences().getAccountBusinessId() + "/" + Utils.queryName(getContentResolver(), file));
+                        final StorageReference riversRef = storageRef.child(ConversaApp.getInstance(this).getPreferences().getAccountBusinessId() + "/" + files.getName());
                         // Create upload task
                         UploadTask uploadTask = riversRef.putFile(file);
 
