@@ -33,6 +33,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 
+import com.androidnetworking.AndroidNetworking;
 import com.birbit.android.jobqueue.JobManager;
 import com.birbit.android.jobqueue.config.Configuration;
 import com.birbit.android.jobqueue.log.CustomLogger;
@@ -44,6 +45,7 @@ import com.taplytics.sdk.Taplytics;
 import org.greenrobot.eventbus.EventBus;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import ee.app.conversamanager.database.MySQLiteHelper;
 import ee.app.conversamanager.events.MyEventBusIndex;
@@ -53,6 +55,7 @@ import ee.app.conversamanager.utils.Const;
 import ee.app.conversamanager.utils.Foreground;
 import ee.app.conversamanager.utils.Logger;
 import okhttp3.Interceptor;
+import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 
@@ -92,6 +95,7 @@ public class ConversaApp extends MultiDexApplication {
 		AblyConnection.initAblyManager(this);
 		AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
+		initializeFastNetworking();
 		initializeDeveloperBuild();
 		initializeJobManager();
 		initializeEventBus();
@@ -99,6 +103,54 @@ public class ConversaApp extends MultiDexApplication {
 		initializeTypefaces();
 		initializeTaplytics();
 		initializeOneSignal();
+	}
+
+	private void initializeFastNetworking() {
+//		final Interceptor interceptor = new Interceptor() {
+//			@Override
+//			public void intercept(Chain chain) throws IOException  {
+//				Request requestFacade = chain.request();
+//				requestFacade.addHeader("User-Agent", "Conversa Android App");
+//
+//				if (!Util.getSsoToken().isEmpty()) {
+//					setupAuthCookie(cookieManager);
+//
+//					if (BuildConstants.SERVER_URL.contains("qa.conversa.com") ) {
+//						requestFacade.addHeader("Authorization", "Basic " + Base64.encodeToString("dev:skyroar".getBytes(), 0));
+//					} else if (BuildConstants.SERVER_URL.contains("demo.taskeasy.com") ||
+//							BuildConstants.SERVER_URL.contains("test.conversa.com") ||
+//							BuildConstants.SERVER_URL.contains("staging.conversa.com")) {
+//						requestFacade.addHeader("Authorization", "Basic " + Base64.encodeToString("demo:yellowpig".getBytes(), 0));
+//					}
+//				}
+//			}
+//		};
+
+//		final Profiler profiler = new Profiler() {
+//			@Override
+//			public Object beforeCall() {
+//				return null;
+//			}
+//
+//			@Override
+//			public void afterCall(final RequestInformation requestInfo, final long elapsedTime, final int statusCode, final Object beforeCallData) {
+////				taskEasyApplication.getTracker(TrackerName.APP_TRACKER)
+////						.send(new HitBuilders.TimingBuilder()
+////								.setCategory(requestInfo.getMethod() + " Timings")
+////								.setValue(elapsedTime)
+////								.setVariable(requestInfo.getRelativePath())
+////								.setLabel(String.valueOf(statusCode))
+////								.build());
+//			}
+//		};
+
+		OkHttpClient client = new OkHttpClient().newBuilder()
+				.connectTimeout(30, TimeUnit.SECONDS)
+				.readTimeout(1, TimeUnit.MINUTES)
+				.build();
+
+		AndroidNetworking.initialize(getApplicationContext(), client);
+//		AndroidNetworking.setParserFactory(new JacksonParserFactory());
 	}
 
 	private void initializeDeveloperBuild() {
@@ -233,7 +285,6 @@ public class ConversaApp extends MultiDexApplication {
 	public Typeface getTfRalewayBold() {
 		return mTfRalewayBold;
 	}
-
 
 	class LoggingInterceptor implements Interceptor {
 		@SuppressLint("DefaultLocale")

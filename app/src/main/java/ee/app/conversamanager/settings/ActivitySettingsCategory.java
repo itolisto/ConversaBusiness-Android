@@ -210,7 +210,7 @@ public class ActivitySettingsCategory extends ConversaActivity implements Flexib
     }
 
     @Override
-    public boolean onItemClick(int position) {
+    public boolean onItemClick(View view, int position) {
         if (mAdapter.getItem(position) instanceof HeaderItem)
             return false;
 
