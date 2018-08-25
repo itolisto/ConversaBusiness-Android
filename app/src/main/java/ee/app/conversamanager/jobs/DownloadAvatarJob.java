@@ -1,7 +1,5 @@
 package ee.app.conversamanager.jobs;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -9,17 +7,9 @@ import com.birbit.android.jobqueue.Job;
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
 
-import java.io.IOException;
-import java.io.InputStream;
-
-import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.networking.FirebaseCustomException;
 import ee.app.conversamanager.utils.AppActions;
 import ee.app.conversamanager.utils.Logger;
-import ee.app.conversamanager.utils.Utils;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 /**
  * Created by edgargomez on 10/12/16.

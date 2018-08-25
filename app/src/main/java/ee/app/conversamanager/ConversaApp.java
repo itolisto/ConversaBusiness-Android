@@ -27,6 +27,7 @@ package ee.app.conversamanager;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.StrictMode;
 import android.support.multidex.MultiDexApplication;
 import android.support.v4.content.LocalBroadcastManager;
@@ -151,6 +152,10 @@ public class ConversaApp extends MultiDexApplication {
 
 		AndroidNetworking.initialize(getApplicationContext(), client);
 //		AndroidNetworking.setParserFactory(new JacksonParserFactory());
+
+		if (BuildConfig.DEV_BUILD) {
+			AndroidNetworking.enableLogging();
+		}
 	}
 
 	private void initializeDeveloperBuild() {

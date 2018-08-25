@@ -3,6 +3,7 @@ package ee.app.conversamanager;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
@@ -11,7 +12,11 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GetTokenResult;
 
 import java.util.HashMap;
 import java.util.Timer;
@@ -128,6 +133,17 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
         super.initialization();
         startTimer();
         Foreground.get(this).addListener(this);
+
+        FirebaseUser current = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (current != null) {
+            current.getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                @Override
+                public void onComplete(@NonNull Task<GetTokenResult> task) {
+                    ConversaApp.getInstance(getApplicationContext()).getPreferences().setFirebaseToken(task.getResult().getToken());
+                }
+            });
+        }
     }
 
     @Override

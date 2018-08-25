@@ -32,4 +32,6 @@ public class PreferencesKeys {
     public static final String ACCOUNT_REDIRECT_KEY = "sett_account_redirect_key";
     public static final String ACCOUNT_AVATAR_KEY = "sett_account_avatar_key";
     public static final String ACCOUNT_STATUS_KEY = "sett_account_status_key";
+
+    public static final String FIREBASE_TOKEN_ID = "firebase_token_id";
 }

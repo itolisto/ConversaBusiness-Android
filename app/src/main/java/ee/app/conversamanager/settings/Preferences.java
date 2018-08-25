@@ -182,6 +182,10 @@ public class Preferences {
         return getBooleanPreference(PreferencesKeys.NOTIFICATION_INAPP_PREVIEW_KEY, true);
     }
 
+    public String getFirebaseToken() {
+        return getStringPreference(PreferencesKeys.FIREBASE_TOKEN_ID, "");
+    }
+
     /* ******************************************************************************** */
 	/* ************************************ SETTERS *********************************** */
 	/* ******************************************************************************** */
@@ -316,6 +320,12 @@ public class Preferences {
     public void setInAppNotificationPreview(boolean value) {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean(PreferencesKeys.NOTIFICATION_INAPP_PREVIEW_KEY, value);
+        editor.apply();
+    }
+
+    public void setFirebaseToken(String value) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(PreferencesKeys.FIREBASE_TOKEN_ID, value);
         editor.apply();
     }
 

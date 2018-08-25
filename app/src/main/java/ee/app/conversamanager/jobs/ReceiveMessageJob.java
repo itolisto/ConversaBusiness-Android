@@ -7,25 +7,11 @@ import com.birbit.android.jobqueue.Job;
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
 
-import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 import ee.app.conversamanager.ConversaApp;
-import ee.app.conversamanager.delivery.DeliveryStatus;
-import ee.app.conversamanager.dialog.PushNotification;
-import ee.app.conversamanager.events.contact.ContactSaveEvent;
-import ee.app.conversamanager.events.message.MessageIncomingEvent;
 import ee.app.conversamanager.management.AblyConnection;
-import ee.app.conversamanager.model.database.NotificationInformation;
 import ee.app.conversamanager.model.database.dbCustomer;
-import ee.app.conversamanager.model.database.dbMessage;
-import ee.app.conversamanager.model.parse.Customer;
-import ee.app.conversamanager.utils.AppActions;
-import ee.app.conversamanager.utils.Const;
-import ee.app.conversamanager.utils.Foreground;
 import ee.app.conversamanager.utils.Logger;
 
 /**
