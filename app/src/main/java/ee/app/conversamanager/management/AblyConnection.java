@@ -151,7 +151,7 @@ public class AblyConnection implements Channel.MessageListener,
         params.put("channelName", channelName);
         params.put("isTyping", true);
 
-        NetworkingManager.getInstance().post(context,"messages/sendPresenceMessage", params, new FunctionCallback<JSONObject>() {
+        NetworkingManager.getInstance().post(context,"message/sendPresenceMessage", params, new FunctionCallback<JSONObject>() {
             @Override
             public void done(JSONObject JSONObject, FirebaseCustomException e) {
                 if (e != null) {
@@ -168,7 +168,7 @@ public class AblyConnection implements Channel.MessageListener,
         params.put("userId", ConversaApp.getInstance(context).getPreferences().getAccountBusinessId());
         params.put("channelName", channelName);
 
-        NetworkingManager.getInstance().post(context,"messages/sendPresenceMessage", params, new FunctionCallback<JSONObject>() {
+        NetworkingManager.getInstance().post(context,"message/sendPresenceMessage", params, new FunctionCallback<JSONObject>() {
             @Override
             public void done(JSONObject object, FirebaseCustomException e) {
                 if (e != null) {
