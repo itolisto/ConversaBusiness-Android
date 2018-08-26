@@ -62,7 +62,7 @@ public class ActivityCheck extends BaseActivity implements View.OnClickListener 
                     params.put("search", mEtCheckName.getText().toString());
                     params.put("skip", 0); // Not needed for search but we add this parameter as api requires it
 
-                    NetworkingManager.getInstance().post("public/searchBusiness", params, new FunctionCallback<JSONArray>() {
+                    NetworkingManager.getInstance().post(this,"public/searchBusiness", params, new FunctionCallback<JSONArray>() {
                         @Override
                         public void done(JSONArray json, FirebaseCustomException exception) {
                             if (exception == null) {

@@ -7,11 +7,13 @@ import com.birbit.android.jobqueue.Job;
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
 import java.util.HashMap;
 
 import ee.app.conversamanager.ConversaApp;
+import ee.app.conversamanager.events.account.AccountEvent;
 import ee.app.conversamanager.management.AblyConnection;
 import ee.app.conversamanager.networking.FirebaseCustomException;
 import ee.app.conversamanager.networking.NetworkingManager;
@@ -41,7 +43,7 @@ public class BusinessInfoJob extends Job {
     public void onRun() throws Throwable {
         HashMap<String, String> params = new HashMap<>();
 
-        JSONObject jsonRootObject = NetworkingManager.getInstance().postSync("business/getBusinessId", params);
+        JSONObject jsonRootObject = NetworkingManager.getInstance().postSync(getApplicationContext(),"business/getBusinessId", params);
 
         String objectId = jsonRootObject.optString("ob", "");
         String displayName = jsonRootObject.optString("dn", "");
@@ -58,7 +60,7 @@ public class BusinessInfoJob extends Job {
             redirect = true;
         }
 
-        // 1. Save Customer object id
+        // Save Customer object id
         ConversaApp.getInstance(getApplicationContext()).getPreferences().setAccountBusinessId(objectId, false);
         ConversaApp.getInstance(getApplicationContext()).getPreferences().setAccountDisplayName(displayName, false);
         ConversaApp.getInstance(getApplicationContext()).getPreferences().setAccountPaidPlan(paidPlan);
@@ -69,12 +71,8 @@ public class BusinessInfoJob extends Job {
         ConversaApp.getInstance(getApplicationContext()).getPreferences().setAccountRedirect(redirect);
         ConversaApp.getInstance(getApplicationContext()).getPreferences().setAccountAvatar(avatar);
         ConversaApp.getInstance(getApplicationContext()).getPreferences().setAccountStatus(status);
-        // 2. Subscribe to Customer channels
-        AblyConnection.getInstance().subscribeToChannels();
-
-        ConversaApp.getInstance(getApplicationContext())
-                .getJobManager()
-                .addJob(new DownloadAvatarJob(objectId));
+        // Notify loading
+        EventBus.getDefault().post(new AccountEvent());
     }
 
     @Override

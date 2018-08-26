@@ -34,4 +34,5 @@ public class PreferencesKeys {
     public static final String ACCOUNT_STATUS_KEY = "sett_account_status_key";
 
     public static final String FIREBASE_TOKEN_ID = "firebase_token_id";
+    public static final String FIREBASE_LOAD_TOKEN_ID = "firebase_load_token_id";
 }

@@ -1,5 +1,6 @@
 package ee.app.conversamanager.networking;
 
+import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.annotation.NonNull;
@@ -49,15 +50,15 @@ public class NetworkingManager {
         return BASE_URL + functionName;
     }
 
-    private Headers getFirebaseHeaders(String tokenId) {
-        final Headers.Builder headersBuilder = new Headers.Builder();
-        headersBuilder.set("Accept", "application/json");
-        headersBuilder.set("Content-Type", "text/json; Charset=UTF-8");
-        headersBuilder.set("X-Conversa-Application-Id", "abc");
-        headersBuilder.set("X-Conversa-Client-Version", BuildConfig.VERSION_NAME);
-        headersBuilder.set("X-Conversa-Client-Key", "fdas");
-        headersBuilder.set("Authorization", "Bearer " + tokenId);
-        return headersBuilder.build();
+    private HashMap<String, String> getFirebaseHeaders(String tokenId) {
+        HashMap<String, String> headersBuilder = new HashMap<>(6);
+        headersBuilder.put("Accept", "application/json");
+        headersBuilder.put("Content-Type", "text/json; Charset=UTF-8");
+        headersBuilder.put("X-Conversa-Application-Id", "abc");
+        headersBuilder.put("X-Conversa-Client-Version", BuildConfig.VERSION_NAME);
+        headersBuilder.put("X-Conversa-Client-Key", "fdas");
+        headersBuilder.put("Authorization", "Bearer " + tokenId);
+        return headersBuilder;
     }
 
     private String getUrlWithQueries(@NonNull String url, @Nullable Map<String, String> queries) {
@@ -79,7 +80,7 @@ public class NetworkingManager {
         }
     }
 
-    public <T> void post(@NonNull final String functionName, @NonNull final HashMap<String, ?> requestJson, @Nullable final FunctionCallback<T> callback) {
+    public <T> void post(@NonNull Context context, @NonNull final String functionName, @NonNull final HashMap<String, ?> requestJson, @Nullable final FunctionCallback<T> callback) {
         HashMap<String, String> body = new HashMap<>(requestJson.size());
 
         for (Map.Entry<String, ?> entry : requestJson.entrySet()) {
@@ -90,7 +91,7 @@ public class NetworkingManager {
 
         AndroidNetworking.post(getAbsoluteUrl(functionName))
                 .addBodyParameter(body)
-                .addHeaders(getFirebaseHeaders(ConversaApp.getInstance(null).getPreferences().getFirebaseToken()))
+                .addHeaders(getFirebaseHeaders(ConversaApp.getInstance(context).getPreferences().getFirebaseToken()))
                 .setPriority(Priority.HIGH)
                 .build()
                 .getAsString(new StringRequestListener() {
@@ -128,7 +129,7 @@ public class NetworkingManager {
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    callback.done(null, new FirebaseCustomException(1, "Couldn't parse json string"));
+                                    callback.done(null, new FirebaseCustomException(FirebaseCustomException.INVALID_JSON, "Couldn't parse json string"));
                                 }
                             });
                         }
@@ -142,7 +143,7 @@ public class NetworkingManager {
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    callback.done(null, new FirebaseCustomException(anError));
+                                    callback.done(null, getError(anError));
                                 }
                             });
                         }
@@ -150,9 +151,9 @@ public class NetworkingManager {
                 });
     }
 
-    public void get(@NonNull final String functionName, @NonNull final HashMap<String, String> requestJson, @Nullable final FunctionCallback callback) {
+    public void get(@NonNull Context context, @NonNull final String functionName, @NonNull final HashMap<String, String> requestJson, @Nullable final FunctionCallback callback) {
         AndroidNetworking.get(getUrlWithQueries(getAbsoluteUrl(functionName), requestJson))
-                .addHeaders(getFirebaseHeaders(ConversaApp.getInstance(null).getPreferences().getFirebaseToken()))
+                .addHeaders(getFirebaseHeaders(ConversaApp.getInstance(context).getPreferences().getFirebaseToken()))
                 .setPriority(Priority.HIGH)
                 .build()
                 .getAsString(new StringRequestListener() {
@@ -190,7 +191,7 @@ public class NetworkingManager {
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    callback.done(null, new FirebaseCustomException(1, "Couldn't parse json string"));
+                                    callback.done(null, new FirebaseCustomException(FirebaseCustomException.INVALID_JSON, "Couldn't parse json string"));
                                 }
                             });
                         }
@@ -204,7 +205,7 @@ public class NetworkingManager {
                             handler.post(new Runnable() {
                                 @Override
                                 public void run() {
-                                    callback.done(null, new FirebaseCustomException(anError));
+                                    callback.done(null, getError(anError));
                                 }
                             });
                         }
@@ -213,9 +214,7 @@ public class NetworkingManager {
     }
 
     @WorkerThread
-    public <T> T postSync(@NonNull final String functionName, @NonNull final HashMap<String, ?> requestJson) throws FirebaseCustomException {
-        String token = "";
-
+    public <T> T postSync(@NonNull Context context, @NonNull final String functionName, @NonNull final HashMap<String, ?> requestJson) throws FirebaseCustomException {
         HashMap<String, String> body = new HashMap<>(requestJson.size());
 
         for (Map.Entry<String, ?> entry : requestJson.entrySet()) {
@@ -225,7 +224,7 @@ public class NetworkingManager {
         }
 
         ANRequest request = AndroidNetworking.post(getAbsoluteUrl(functionName))
-                .addHeaders(getFirebaseHeaders(token))
+                .addHeaders(getFirebaseHeaders(ConversaApp.getInstance(context).getPreferences().getFirebaseToken()))
                 .addBodyParameter(body)
                 .build();
 
@@ -242,18 +241,16 @@ public class NetworkingManager {
                 return (T) new JSONObject(json);
             } catch (Exception ignored) {}
 
-            return null;
+            throw new FirebaseCustomException(FirebaseCustomException.INVALID_JSON, "Couldn't parse json string");
         } else {
-            ANError error = response.getError();
-            throw new FirebaseCustomException(error);
+            ANError anError = response.getError();
+            throw getError(anError);
         }
     }
 
-    public <T> T getSync(@NonNull final String functionName, @NonNull final HashMap<String, String> requestJson) throws FirebaseCustomException {
-        String token = "";
-
+    public <T> T getSync(@NonNull Context context, @NonNull final String functionName, @NonNull final HashMap<String, String> requestJson) throws FirebaseCustomException {
         ANRequest request = AndroidNetworking.get(getUrlWithQueries(getAbsoluteUrl(functionName), requestJson))
-                .addHeaders(getFirebaseHeaders(token))
+                .addHeaders(getFirebaseHeaders(ConversaApp.getInstance(context).getPreferences().getFirebaseToken()))
                 .build();
 
         ANResponse response = request.executeForString();
@@ -269,10 +266,26 @@ public class NetworkingManager {
                 return (T) new JSONObject(json);
             } catch (Exception ignored) {}
 
-            return null;
+            throw new FirebaseCustomException(FirebaseCustomException.INVALID_JSON, "Couldn't parse json string");
         } else {
-            ANError error = response.getError();
-            throw new FirebaseCustomException(error);
+            ANError anError = response.getError();
+            throw getError(anError);
+        }
+    }
+
+    private FirebaseCustomException getError(ANError anError) {
+        try {
+            JSONObject error = new JSONObject(anError.getErrorBody());
+
+            if (anError.getErrorBody().equalsIgnoreCase("{\"error\":\"unauthorized\"}")) {
+                return new FirebaseCustomException(FirebaseCustomException.INVALID_SESSION_TOKEN, anError.getErrorBody());
+            } if (error.optInt("error", 0) == FirebaseCustomException.ACCOUNT_NOT_FOUND) {
+                return new FirebaseCustomException(FirebaseCustomException.ACCOUNT_NOT_FOUND, anError.getErrorBody());
+            } else {
+                return new FirebaseCustomException(FirebaseCustomException.OTHER_CAUSE, anError.getErrorBody());
+            }
+        } catch (JSONException e) {
+            return new FirebaseCustomException(FirebaseCustomException.OTHER_CAUSE, e.getMessage());
         }
     }
 

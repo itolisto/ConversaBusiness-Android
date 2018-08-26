@@ -43,7 +43,7 @@ public class SettingsRedirectJob extends Job {
                 .getPreferences().getAccountBusinessId());
         params.put("redirect", redirect);
 
-        NetworkingManager.getInstance().postSync("business/updateBusinessRedirect", params);
+        NetworkingManager.getInstance().postSync(getApplicationContext(),"business/updateBusinessRedirect", params);
 
         ConversaApp.getInstance(getApplicationContext())
                 .getPreferences()

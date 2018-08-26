@@ -261,7 +261,7 @@ public class ActivitySettingsDetailAccount extends ConversaActivity implements V
         final HashMap<String, Object> params = new HashMap<>(9);
         params.put("avatar", file);
         params.put("businessId", ConversaApp.getInstance(this).getPreferences().getAccountBusinessId());
-        NetworkingManager.getInstance().post("business/updateBusinessAvatar", params, new FunctionCallback<Object>() {
+        NetworkingManager.getInstance().post(this,"business/updateBusinessAvatar", params, new FunctionCallback<Object>() {
             @Override
             public void done(Object json, FirebaseCustomException exception) {
                 if (exception == null) {
@@ -339,7 +339,7 @@ public class ActivitySettingsDetailAccount extends ConversaActivity implements V
                 HashMap<String, String> params = new HashMap<>(2);
                 params.put("displayName", newName);
                 params.put("businessId", ConversaApp.getInstance(this).getPreferences().getAccountBusinessId());
-                NetworkingManager.getInstance().post("business/updateBusinessName", params, new FunctionCallback<JSONObject>() {
+                NetworkingManager.getInstance().post(this,"business/updateBusinessName", params, new FunctionCallback<JSONObject>() {
                     @Override
                     public void done(JSONObject object, FirebaseCustomException e) {
                         if (e == null) {
@@ -384,7 +384,7 @@ public class ActivitySettingsDetailAccount extends ConversaActivity implements V
                 HashMap<String, String> params = new HashMap<>(2);
                 params.put("conversaId", newName);
                 params.put("businessId", ConversaApp.getInstance(this).getPreferences().getAccountBusinessId());
-                NetworkingManager.getInstance().post("business/updateBusinessId", params, new FunctionCallback<JSONObject>() {
+                NetworkingManager.getInstance().post(this,"business/updateBusinessId", params, new FunctionCallback<JSONObject>() {
                     @Override
                     public void done(JSONObject object, FirebaseCustomException e) {
                         if (e == null) {

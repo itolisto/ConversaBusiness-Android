@@ -312,4 +312,6 @@
     <string name="flash_on">Flash on</string>
     <string name="save">Save</string>
     <string name="no_select">No Select</string>
+
+    <string name="activity_loading_info">Por favor espera mientras cargamos tu información</string>
 </resources>

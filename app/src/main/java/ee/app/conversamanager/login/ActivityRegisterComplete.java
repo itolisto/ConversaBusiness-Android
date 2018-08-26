@@ -150,7 +150,7 @@ public class ActivityRegisterComplete extends BaseActivity implements View.OnCli
         mLtvTermsPrivacy.setText(styledString);
 
         HashMap<String, Object> params = new HashMap<>(1);
-        NetworkingManager.getInstance().post("public/getCountries", params, new FunctionCallback<Object>() {
+        NetworkingManager.getInstance().post(this,"public/getCountries", params, new FunctionCallback<Object>() {
             @Override
             public void done(Object json, FirebaseCustomException exception) {
                 if (exception != null) {
@@ -271,7 +271,7 @@ public class ActivityRegisterComplete extends BaseActivity implements View.OnCli
         params.put("displayName", displayName);
         params.put("conversaID", conversaId);
         params.put("categoryId", categoryId);
-        NetworkingManager.getInstance().post("users", params, new FunctionCallback<JSONObject>() {
+        NetworkingManager.getInstance().post(this,"users", params, new FunctionCallback<JSONObject>() {
             @Override
             public void done(JSONObject json, FirebaseCustomException exception) {
                 progress.dismiss();

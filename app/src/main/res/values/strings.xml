@@ -310,7 +310,6 @@
     <string name="tutorial_title_three">Be social</string>
     <string name="tutorial_title_two">Instant messaging</string>
 
-
     <string name="camera_permission_confirmation">This app demonstrates the usage of CameraView. In order to do that, it needs permission to access camera.</string>
     <string name="camera_permission_not_granted">Camera app cannot do anything without camera permission.</string>
     <string name="picture_taken">Picture taken</string>
@@ -322,4 +321,6 @@
     <string name="flash_on">Flash on</string>
     <string name="save">Save</string>
     <string name="no_select">No Select</string>
+
+    <string name="activity_loading_info">Please wait while we load your information</string>
 </resources>

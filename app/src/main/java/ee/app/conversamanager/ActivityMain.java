@@ -116,14 +116,28 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
             public void onTabReselected(TabLayout.Tab tab) { }
         });
 
-        if (ConversaApp.getInstance(this).getPreferences().getAccountBusinessId().isEmpty()) {
-            // 1. Get Customer Id
-            ConversaApp.getInstance(this)
-                    .getJobManager()
-                    .addJobInBackground(new BusinessInfoJob(FirebaseAuth.getInstance().getCurrentUser().getUid()));
-        } else {
-            AblyConnection.getInstance().subscribeToChannels();
+        // Load new token for current session
+        if (ConversaApp.getInstance(this).getPreferences().getFirebaseLoadToken()) {
+            FirebaseUser current = FirebaseAuth.getInstance().getCurrentUser();
+
+            if (current != null) {
+                current.getIdToken(true).addOnCompleteListener(new OnCompleteListener<GetTokenResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<GetTokenResult> task) {
+                        // TODO: Should evaluate the necessity of refreshing token after certain time and not onlly after Splash Screen is launched
+                        if (task.isSuccessful()) {
+                            ConversaApp.getInstance(getApplicationContext()).getPreferences().setFirebaseToken(task.getResult().getToken());
+                        } else {
+                            Logger.error(TAG, "Shouldn't reach this piece of code. Probably logout user automatically");
+                        }
+
+                        ConversaApp.getInstance(getApplicationContext()).getPreferences().setFirebaseLoadToken(false);
+                    }
+                });
+            }
         }
+
+        AblyConnection.getInstance().subscribeToChannels();
 
         initialization();
 	}
@@ -212,7 +226,7 @@ public class ActivityMain extends ConversaActivity implements Foreground.Listene
                     params.put("businessId", id);
 
                     try {
-                        NetworkingManager.getInstance().postSync("business/updateBusinessLastConnection", params);
+                        NetworkingManager.getInstance().postSync(getApplicationContext(),"business/updateBusinessLastConnection", params);
                     } catch (FirebaseCustomException e) {
                         if (AppActions.validateParseException(e)) {
                             AppActions.appLogout(getApplicationContext(), true);

@@ -45,7 +45,7 @@ public class SettingsUpdateStatusJob extends Job {
                 .getPreferences().getAccountBusinessId());
         params.put("status", nnew);
 
-        NetworkingManager.getInstance().postSync("business/updateBusinessStatus", params);
+        NetworkingManager.getInstance().postSync(getApplicationContext(),"business/updateBusinessStatus", params);
 
         ConversaApp.getInstance(getApplicationContext())
                 .getPreferences()

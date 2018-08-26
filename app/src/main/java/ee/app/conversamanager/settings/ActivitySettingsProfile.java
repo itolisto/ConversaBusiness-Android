@@ -200,7 +200,7 @@ public class ActivitySettingsProfile extends ConversaActivity implements View.On
         params.put("businessId", ConversaApp.getInstance(this).getPreferences().getAccountBusinessId());
         params.put("count", false);
 
-        NetworkingManager.getInstance().post("general/getBusinessProfile", params, new FunctionCallback<Object>() {
+        NetworkingManager.getInstance().post(this,"general/getBusinessProfile", params, new FunctionCallback<Object>() {
             @Override
             public void done(Object json, FirebaseCustomException exception) {
                 if(exception == null) {

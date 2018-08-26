@@ -55,8 +55,8 @@ public class SendMessageJob extends Job {
                 .getMessageById(id);
 
         final HashMap<String, Object> params = new HashMap<>(9);
-        params.put("customerId", message.getToUserId());
-        params.put("businessId", message.getFromUserId());
+        params.put("fromId", message.getToUserId());
+        params.put("toId", message.getFromUserId());
         params.put("messageType", Integer.valueOf(message.getMessageType()));
 
         if (AblyConnection.getInstance() != null && AblyConnection.getInstance()
@@ -121,7 +121,7 @@ public class SendMessageJob extends Job {
         }
 
         try {
-            NetworkingManager.getInstance().postSync("messages/sendUserMessage", params);
+            NetworkingManager.getInstance().postSync(getApplicationContext(),"messages/sendUserMessage", params);
             message.updateMessageStatus(getApplicationContext(), DeliveryStatus.statusAllDelivered);
         } catch (FirebaseCustomException e) {
             if (AppActions.validateParseException(e)) {
