@@ -37,7 +37,6 @@ import java.util.Locale;
 import ee.app.conversamanager.extendables.ConversaFragment;
 import ee.app.conversamanager.settings.PreferencesKeys;
 import ee.app.conversamanager.utils.AppActions;
-import ee.app.conversamanager.utils.Logger;
 import ee.app.conversamanager.utils.Utils;
 import ee.app.conversamanager.view.BoldTextView;
 import ee.app.conversamanager.view.RegularTextView;

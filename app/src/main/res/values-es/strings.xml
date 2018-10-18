@@ -273,8 +273,7 @@
     <string name="sett_category_selected_title">Seleccionadas</string>
     <string name="sett_category_available_title">Categorías</string>
     <string name="sett_category_limit_warning">Límite alcanzado</string>
-    <!--<string name="sett_category_detail_title">Puedes escoger hasta %1$d categorías</string>-->
-    <string name="sett_category_detail_title">Puedes escoger hasta 3 categorías</string>
+    <string name="sett_category_detail_title">Puedes escoger hasta %1$d categorías</string>
     <string name="sett_category_info_error">No pudimos encontrar la información necesaria</string>
     <string name="sett_redirect_premium">Esta es una función premium. Contacta a soporte técnico para poder activarla.</string>
     <string name="conversa_id_already_taken">Este Conversa ID ya está ocupado, prueba con otro</string>

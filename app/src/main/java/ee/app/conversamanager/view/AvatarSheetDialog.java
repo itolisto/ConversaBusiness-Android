@@ -11,12 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-
 import ee.app.conversamanager.ActivityImageDetail;
 import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.R;
-import ee.app.conversamanager.utils.Const;
 import ee.app.conversamanager.camara.ImagePickerDemo;
+import ee.app.conversamanager.utils.Const;
 
 /**
  * Created by edgargomez on 9/9/16.

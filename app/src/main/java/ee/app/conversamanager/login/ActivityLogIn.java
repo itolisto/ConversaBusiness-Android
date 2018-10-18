@@ -11,21 +11,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.parse.GetCallback;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.R;
 import ee.app.conversamanager.extendables.BaseActivity;
-import ee.app.conversamanager.model.parse.Account;
 import ee.app.conversamanager.utils.AppActions;
-import ee.app.conversamanager.utils.Const;
 import ee.app.conversamanager.utils.Utils;
 
 /**

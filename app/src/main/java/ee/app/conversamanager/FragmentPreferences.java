@@ -22,12 +22,12 @@ import com.facebook.drawee.view.SimpleDraweeView;
 import java.util.List;
 
 import ee.app.conversamanager.extendables.ConversaFragment;
-import ee.app.conversamanager.settings.ActivitySettingsProfile;
 import ee.app.conversamanager.settings.ActivitySettingsAccount;
 import ee.app.conversamanager.settings.ActivitySettingsChat;
 import ee.app.conversamanager.settings.ActivitySettingsHelp;
 import ee.app.conversamanager.settings.ActivitySettingsLink;
 import ee.app.conversamanager.settings.ActivitySettingsNotifications;
+import ee.app.conversamanager.settings.ActivitySettingsProfile;
 import ee.app.conversamanager.settings.PreferencesKeys;
 import ee.app.conversamanager.utils.Utils;
 import ee.app.conversamanager.view.LightTextView;

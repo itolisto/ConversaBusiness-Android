@@ -29,9 +29,9 @@ import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import ee.app.conversamanager.actions.MessageAction;
 import ee.app.conversamanager.delivery.DeliveryStatus;
 import ee.app.conversamanager.messaging.MessageIntentService;
-import ee.app.conversamanager.actions.MessageAction;
 
 /**
  * dbMessage
