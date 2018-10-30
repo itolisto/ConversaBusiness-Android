@@ -8,8 +8,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +19,8 @@ import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.List;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import ee.app.conversamanager.extendables.ConversaFragment;
 import ee.app.conversamanager.settings.ActivitySettingsAccount;
 import ee.app.conversamanager.settings.ActivitySettingsChat;

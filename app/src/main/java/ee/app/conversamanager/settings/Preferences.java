@@ -27,14 +27,14 @@ package ee.app.conversamanager.settings;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.annotation.ArrayRes;
-import android.support.annotation.NonNull;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import androidx.annotation.ArrayRes;
+import androidx.annotation.NonNull;
 import ee.app.conversamanager.R;
 
 /**
@@ -357,7 +357,8 @@ public class Preferences {
         sharedPreferences.edit().putLong(key, value).apply();
     }
 
-    private @NonNull Set<String> getMediaDownloadAllowed(Context context, String key, @ArrayRes int defaultValuesRes) {
+    private @NonNull
+    Set<String> getMediaDownloadAllowed(Context context, String key, @ArrayRes int defaultValuesRes) {
         return getStringSetPreference(
                 key,
                 new HashSet<>(Arrays.asList(context.getResources().getStringArray(defaultValuesRes))));

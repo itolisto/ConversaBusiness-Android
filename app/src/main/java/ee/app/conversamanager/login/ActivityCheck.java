@@ -3,8 +3,6 @@ package ee.app.conversamanager.login;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.EditText;
 
@@ -19,6 +17,8 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import ee.app.conversamanager.R;
 import ee.app.conversamanager.extendables.BaseActivity;
 import ee.app.conversamanager.model.nBusiness;

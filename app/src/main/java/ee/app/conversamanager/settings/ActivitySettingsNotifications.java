@@ -1,11 +1,11 @@
 package ee.app.conversamanager.settings;
 
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.SwitchCompat;
-import android.support.v7.widget.Toolbar;
 import android.widget.CompoundButton;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.appcompat.widget.Toolbar;
 import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.R;
 import ee.app.conversamanager.extendables.ConversaActivity;

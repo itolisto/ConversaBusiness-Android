@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.TextUtils;
@@ -41,6 +39,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.R;
 import ee.app.conversamanager.extendables.BaseActivity;

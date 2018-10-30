@@ -2,10 +2,10 @@ package ee.app.conversamanager.settings;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.R;
 import ee.app.conversamanager.extendables.ConversaActivity;

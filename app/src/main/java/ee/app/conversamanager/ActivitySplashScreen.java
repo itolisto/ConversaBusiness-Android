@@ -3,9 +3,10 @@ package ee.app.conversamanager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 
 import com.parse.ParseUser;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class ActivitySplashScreen extends AppCompatActivity {
 

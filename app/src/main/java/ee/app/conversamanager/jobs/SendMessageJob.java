@@ -1,8 +1,5 @@
 package ee.app.conversamanager.jobs;
 
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
 import com.birbit.android.jobqueue.Job;
 import com.birbit.android.jobqueue.Params;
 import com.birbit.android.jobqueue.RetryConstraint;
@@ -13,6 +10,8 @@ import com.parse.ParseFile;
 import java.io.File;
 import java.util.HashMap;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.delivery.DeliveryStatus;
 import ee.app.conversamanager.management.AblyConnection;

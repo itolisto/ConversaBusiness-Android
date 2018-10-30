@@ -1,16 +1,11 @@
 package ee.app.conversamanager.settings;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 
 import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
@@ -26,6 +21,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.RecyclerView;
 import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.R;
 import ee.app.conversamanager.extendables.ConversaActivity;
@@ -210,7 +210,7 @@ public class ActivitySettingsCategory extends ConversaActivity implements Flexib
     }
 
     @Override
-    public boolean onItemClick(int position) {
+    public boolean onItemClick(View view, int position) {
         if (mAdapter.getItem(position) instanceof HeaderItem)
             return false;
 
@@ -357,4 +357,5 @@ public class ActivitySettingsCategory extends ConversaActivity implements Flexib
             });
         }
     }
+
 }

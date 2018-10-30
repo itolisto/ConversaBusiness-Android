@@ -1,12 +1,8 @@
 package ee.app.conversamanager.management;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.provider.Settings;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
@@ -21,6 +17,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.events.TypingEvent;
 import ee.app.conversamanager.messaging.CustomMessageService;

@@ -1,9 +1,8 @@
 package ee.app.conversamanager.interfaces;
 
-import android.support.annotation.UiThread;
-
 import java.util.List;
 
+import androidx.annotation.UiThread;
 import ee.app.conversamanager.messaging.MessageDeleteReason;
 import ee.app.conversamanager.messaging.MessageUpdateReason;
 import ee.app.conversamanager.model.database.dbMessage;

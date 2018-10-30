@@ -23,8 +23,7 @@
  */
 package ee.app.conversamanager.tutorial;
 
-import android.support.annotation.NonNull;
-
+import androidx.annotation.NonNull;
 import ee.app.conversamanager.BuildConfig;
 
 /**

@@ -2,8 +2,6 @@ package ee.app.conversamanager.jobs;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 import com.birbit.android.jobqueue.Job;
 import com.birbit.android.jobqueue.Params;
@@ -14,6 +12,8 @@ import org.greenrobot.eventbus.EventBus;
 import java.io.IOException;
 import java.io.InputStream;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.delivery.DeliveryStatus;
 import ee.app.conversamanager.events.message.MessageUpdateEvent;

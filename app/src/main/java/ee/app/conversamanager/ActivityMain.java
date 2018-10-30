@@ -3,14 +3,12 @@ package ee.app.conversamanager;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Bundle;
-import android.support.design.widget.TabLayout;
-import android.support.v4.view.ViewPager;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.View;
 import android.widget.ImageView;
 
 import com.crashlytics.android.Crashlytics;
+import com.google.android.material.tabs.TabLayout;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 
@@ -18,6 +16,8 @@ import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import androidx.appcompat.widget.Toolbar;
+import androidx.viewpager.widget.ViewPager;
 import ee.app.conversamanager.extendables.ConversaActivity;
 import ee.app.conversamanager.jobs.BusinessInfoJob;
 import ee.app.conversamanager.management.AblyConnection;

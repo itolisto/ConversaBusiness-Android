@@ -28,9 +28,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.StrictMode;
-import android.support.multidex.MultiDexApplication;
-import android.support.v4.content.LocalBroadcastManager;
-import android.support.v7.app.AppCompatDelegate;
 import android.util.Log;
 
 import com.birbit.android.jobqueue.JobManager;
@@ -46,6 +43,9 @@ import org.greenrobot.eventbus.EventBus;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import androidx.appcompat.app.AppCompatDelegate;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import androidx.multidex.MultiDexApplication;
 import ee.app.conversamanager.database.MySQLiteHelper;
 import ee.app.conversamanager.events.MyEventBusIndex;
 import ee.app.conversamanager.management.AblyConnection;

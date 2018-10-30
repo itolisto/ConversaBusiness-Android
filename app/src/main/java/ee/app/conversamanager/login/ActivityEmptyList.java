@@ -3,10 +3,10 @@ package ee.app.conversamanager.login;
 import android.app.TaskStackBuilder;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.NavUtils;
 import android.view.View;
 
+import androidx.annotation.Nullable;
+import androidx.core.app.NavUtils;
 import ee.app.conversamanager.R;
 import ee.app.conversamanager.extendables.BaseActivity;
 

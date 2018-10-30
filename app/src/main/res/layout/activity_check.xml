@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:layout_marginTop="28dp"
             android:id="@+id/tilName"
             android:theme="@style/MyTheme.Gray"
@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:padding="14dp" >
 
-            <android.support.design.widget.TextInputEditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -37,7 +37,7 @@
                 android:textColor="@android:color/black"
                 android:textColorHint="@color/light_gray"
                 android:textSize="13sp" />
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <ee.app.conversamanager.view.RegularTextView
             android:id="@+id/tvMessage"

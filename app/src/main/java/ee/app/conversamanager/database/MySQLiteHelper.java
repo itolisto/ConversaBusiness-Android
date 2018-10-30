@@ -10,7 +10,6 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.support.annotation.WorkerThread;
 import android.text.TextUtils;
 
 import java.io.File;
@@ -18,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.WorkerThread;
 import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.model.database.NotificationInformation;
 import ee.app.conversamanager.model.database.dbCustomer;

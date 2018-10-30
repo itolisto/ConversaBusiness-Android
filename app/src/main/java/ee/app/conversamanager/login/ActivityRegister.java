@@ -6,10 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.NavUtils;
-import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +34,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.core.app.NavUtils;
 import ee.app.conversamanager.ConversaApp;
 import ee.app.conversamanager.R;
 import ee.app.conversamanager.extendables.BaseActivity;
@@ -324,7 +324,8 @@ public class ActivityRegister extends BaseActivity implements View.OnClickListen
             notifyDataSetChanged();
         }
 
-        private @NonNull View getCustomView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+        private @NonNull
+        View getCustomView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
             TextView v = (TextView) super.getView(position, convertView, parent);
             v.setTypeface(ConversaApp.getInstance(context).getTfRalewayRegular());
             v.setText(itemList.get(position).getCategoryName(context));

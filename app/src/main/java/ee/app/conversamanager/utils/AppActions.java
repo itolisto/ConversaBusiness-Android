@@ -2,10 +2,10 @@ package ee.app.conversamanager.utils;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 
 import com.parse.ParseException;
 
+import androidx.appcompat.app.AppCompatActivity;
 import ee.app.conversamanager.ActivityMain;
 import ee.app.conversamanager.ActivitySignIn;
 import ee.app.conversamanager.ConversaApp;

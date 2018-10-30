@@ -1,12 +1,12 @@
 package ee.app.conversamanager.holders;
 
 import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
 
 import com.facebook.drawee.view.SimpleDraweeView;
 
+import androidx.appcompat.app.AppCompatActivity;
 import ee.app.conversamanager.R;
 import ee.app.conversamanager.interfaces.OnBusinessClickListener;
 import ee.app.conversamanager.model.nBusiness;

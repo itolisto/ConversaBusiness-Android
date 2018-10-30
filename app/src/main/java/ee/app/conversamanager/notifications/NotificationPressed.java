@@ -2,11 +2,11 @@ package ee.app.conversamanager.notifications;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import androidx.appcompat.app.AppCompatActivity;
 import ee.app.conversamanager.ActivityChatWall;
 import ee.app.conversamanager.ActivityMain;
 import ee.app.conversamanager.ConversaApp;

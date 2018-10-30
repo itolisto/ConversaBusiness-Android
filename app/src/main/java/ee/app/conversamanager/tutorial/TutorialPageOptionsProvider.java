@@ -23,7 +23,7 @@
  */
 package ee.app.conversamanager.tutorial;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * {@link PageOptions} provider

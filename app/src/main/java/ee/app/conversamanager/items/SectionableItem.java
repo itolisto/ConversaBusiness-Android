@@ -78,7 +78,7 @@ public class SectionableItem extends AbstractSectionableItem<CategoryViewHolder,
                 holder.mIbDelete.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        adapter.mItemClickListener.onItemClick((adapter.getSectionItems(getHeader()).indexOf(item) + 1) * -1);
+                        adapter.mItemClickListener.onItemClick(v, (adapter.getSectionItems(getHeader()).indexOf(item) + 1) * -1);
                     }
                 });
 

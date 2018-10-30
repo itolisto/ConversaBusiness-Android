@@ -1,7 +1,6 @@
 package ee.app.conversamanager.browser;
 
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -9,6 +8,7 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 
+import androidx.appcompat.widget.Toolbar;
 import ee.app.conversamanager.R;
 import ee.app.conversamanager.extendables.BaseActivity;
 import ee.app.conversamanager.view.RegularTextView;

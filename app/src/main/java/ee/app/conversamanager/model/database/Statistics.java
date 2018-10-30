@@ -24,8 +24,7 @@
 
 package ee.app.conversamanager.model.database;
 
-import android.support.v7.app.AppCompatActivity;
-
+import androidx.appcompat.app.AppCompatActivity;
 import ee.app.conversamanager.R;
 
 /**
